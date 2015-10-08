@@ -11,9 +11,9 @@ module LE
 class LevelSet
 	def initialize(json_fname : String)
 		@json = JSON.parse(File.open json_fname, "r") as Hash
-		@name = @json["name"] as String|Nil
-		@author = @json["author"] as String|Nil
-		@difficulty = @json["difficulty"] as String|Nil
+		@name = @json["name"] as String?
+		@author = @json["author"] as String?
+		@difficulty = @json["difficulty"] as String?
 		@tracks = @json["tracks"] as Array
 		@levels = [] of Level
 
