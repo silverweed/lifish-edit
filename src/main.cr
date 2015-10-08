@@ -7,16 +7,27 @@ require "crsfml/graphics"
 require "crsfml/window"
 require "./*"
 
+if ARGV.size < 1
+	puts "Usage: #{$0} <lifish_dir>"
+	exit 1
+end
+
+getopt!([
+	{ "-l", :levels, String }, # the name of the levelset to load
+	{ "-v", :verbose },        # whether to be verbose or not
+])
+
+puts "options: #{$_options}; args: #{$_args}"
+
+LIFISH_DIR = $_args[0]
 WIN_WIDTH = 800
 WIN_HEIGHT = 600
 
-ls = LE::LevelSet.new "levels.json"
-level = ls[0]
-#level.dump if level
-#ls.dump
-exit 0
+ls = LE::LevelSet.new "#{LIFISH_DIR}/levels.json"
 
 window = SF::RenderWindow.new(SF.video_mode(WIN_WIDTH, WIN_HEIGHT), "Lifish Edit")
+font = SF::Font.from_file "#{LIFISH_DIR}/assets/fonts/pf_tempesta_seven.ttf"
+dummy = SF::Text.new("Nothing to see here yet...", font, 20)
 
 while window.open?
 	while event = window.poll_event
@@ -26,5 +37,6 @@ while window.open?
 		end
 	end
 	window.clear
+	window.draw dummy
 	window.display
 end

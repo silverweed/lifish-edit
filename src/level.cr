@@ -16,15 +16,15 @@ class Level
 
 	# Prints a human-readable representation of this level.
 	def dump
-		puts 	"Time: #{@time} s\n"
-			"Music: #{@music}\n"
-			"TileIDs: {\n"
-			"	border: #{@tileIDs["border"]},\n"
-			"	breakable: #{@tileIDs["breakable"]},\n"
-			"	fixed: #{@tileIDs["fixed"]},\n"
-			"	bg: #{@tileIDs["bg"]}\n"
-			"},\n"
-			"Tilemap: #{@tilemap}"
+		puts "Time: #{@time} s\n\
+			Music: #{@music}\n\
+			TileIDs: {\n\
+			\tborder: #{@tileIDs["border"]},\n\
+			\tbreakable: #{@tileIDs["breakable"]},\n\
+			\tfixed: #{@tileIDs["fixed"]},\n\
+			\tbg: #{@tileIDs["bg"]}\n\
+			},\n\
+			Tilemap: #{@tilemap}"
 	end
 end
 

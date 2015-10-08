@@ -5,6 +5,9 @@ require "json"
 
 module LE
 
+# A **LevelSet** contains an array of `Level`s.
+# The LevelSet is constructed with a JSON lifish levels file
+# containing the levels data and metadata.
 class LevelSet
 	def initialize(json_fname : String)
 		@json = JSON.parse(File.open json_fname, "r") as Hash
@@ -40,17 +43,12 @@ class LevelSet
 	end
 
 	def dump
-		if false
-		puts "
-	LevelSet: #{@name || "Unnamed set"}
-	Author: #{@author || "Unknown"}
-	Difficulty: #{@difficulty || "Unknown"}
-	#Tracks: #{@tracks.size}
-	#Levels: #{@levels.size}"
-		end
+		puts "LevelSet: #{@name || "Unnamed set"}\n\
+			Author: #{@author || "Unknown"}\n\
+			Difficulty: #{@difficulty || "Unknown"}\n\
+			#Tracks: #{@tracks.size}\n\
+			#Levels: #{@levels.size}"
 	end
-
-
 end
 
 end # module LE
