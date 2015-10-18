@@ -7,6 +7,8 @@ module LE
 class Level
 	property time, music, tileIDs, tilemap
 
+	# Initializes this level with the parameters given by
+	# the hash *json*. May fail if *json* is not a valid hash.
 	def initialize(json)
 		@time = json["time"] as Int
 		@music = json["music"] as Int

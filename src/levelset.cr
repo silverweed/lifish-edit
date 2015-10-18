@@ -9,6 +9,8 @@ module LE
 # The LevelSet is constructed with a JSON lifish levels file
 # containing the levels data and metadata.
 class LevelSet
+	# Opens file *json_fname* containing a lifish level set
+	# and deserializes it.
 	def initialize(json_fname : String)
 		@json = JSON.parse(File.open json_fname, "r") as Hash
 		@name = @json["name"] as String?
@@ -16,6 +18,8 @@ class LevelSet
 		@difficulty = @json["difficulty"] as String?
 		@tracks = @json["tracks"] as Array
 		@levels = [] of Level
+		# currently pointed level
+		@current = 0
 
 		# Generate levels
 		lvjson = @json["levels"] as Array
@@ -31,17 +35,21 @@ class LevelSet
 		@levels[i]
 	end
 
-	private def init_level(i)
-		lvjson = @json["levels"] as Array
-
-		begin
-			description = lvjson[i] as Hash
-			Level.new description
-		rescue
-			nil
+	# Returns first non-nil level after the current one, cyclic.
+	def next
+		nils = 0
+		while nils < @levels.size
+			@current += 1
+			@current = 0 if @current == @levels.size
+			if @levels[@current].is_a? Level
+				return @levels[@current]
+			else
+				nils += 1
+			end
 		end
+		raise Exception.new "All levels nil!"
 	end
-
+		
 	def dump
 		puts "LevelSet: #{@name || "Unnamed set"}\n\
 			Author: #{@author || "Unknown"}\n\
