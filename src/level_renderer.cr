@@ -19,7 +19,7 @@ class LevelRenderer
 		load_level
 	end
 
-	private def load_level()
+	private def load_level
 		@tiles = [] of Entity?
 		@level.tilemap.each_char do |c|
 			break if c == '\0'
@@ -33,7 +33,7 @@ class LevelRenderer
 				if $verbose
 					STDERR.puts "Creating entity #{c}"
 				end
-				@tiles << Entity.new entity
+				@tiles << Entity.new entity, @level.tileIDs
 			end
 		end
 		bg_texture = SF::Texture.from_file(get_graphic "bg#{@level.tileIDs["bg"]}.png")
@@ -45,7 +45,7 @@ class LevelRenderer
 		LV_HEIGHT.times do |row|
 			LV_WIDTH.times do |col|
 				entity = @tiles[col+LV_WIDTH*row]
-				pos = SF.vector2f(TILE_SIZE*row, TILE_SIZE*col)
+				pos = SF.vector2f(TILE_SIZE*col, TILE_SIZE*row)
 				@bg.position = pos
 				target.draw @bg
 				if entity

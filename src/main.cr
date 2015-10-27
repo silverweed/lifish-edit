@@ -36,6 +36,13 @@ while window.open?
 		case event.type
 		when SF::Event::Closed
 			window.close
+		when SF::Event::KeyPressed
+			case event.key.code
+			when SF::KeyCode::Add
+				lr.level = ls.next
+			when SF::KeyCode::Subtract
+				lr.level = ls.prev
+			end
 		end
 	end
 	window.clear

@@ -8,11 +8,22 @@ class Entity
 
 	getter sprite
 
-	def initialize(entity_type : Symbol)
+	def initialize(entity_type : Symbol, tileIDs = nil : Hash?)
 		texture_name = entity_type.to_s + ".png"
-		@texture = SF::Texture.from_file(get_graphic texture_name)
-		@sprite = SF::Sprite.new @texture
-		@sprite.texture_rect = SF.int_rect 0, 0, TILE_SIZE, TILE_SIZE
+		@sprite = SF::Sprite.new
+		begin
+			@texture = SF::Texture.from_file(get_graphic texture_name)
+			@sprite.texture = @texture
+		rescue
+		end
+		rect = SF.int_rect 0, 0, TILE_SIZE, TILE_SIZE
+		case entity_type
+		when :fixed
+			rect.left = TILE_SIZE * (tileIDs["fixed"] as Int - 1)
+		when :breakable
+			rect.top = TILE_SIZE * (tileIDs["breakable"] as Int - 1)
+		end
+		@sprite.texture_rect = rect
 	end
 
 	def draw(target, states : SF::RenderStates)
@@ -23,7 +34,7 @@ class Entity
 		@sprite.position = pos
 	end
 
-	def position()
+	def position
 		@sprite.position
 	end
 end

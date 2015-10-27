@@ -37,19 +37,27 @@ class LevelSet
 
 	# Returns first non-nil level after the current one, cyclic.
 	def next
+		cyclic true
+	end
+	
+	def prev
+		cyclic false
+	end
+
+	def cyclic(forward)
 		nils = 0
 		while nils < @levels.size
-			@current += 1
+			@current += forward ? 1 : -1
 			@current = 0 if @current == @levels.size
 			if @levels[@current].is_a? Level
-				return @levels[@current]
+				return @levels[@current-1]
 			else
-				nils += 1
+				nils += forward ? 1 : -1 
 			end
 		end
 		raise Exception.new "All levels nil!"
 	end
-		
+	
 	def dump
 		puts "LevelSet: #{@name || "Unnamed set"}\n\
 			Author: #{@author || "Unknown"}\n\
