@@ -1,0 +1,5 @@
+module LE
+	LV_WIDTH = 15
+	LV_HEIGHT = 13
+	TILE_SIZE = 32
+end
