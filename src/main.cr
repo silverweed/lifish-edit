@@ -30,6 +30,7 @@ window = SF::RenderWindow.new(SF.video_mode(WIN_WIDTH, WIN_HEIGHT), "Lifish Edit
 font = SF::Font.from_file "#{LIFISH_DIR}/assets/fonts/pf_tempesta_seven.ttf"
 
 lr = LE::LevelRenderer.new ls.next
+mouse_utils = LE::MouseUtils.new lr
 
 while window.open?
 	while event = window.poll_event
@@ -42,6 +43,11 @@ while window.open?
 				lr.level = ls.next
 			when SF::KeyCode::Subtract
 				lr.level = ls.prev
+			end
+		when SF::Event::MouseButtonPressed
+			if event.mouse_button.button ==  SF::Mouse::Left
+				puts mouse_utils.get_touched_entity
+				puts "Mouse in #{SF::Mouse.get_position window}"
 			end
 		end
 	end

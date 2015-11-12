@@ -7,7 +7,7 @@ module LE
 class LevelRenderer
 	include Utils
 
-	getter level
+	getter level, tiles
 
 	def initialize(@level)
 		@tiles = [] of Entity?
