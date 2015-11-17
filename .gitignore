@@ -5,3 +5,6 @@
 *.swp
 *~
 .lifishedit.cfg
+lifish
+lifishedit
+*.o
