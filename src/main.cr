@@ -6,31 +6,39 @@
 require "crsfml/graphics"
 require "crsfml/window"
 
-if ARGV.size < 1
-	puts "Usage: #{$0} <lifish_dir>"
-	exit 1
-end
-
 getopt! [
 	{ "-l", :levels, String }, # the name of the levelset to load
 	{ "-v", :verbose },        # whether to be verbose or not
 ]
 
-puts "options: #{$_options}; args: #{$_args}"
+STDERR.puts "options: #{$_options}; args: #{$_args}"
 
-LIFISH_DIR = $_args[0]
-ASSETS_DIR = "#{LIFISH_DIR}/assets"
+if ARGV.size > 1
+	$lifish_dir = $_args[0]
+else
+	start_dir = LE::Utils.read_start_dir || ENV["HOME"]
+	case NFD.open_dialog nil, start_dir, out exe
+	when NFD::Result::ERROR
+		raise "Error selecting directory!"
+	when NFD::Result::CANCEL
+		raise "Directory not selected!"
+	else
+		$lifish_dir = File.dirname(String.new exe)
+		LE::Utils.write_start_dir $lifish_dir
+	end
+end
+ASSETS_DIR = "#{$lifish_dir}/assets"
 WIN_WIDTH = 800
 WIN_HEIGHT = 600
 $verbose = $_options.has_key? :verbose
 
-ls = LE::LevelSet.new "#{LIFISH_DIR}/levels.json"
+ls = LE::LevelSet.new "#{$lifish_dir}/levels.json"
 
 window = SF::RenderWindow.new(SF.video_mode(WIN_WIDTH, WIN_HEIGHT), "Lifish Edit")
-font = SF::Font.from_file "#{LIFISH_DIR}/assets/fonts/pf_tempesta_seven.ttf"
+font = SF::Font.from_file "#{$lifish_dir}/assets/fonts/pf_tempesta_seven.ttf"
 
 lr = LE::LevelRenderer.new ls.next
-mouse_utils = LE::MouseUtils.new lr
+mouse_utils = LE::MouseUtils.new window, lr
 
 while window.open?
 	while event = window.poll_event
@@ -45,9 +53,14 @@ while window.open?
 				lr.level = ls.prev
 			end
 		when SF::Event::MouseButtonPressed
-			if event.mouse_button.button ==  SF::Mouse::Left
-				puts mouse_utils.get_touched_entity
-				puts "Mouse in #{SF::Mouse.get_position window}"
+			entity = mouse_utils.get_touched_entity 
+			puts "Mouse in #{SF::Mouse.get_position window}"
+			puts entity
+			case event.mouse_button.button
+			when SF::Mouse::Left
+				
+			when SF::Mouse::Right
+				lr.remove_entity! entity if entity.is_a? LE::Entity
 			end
 		end
 	end

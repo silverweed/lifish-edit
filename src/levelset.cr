@@ -50,9 +50,9 @@ class LevelSet
 			@current += forward ? 1 : -1
 			@current = 0 if @current == @levels.size
 			if @levels[@current].is_a? Level
-				return @levels[@current-1]
+				return @levels[@current]
 			else
-				nils += forward ? 1 : -1 
+				nils += 1 
 			end
 		end
 		raise Exception.new "All levels nil!"

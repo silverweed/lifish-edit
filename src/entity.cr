@@ -6,10 +6,10 @@ module LE
 class Entity
 	include Utils
 
-	getter sprite
+	getter sprite, type
 
-	def initialize(entity_type : Symbol, tileIDs = nil : Hash?)
-		texture_name = entity_type.to_s + ".png"
+	def initialize(@type : Symbol, tileIDs = nil : Hash?)
+		texture_name = @type.to_s + ".png"
 		@sprite = SF::Sprite.new
 		begin
 			@texture = SF::Texture.from_file(get_graphic texture_name)
@@ -17,7 +17,7 @@ class Entity
 		rescue
 		end
 		rect = SF.int_rect 0, 0, TILE_SIZE, TILE_SIZE
-		case entity_type
+		case @type
 		when :fixed
 			rect.left = TILE_SIZE * (tileIDs["fixed"] as Int - 1)
 		when :breakable
@@ -36,6 +36,13 @@ class Entity
 
 	def position
 		@sprite.position
+	end
+
+	def contains?(point)
+		@sprite.position.x <= point.x && 
+			point.x <= @sprite.position.x + @sprite.texture_rect.width &&
+			@sprite.position.y <= point.y &&
+			point.y <= @sprite.position.y + @sprite.texture_rect.height
 	end
 end
 

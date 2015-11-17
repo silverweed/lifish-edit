@@ -26,4 +26,9 @@ def self.get_entity(c)
 	ENTITIES[c] || :unknown
 end
 
+def self.get_entity_symbol(e) : Char
+	ENTITIES.each { |k, v| return k if v == e }
+	return '0'
+end
+
 end # module LE
