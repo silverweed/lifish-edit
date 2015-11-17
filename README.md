@@ -1,6 +1,6 @@
 # LifishEdit
-
-TODO: Write a description here
+LifishEdit is a small graphical level editor for [Lifish](https://github.com/silverweed/lifish).
+It's currently work-in-progress and not working yet.
 
 ## Installation
 
@@ -15,8 +15,8 @@ TODO: Write installation instructions here
 TODO: Write usage instructions here
 
 ## Development
-
-TODO: Write development instructions here
+Building LifishEdit requires the [Crystal](http://crystal-lang.org) compiler, SFML and 
+[crsfml](https://github.com/BlaXpirit/crsfml).
 
 ## Contributing
 
