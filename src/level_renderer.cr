@@ -1,6 +1,6 @@
 require "crsfml/graphics"
 require "crsfml/system"
-require "./utils.cr"
+require "./utils"
 
 module LE
 
@@ -8,10 +8,12 @@ class LevelRenderer
 	include Utils
 
 	getter level, tiles
+	property offset
 
 	def initialize(@level)
 		@tiles = [] of Entity?
 		@bg = SF::Sprite.new
+		@offset = SF.vector2 0, 0
 		load_level
 	end
 
@@ -63,11 +65,11 @@ class LevelRenderer
 		LV_HEIGHT.times do |row|
 			LV_WIDTH.times do |col|
 				entity = @tiles[col+LV_WIDTH*row]
-				pos = SF.vector2f TILE_SIZE*col, TILE_SIZE*row
-				@bg.position = pos
+				pos = SF.vector2 TILE_SIZE*col, TILE_SIZE*row
+				@bg.position = pos + offset
 				target.draw @bg
 				if entity
-					entity.position = pos
+					entity.position = pos + offset
 					target.draw entity
 				end
 			end

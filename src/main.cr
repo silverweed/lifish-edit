@@ -5,6 +5,8 @@
 
 require "crsfml/graphics"
 require "crsfml/window"
+require "./consts"
+require "./menu"
 
 getopt! [
 	{ "-l", :levels, String }, # the name of the levelset to load
@@ -27,17 +29,18 @@ else
 		LE::Utils.write_start_dir $lifish_dir
 	end
 end
+
 ASSETS_DIR = "#{$lifish_dir}/assets"
-WIN_WIDTH = 800
-WIN_HEIGHT = 600
 $verbose = $_options.has_key? :verbose
 
 ls = LE::LevelSet.new "#{$lifish_dir}/levels.json"
 
-window = SF::RenderWindow.new(SF.video_mode(WIN_WIDTH, WIN_HEIGHT), "Lifish Edit")
+window = SF::RenderWindow.new(SF.video_mode(LE::WIN_WIDTH, LE::WIN_HEIGHT), "Lifish Edit")
 font = SF::Font.from_file "#{$lifish_dir}/assets/fonts/pf_tempesta_seven.ttf"
 
+menu = LE::Menu.new
 lr = LE::LevelRenderer.new ls.next
+lr.offset = SF.vector2 LE::SIDE_PANEL_WIDTH, LE::MENU_HEIGHT
 mouse_utils = LE::MouseUtils.new window, lr
 
 while window.open?
@@ -65,6 +68,7 @@ while window.open?
 		end
 	end
 	window.clear
+	window.draw menu
 	window.draw lr
 	window.display
 end
