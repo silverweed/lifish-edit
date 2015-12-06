@@ -41,7 +41,7 @@ font = SF::Font.from_file "#{$lifish_dir}/assets/fonts/pf_tempesta_seven.ttf"
 menu = LE::Menu.new
 lr = LE::LevelRenderer.new ls.next
 lr.offset = SF.vector2 LE::SIDE_PANEL_WIDTH, LE::MENU_HEIGHT
-mouse_utils = LE::MouseUtils.new window, lr
+mouse_utils = LE::MouseUtils.new window, lr, menu
 
 while window.open?
 	while event = window.poll_event
@@ -56,14 +56,21 @@ while window.open?
 				lr.level = ls.prev
 			end
 		when SF::Event::MouseButtonPressed
-			entity = mouse_utils.get_touched_entity 
 			puts "Mouse in #{SF::Mouse.get_position window}"
-			puts entity
-			case event.mouse_button.button
-			when SF::Mouse::Left
-				
-			when SF::Mouse::Right
-				lr.remove_entity! entity if entity.is_a? LE::Entity
+			touched = mouse_utils.get_touched 
+			case touched
+			when LE::Entity
+				entity = touched 
+				puts entity
+				case event.mouse_button.button
+				when SF::Mouse::Left
+					
+				when SF::Mouse::Right
+					lr.remove_entity! entity if entity.is_a? LE::Entity
+				end
+			when LE::MenuCallback
+				callback = touched 
+				exit 0 unless callback.call ls
 			end
 		end
 	end

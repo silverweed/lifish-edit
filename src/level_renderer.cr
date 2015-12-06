@@ -5,7 +5,7 @@ require "./utils"
 module LE
 
 class LevelRenderer
-	include Utils
+	include LE::Utils
 
 	getter level, tiles
 	property offset
@@ -23,7 +23,7 @@ class LevelRenderer
 		load_level
 	end
 
-	# Applies tiles modifications to current `@level`
+	# Applies `@tiles` modifications to current `@level`
 	private def save_level
 		tilemap = ""
 		@tiles.each do |tile|
@@ -38,9 +38,9 @@ class LevelRenderer
 		end
 	end
 
-	# Loads current `@level`
+	# Loads current `@level` into `@tiles`
 	private def load_level
-		@tiles = [] of Entity?
+		@tiles = [] of LE::Entity?
 		@level.tilemap.each_char do |c|
 			break if c == '\0'
 			case entity = LE.get_entity c
@@ -53,12 +53,12 @@ class LevelRenderer
 				if $verbose
 					STDERR.puts "Creating entity #{c}"
 				end
-				@tiles << Entity.new entity, @level.tileIDs
+				@tiles << LE::Entity.new entity, @level.tileIDs
 			end
 		end
 		bg_texture = SF::Texture.from_file(get_graphic "bg#{@level.tileIDs["bg"]}.png")
 		@bg.texture = bg_texture
-		@bg.texture_rect = SF.int_rect 0, 0, TILE_SIZE, TILE_SIZE
+		@bg.texture_rect = SF.int_rect 0, 0, LE::TILE_SIZE, LE::TILE_SIZE
 	end
 
 	def draw(target, states : SF::RenderStates)

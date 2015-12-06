@@ -1,4 +1,5 @@
 # level.cr - The level representation
+require "json"
 
 module LE
 
@@ -14,6 +15,18 @@ class Level
 		@music = json["music"] as Int
 		@tileIDs = json["tileIDs"] as Hash
 		@tilemap = json["tilemap"] as String
+	end
+
+	# Serializes this level into JSON
+	def serialize : String
+		String.build do |io|
+			io.json_object do |obj|
+				obj.field "time", @time
+				obj.field "music", @music
+				obj.field "tileIDs", @tileIDs
+				obj.field "tilemap", @tilemap
+			end
+		end
 	end
 
 	# Prints a human-readable representation of this level.

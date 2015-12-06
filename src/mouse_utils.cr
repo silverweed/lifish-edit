@@ -1,9 +1,21 @@
 require "crsfml/window_obj"
+require "./consts"
 
 module LE
 
 class MouseUtils
-	def initialize(@window : SF::RenderWindow, @lr : LE::LevelRenderer)
+	def initialize(@window : SF::RenderWindow, @lr : LE::LevelRenderer, @menu : LE::Menu)
+	end
+
+	def get_touched : (Entity|MenuCallback)?
+		x, y = SF::Mouse.get_position @window
+		if x > LE::SIDE_PANEL_WIDTH && y > LE::MENU_HEIGHT
+			get_touched_entity
+		elsif y <= LE::MENU_HEIGHT
+			@menu.touch SF.vector2f x, y
+		else
+			nil
+		end
 	end
 
 	def get_touched_entity : Entity?

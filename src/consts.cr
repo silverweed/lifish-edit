@@ -8,5 +8,5 @@ module LE
 	# Vertical offset in pixel (i.e. menu height)
 	MENU_HEIGHT = 32
 	WIN_WIDTH = LV_WIDTH * TILE_SIZE + SIDE_PANEL_WIDTH
-	WIN_HEIGHT = LV_HEIGHT * TILE_SIZE
+	WIN_HEIGHT = LV_HEIGHT * TILE_SIZE + MENU_HEIGHT
 end

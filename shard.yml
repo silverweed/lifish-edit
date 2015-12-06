@@ -5,3 +5,7 @@ authors:
   - silverweed <silverweed1991@gmail.com>
 
 license: GPL
+
+dependencies:
+  crsfml:
+    github: blaxpirit/crsfml

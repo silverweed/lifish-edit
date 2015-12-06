@@ -9,15 +9,21 @@ module LE
 # The LevelSet is constructed with a JSON lifish levels file
 # containing the levels data and metadata.
 class LevelSet
-	# Opens file *json_fname* containing a lifish level set
+	getter metadata, enemies
+
+	# Opens file `json_fname` containing a lifish level set
 	# and deserializes it.
 	def initialize(json_fname : String)
 		@json = JSON.parse(File.open json_fname, "r") as Hash
-		@name = @json["name"] as String?
-		@author = @json["author"] as String?
-		@difficulty = @json["difficulty"] as String?
-		@tracks = @json["tracks"] as Array
-		@levels = [] of Level
+		# metadata
+		@metadata = {
+			"name"       => @json["name"]       as String?,
+			"author"     => @json["author"]     as String?,
+			"difficulty" => @json["difficulty"] as String?,
+			"tracks"     => @json["tracks"]     as Array
+		}
+		@enemies = @json["enemies"] as Array	
+		@levels = [] of LE::Level
 		# currently pointed level
 		@current = 0
 
@@ -25,7 +31,7 @@ class LevelSet
 		lvjson = @json["levels"] as Array
 		lvjson.each do |description|
 			begin
-				@levels << Level.new description if description.is_a? Hash
+				@levels << LE::Level.new description if description.is_a? Hash
 			rescue
 			end
 		end
@@ -33,6 +39,13 @@ class LevelSet
 
 	def [](i)
 		@levels[i]
+	end
+
+	def each
+		@levels.each do |level|
+			yield level
+		end
+		self
 	end
 
 	# Returns first non-nil level after the current one, cyclic.
@@ -49,7 +62,7 @@ class LevelSet
 		while nils < @levels.size
 			@current += forward ? 1 : -1
 			@current = 0 if @current == @levels.size
-			if @levels[@current].is_a? Level
+			if @levels[@current].is_a? LE::Level
 				return @levels[@current]
 			else
 				nils += 1 
