@@ -1,6 +1,6 @@
+require "./utils"
 require "crsfml/graphics"
 require "crsfml/system"
-require "./utils"
 
 module LE
 

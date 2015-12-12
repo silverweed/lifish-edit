@@ -1,9 +1,11 @@
-require "crsfml/graphics"
 require "./consts"
+require "./app"
+require "../clibs/nfd"
+require "crsfml/graphics"
 
 module LE
 
-alias MenuCallback = Proc(LE::LevelSet, Bool)
+alias MenuCallback = Proc(LE::App, Bool)
 
 class Menu
 	alias ButtonComponents = Tuple(String, SF::RectangleShape, SF::Text, MenuCallback)
@@ -57,29 +59,29 @@ class Menu
 	private def get_callback(name : String) : MenuCallback
 		case name
 		when "Save"
-			->(ls : LE::LevelSet) { 
+			->(app : LE::App) { 
 				case NFD.save_dialog "json", $lifish_dir, out fname
 				when NFD::Result::ERROR
 					raise "Error selecting directory!"
 				when NFD::Result::CANCEL
 				else
-					LE::SaveManager.save ls, String.new fname
+					LE::SaveManager.save app.ls, String.new fname
 				end
 				true
 			}
 		when "Load"
-			->(ls : LE::LevelSet) { puts "Load!"; true }
+			->(app : LE::App) { puts "Load!"; true }
 		when "Quit"
-			->(ls : LE::LevelSet) {
+			->(app : LE::App) {
 				# TODO: confirm
 				false
 			}
 		when "<"
-			->(ls : LE::LevelSet) {
+			->(app : LE::App) {
 				true	
 			}
 		when ">"
-			->(ls : LE::LevelSet) {
+			->(app : LE::App) {
 				true	
 			}
 		else

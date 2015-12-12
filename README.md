@@ -4,15 +4,19 @@ It's currently work-in-progress and not working yet.
 
 ## Installation
 
+Building:
 
-TODO: Write installation instructions here
-
+```
+make
+```
 
 ## Usage
 
+Running:
 
-
-TODO: Write usage instructions here
+```
+./run.sh [lifish directory]
+```
 
 ## Development
 Building LifishEdit requires the [Crystal](http://crystal-lang.org) compiler, SFML and 

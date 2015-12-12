@@ -1,3 +1,4 @@
+# Module constants
 module LE
 	# Level width in tiles
 	LV_WIDTH = 15

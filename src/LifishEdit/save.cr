@@ -1,5 +1,5 @@
-require "json"
 require "./levelset"
+require "json"
 
 module LE
 

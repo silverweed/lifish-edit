@@ -1,5 +1,6 @@
-require "crsfml/graphics"
 require "./consts"
+require "./utils"
+require "crsfml/graphics"
 
 module LE
 
