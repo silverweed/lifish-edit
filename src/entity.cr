@@ -3,11 +3,15 @@ require "./consts"
 
 module LE
 
+# An Entity is essentially a sprite whose texture depends
+# on its type (as defined in `ENTITIES`).
 class Entity
 	include Utils
 
 	getter sprite, type
 
+	# Creates an Entity of type `@type`. If the entity is a wall,
+	# a `tileIDs` hash needs to be given to specify the tileset used.
 	def initialize(@type : Symbol, tileIDs = nil : Hash?)
 		texture_name = @type.to_s + ".png"
 		@sprite = SF::Sprite.new

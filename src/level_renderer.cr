@@ -4,6 +4,7 @@ require "./utils"
 
 module LE
 
+# A LevelRenderer manages and draws a `Level` with its entities.
 class LevelRenderer
 	include LE::Utils
 

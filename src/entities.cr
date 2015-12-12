@@ -1,5 +1,7 @@
 module LE
 
+# All possible entities in a level. Used to
+# create `LE::Entity`.
 ENTITIES = {
 	'0' => :empty,
 	'1' => :fixed,
@@ -22,10 +24,12 @@ ENTITIES = {
 	'4' => :transparent
 }
 
+# Gets entity value from its key
 def self.get_entity(c)
 	ENTITIES[c] || :unknown
 end
 
+# Gets entity key from its value
 def self.get_entity_symbol(e) : Char
 	ENTITIES.each { |k, v| return k if v == e }
 	return '0'

@@ -8,7 +8,7 @@ alias MenuCallback = Proc(LE::LevelSet, Bool)
 class Menu
 	alias ButtonComponents = Tuple(String, SF::RectangleShape, SF::Text, MenuCallback)
 
-	BUTTON_NAMES = ["Save", "Load", "Quit"]
+	BUTTON_NAMES = ["Save", "Load", "Quit", "<", ">"]
 	FONT_SIZE = 16
 
 	property color
@@ -73,6 +73,14 @@ class Menu
 			->(ls : LE::LevelSet) {
 				# TODO: confirm
 				false
+			}
+		when "<"
+			->(ls : LE::LevelSet) {
+				true	
+			}
+		when ">"
+			->(ls : LE::LevelSet) {
+				true	
 			}
 		else
 			raise "Unknown callback: #{name}"

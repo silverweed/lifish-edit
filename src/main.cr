@@ -14,8 +14,9 @@ getopt! [
 ]
 
 STDERR.puts "options: #{$_options}; args: #{$_args}"
+STDERR.flush
 
-if ARGV.size > 1
+if ARGV.size > 0
 	$lifish_dir = $_args[0]
 else
 	start_dir = LE::Utils.read_start_dir || ENV["HOME"]
