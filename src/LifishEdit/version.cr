@@ -1,3 +1,3 @@
-module LifishEdit
-  VERSION = "0.1.0"
+module LE 
+	VERSION = "0.1.0"
 end
