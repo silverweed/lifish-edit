@@ -57,7 +57,7 @@ class LevelRenderer
 				@tiles << LE::Entity.new entity, @level.tileIDs
 			end
 		end
-		bg_texture = SF::Texture.from_file(get_graphic "bg#{@level.tileIDs["bg"]}.png")
+		bg_texture = SF::Texture.from_file(get_graphic! "bg#{@level.tileIDs["bg"]}.png")
 		@bg.texture = bg_texture
 		@bg.texture_rect = SF.int_rect 0, 0, LE::TILE_SIZE, LE::TILE_SIZE
 	end

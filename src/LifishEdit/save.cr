@@ -20,6 +20,10 @@ class SaveManager
 			end
 		end
 	end
+
+	def self.load(fname : String) : LE::LevelSet
+		LE::LevelSet.new fname	
+	end
 end
 
 end # module LE

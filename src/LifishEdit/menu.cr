@@ -15,11 +15,10 @@ class Menu
 
 	property color
 
-	def initialize(@w = LE::WIN_WIDTH, @h = LE::MENU_HEIGHT)
+	def initialize(@font : SF::Font, @w = LE::WIN_WIDTH, @h = LE::MENU_HEIGHT)
 		@rect = SF::RectangleShape.new(SF.vector2f @w, @h)
 		@color = SF.color 0, 0, 206
 		@rect.fill_color = @color
-		@font = SF::Font.from_file "#{$lifish_dir}/assets/fonts/pf_tempesta_seven.ttf"
 		@buttons = create_buttons
 	end
 	
@@ -60,7 +59,7 @@ class Menu
 		case name
 		when "Save"
 			->(app : LE::App) { 
-				case NFD.save_dialog "json", $lifish_dir, out fname
+				case NFD.save_dialog "json", app.lifish_dir, out fname
 				when NFD::Result::ERROR
 					raise "Error selecting directory!"
 				when NFD::Result::CANCEL
@@ -70,7 +69,16 @@ class Menu
 				true
 			}
 		when "Load"
-			->(app : LE::App) { puts "Load!"; true }
+			->(app : LE::App) { 
+				case NFD.open_dialog "json", app.lifish_dir, out fname
+				when NFD::Result::ERROR
+					raise "Error selecting directory!"
+				when NFD::Result::CANCEL
+				else
+					app.ls = LE::SaveManager.load String.new fname
+				end
+				true 
+			}
 		when "Quit"
 			->(app : LE::App) {
 				# TODO: confirm
@@ -78,11 +86,13 @@ class Menu
 			}
 		when "<"
 			->(app : LE::App) {
-				true	
+				app.lr.level = app.ls.prev
+				true
 			}
 		when ">"
 			->(app : LE::App) {
-				true	
+				app.lr.level = app.ls.next
+				true
 			}
 		else
 			raise "Unknown callback: #{name}"

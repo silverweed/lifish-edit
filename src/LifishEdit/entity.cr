@@ -7,7 +7,7 @@ module LE
 # An Entity is essentially a sprite whose texture depends
 # on its type (as defined in `ENTITIES`).
 class Entity
-	include Utils
+	include LE::Utils
 
 	getter sprite, type
 
@@ -17,7 +17,7 @@ class Entity
 		texture_name = @type.to_s + ".png"
 		@sprite = SF::Sprite.new
 		begin
-			@texture = SF::Texture.from_file(get_graphic texture_name)
+			@texture = SF::Texture.from_file(get_graphic! texture_name)
 			@sprite.texture = @texture
 		rescue
 		end

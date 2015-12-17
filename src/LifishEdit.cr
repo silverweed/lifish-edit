@@ -8,16 +8,18 @@ require "./clibs/*"
 require "crsfml/graphics"
 require "crsfml/window"
 
-getopt! [
+_options = getopt! [
 	{ "-l", :levels, String }, # the name of the levelset to load
 	{ "-v", :verbose },        # whether to be verbose or not
 ]
 
-STDERR.puts "options: #{$_options}; args: #{$_args}"
+_args = _options[:args] as Array(String)
+
+STDERR.puts "options: #{_options}; args: #{_args}"
 STDERR.flush
 
 if ARGV.size > 0
-	$lifish_dir = $_args[0]
+	$lifish_dir = _args[0]
 else
 	start_dir = LE::Utils.read_start_dir || ENV["HOME"]
 	case NFD.open_dialog nil, start_dir, out exe
@@ -26,25 +28,18 @@ else
 	when NFD::Result::CANCEL
 		raise "Directory not selected!"
 	else
-		$lifish_dir = File.dirname(String.new exe)
+		$lifish_dir = File.dirname String.new exe
 		LE::Utils.write_start_dir $lifish_dir
 	end
 end
 
-ASSETS_DIR = "#{$lifish_dir}/assets"
-$verbose = $_options.has_key? :verbose
+raise "Lifish dir is bogus or nil!" unless $lifish_dir.is_a? String && $lifish_dir.size > 0
 
-ls = LE::LevelSet.new "#{$lifish_dir}/levels.json"
-
-window = SF::RenderWindow.new(SF.video_mode(LE::WIN_WIDTH, LE::WIN_HEIGHT), "Lifish Edit")
-font = SF::Font.from_file "#{$lifish_dir}/assets/fonts/pf_tempesta_seven.ttf"
-
-menu = LE::Menu.new
-lr = LE::LevelRenderer.new ls.next
-lr.offset = SF.vector2 LE::SIDE_PANEL_WIDTH, LE::MENU_HEIGHT
-mouse_utils = LE::MouseUtils.new window, lr, menu
-
-app = LE::App.new lr, ls, menu, window, mouse_utils
+app = LE::App.new
+app.verbose = _options.has_key? :verbose
+lr = app.lr
+window = app.window
+ls = app.ls
 
 while window.open?
 	while event = window.poll_event
@@ -60,7 +55,7 @@ while window.open?
 			end
 		when SF::Event::MouseButtonPressed
 			puts "Mouse in #{SF::Mouse.get_position window}"
-			touched = mouse_utils.get_touched 
+			touched = app.mouse_utils.get_touched 
 			case touched
 			when LE::Entity
 				entity = touched 

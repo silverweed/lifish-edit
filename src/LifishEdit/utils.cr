@@ -2,8 +2,8 @@ module LE
 	module Utils
 		extend self
 
-		def get_graphic(name)
-			"#{ASSETS_DIR}/graphics/#{name}"
+		macro get_graphic!(name)
+			"#{$lifish_dir}/assets/graphics/#{{{name}}}"
 		end
 
 		# Read the starting directory from a cfg file
