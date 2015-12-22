@@ -7,6 +7,7 @@ module LE
 # Levels are usually created by a `LevelSet`.
 class Level
 	property time, music, tileIDs, tilemap
+	getter orig_tilemap
 
 	# Initializes this level with the parameters given by
 	# the hash *json*. May fail if *json* is not a valid hash.
@@ -14,7 +15,7 @@ class Level
 		@time = json["time"] as Int
 		@music = json["music"] as Int
 		@tileIDs = json["tileIDs"] as Hash
-		@tilemap = json["tilemap"] as String
+		@orig_tilemap = @tilemap = json["tilemap"] as String
 	end
 
 	# Serializes this level into JSON
@@ -40,6 +41,10 @@ class Level
 			\tbg: #{@tileIDs["bg"]}\n\
 			},\n\
 			Tilemap: #{@tilemap}"
+	end
+
+	def restore!
+		@tilemap = @orig_tilemap
 	end
 end
 

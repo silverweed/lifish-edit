@@ -70,6 +70,13 @@ while window.open?
 				callback = touched 
 				exit 0 unless callback.call app
 			end
+		when SF::Event::MouseMoved
+			if SF::Mouse.is_button_pressed SF::Mouse::Left
+				# TODO: put entity
+			elsif SF::Mouse.is_button_pressed SF::Mouse::Right
+				touched = app.mouse_utils.get_touched
+				lr.remove_entity! touched if touched.is_a? LE::Entity
+			end
 		end
 	end
 	window.clear

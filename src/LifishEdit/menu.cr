@@ -10,7 +10,7 @@ alias MenuCallback = Proc(LE::App, Bool)
 class Menu
 	alias ButtonComponents = Tuple(String, SF::RectangleShape, SF::Text, MenuCallback)
 
-	BUTTON_NAMES = ["Save", "Load", "Quit", "<", ">"]
+	BUTTON_NAMES = ["Save", "Load", "Quit", "<", ">", "Restore", "Rstr All"]
 	FONT_SIZE = 16
 
 	property color
@@ -39,7 +39,7 @@ class Menu
 	
 	private def create_buttons : Array(ButtonComponents)
 		btn = [] of ButtonComponents
-		x, y, width = 0, 0, 100
+		x, y, width = 0, 0, @w / BUTTON_NAMES.size
 		BUTTON_NAMES.each do |name|
 			# The rectangle intercepting mouse clicks
 			rect = SF::RectangleShape.new(SF.vector2f width, @h)
@@ -92,6 +92,20 @@ class Menu
 		when ">"
 			->(app : LE::App) {
 				app.lr.level = app.ls.next
+				true
+			}
+		when "Restore"
+			->(app : LE::App) {
+				app.lr.level.restore!
+				app.lr.load_level
+				true
+			}
+		when "Rstr All"
+			->(app : LE::App) {
+				app.ls.each do |level|
+					level.restore!	
+				end
+				app.lr.load_level
 				true
 			}
 		else
