@@ -72,9 +72,6 @@ class LevelRenderer
 			when :empty
 				@tiles << nil
 			else
-				if $verbose
-					STDERR.puts "Creating entity #{c}"
-				end
 				@tiles << LE::Entity.new entity, @level.tileIDs
 			end
 		end

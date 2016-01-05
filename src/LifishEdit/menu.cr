@@ -86,27 +86,45 @@ class Menu
 			}
 		when "<"
 			->(app : LE::App) {
-				app.lr.level = app.ls.prev
-				true
+				begin
+					app.lr.level = app.ls.prev
+					true
+				rescue
+					false
+				end
 			}
 		when ">"
 			->(app : LE::App) {
-				app.lr.level = app.ls.next
-				true
+				begin
+					app.lr.level = app.ls.next
+					true
+				rescue
+					false
+				end
 			}
 		when "Restore"
 			->(app : LE::App) {
-				app.lr.level.restore!
-				app.lr.load_level
-				true
+				begin
+					app.lr.level.restore!
+					app.lr.load_level
+					true
+				rescue
+					false
+				end
 			}
 		when "Rstr All"
 			->(app : LE::App) {
 				app.ls.each do |level|
 					level.restore!	
 				end
-				app.lr.load_level
 				true
+				# XXX: this causes the compiler to crash
+				#begin
+				#	app.lr.load_level
+				#	true
+				#rescue
+				#	false
+				#end
 			}
 		else
 			raise "Unknown callback: #{name}"

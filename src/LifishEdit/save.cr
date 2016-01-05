@@ -19,6 +19,7 @@ class SaveManager
 				end
 			end
 		end
+		File.write fname, output	
 	end
 
 	def self.load(fname : String) : LE::LevelSet

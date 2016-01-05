@@ -54,7 +54,7 @@ while window.open?
 				lr.level = ls.prev
 			end
 		when SF::Event::MouseButtonPressed
-			puts "Mouse in #{SF::Mouse.get_position window}"
+			puts "Mouse in #{SF::Mouse.get_position window}" if app.verbose
 			touched = app.mouse_utils.get_touched 
 			case touched
 			when LE::Entity

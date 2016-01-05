@@ -12,22 +12,20 @@ class Level
 	# Initializes this level with the parameters given by
 	# the hash *json*. May fail if *json* is not a valid hash.
 	def initialize(json)
-		@time = json["time"] as Int
-		@music = json["music"] as Int
-		@tileIDs = json["tileIDs"] as Hash
-		@orig_tilemap = @tilemap = json["tilemap"] as String
+		@time = json["time"].as_i
+		@music = json["music"].as_i
+		@tileIDs = json["tileIDs"].as_h
+		@orig_tilemap = @tilemap = json["tilemap"].as_s
 	end
 
 	# Serializes this level into JSON
-	def serialize : String
-		String.build do |io|
-			io.json_object do |obj|
-				obj.field "time", @time
-				obj.field "music", @music
-				obj.field "tileIDs", @tileIDs
-				obj.field "tilemap", @tilemap
-			end
-		end
+	def serialize
+		{
+			"time" => @time,
+			"music" => @music,
+			"tileIDs" => @tileIDs,
+			"tilemap" => @tilemap
+		}.to_json
 	end
 
 	# Prints a human-readable representation of this level.

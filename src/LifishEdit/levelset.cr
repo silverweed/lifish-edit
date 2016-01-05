@@ -14,26 +14,30 @@ class LevelSet
 	# Opens file `json_fname` containing a lifish level set
 	# and deserializes it.
 	def initialize(json_fname : String)
-		@json = JSON.parse(File.open json_fname, "r") as Hash
+		@json = JSON.parse(File.open json_fname, "r")
+
 		# metadata
 		@metadata = {
-			"name"       => @json["name"]       as String?,
-			"author"     => @json["author"]     as String?,
-			"difficulty" => @json["difficulty"] as String?,
-			"tracks"     => @json["tracks"]     as Array
+			"name"       => @json["name"].as_s,
+			"author"     => @json["author"].as_s,
+			"difficulty" => @json["difficulty"].as_s,
+			"tracks"     => @json["tracks"]
 		}
-		@enemies = @json["enemies"] as Array	
+		@enemies = @json["enemies"]
 		@levels = [] of LE::Level
 		# currently pointed level
 		@current = 0
 
 		# Generate levels
-		lvjson = @json["levels"] as Array
+		lvjson = @json["levels"]
+		i = 0
 		lvjson.each do |description|
 			begin
-				@levels << LE::Level.new description if description.is_a? Hash
+				@levels << LE::Level.new description 
 			rescue
+				puts "Couldn't create level #{i}"
 			end
+			i += 1
 		end
 	end
 

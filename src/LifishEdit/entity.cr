@@ -18,15 +18,15 @@ class Entity
 		@sprite = SF::Sprite.new
 		begin
 			@texture = SF::Texture.from_file(get_graphic! texture_name)
-			@sprite.texture = @texture
+			@sprite.texture = @texture as SF::Texture if @texture
 		rescue
 		end
 		rect = SF.int_rect 0, 0, TILE_SIZE, TILE_SIZE
 		case @type
 		when :fixed
-			rect.left = TILE_SIZE * (tileIDs["fixed"] as Int - 1)
+			rect.left = TILE_SIZE * (tileIDs["fixed"] as Int64 - 1)
 		when :breakable
-			rect.top = TILE_SIZE * (tileIDs["breakable"] as Int - 1)
+			rect.top = TILE_SIZE * (tileIDs["breakable"] as Int64 - 1)
 		end
 		@sprite.texture_rect = rect
 	end
