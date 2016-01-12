@@ -14,6 +14,7 @@ class App
 	def initialize
 		@ls = LE::LevelSet.new "#{$lifish_dir}/levels.json"
 		@window = SF::RenderWindow.new SF.video_mode(LE::WIN_WIDTH, LE::WIN_HEIGHT), "Lifish Edit"
+		@window.vertical_sync_enabled = true
 		@font = SF::Font.from_file "#{$lifish_dir}/assets/fonts/pf_tempesta_seven.ttf"
 		@menu = LE::Menu.new @font
 		@sidebar = LE::Sidebar.new

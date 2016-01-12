@@ -25,12 +25,12 @@ class LevelRenderer
 	end
 
 	def draw(target, states : SF::RenderStates)
-		LV_HEIGHT.times do |row|
-			LV_WIDTH.times do |col|
-				entity = @tiles[col+LV_WIDTH*row]
-				pos = SF.vector2 TILE_SIZE*col, TILE_SIZE*row
-				@bg.position = pos + offset
-				target.draw @bg
+		@bg.position = SF.vector2f LE::SIDE_PANEL_WIDTH, LE::MENU_HEIGHT
+		target.draw @bg
+		LE::LV_HEIGHT.times do |row|
+			LE::LV_WIDTH.times do |col|
+				entity = @tiles[col+LE::LV_WIDTH*row]
+				pos = SF.vector2 LE::TILE_SIZE*col, LE::TILE_SIZE*row
 				if entity
 					entity.position = pos + offset
 					target.draw entity
@@ -80,7 +80,11 @@ class LevelRenderer
 		end
 		bg_texture = SF::Texture.from_file(get_graphic! "bg#{@level.tileIDs["bg"]}.png")
 		@bg.texture = bg_texture
-		@bg.texture_rect = SF.int_rect 0, 0, LE::TILE_SIZE, LE::TILE_SIZE
+		@bg.texture_rect = SF.int_rect 0, 0, LE::TILE_SIZE *
+			LE::LV_WIDTH, LE::TILE_SIZE * LE::LV_HEIGHT
+		if @bg.texture.is_a? SF::Texture
+			(@bg.texture as SF::Texture).repeated = true
+		end
 	end
 end
 

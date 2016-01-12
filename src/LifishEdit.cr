@@ -33,7 +33,7 @@ else
 	end
 end
 
-raise "Lifish dir is bogus or nil!" unless $lifish_dir.is_a? String && $lifish_dir.size > 0
+raise "Lifish dir is bogus or nil!" unless $lifish_dir.is_a?(String) && $lifish_dir.size > 0
 
 app = LE::App.new
 app.verbose = _options.has_key? :verbose
