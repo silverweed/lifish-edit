@@ -19,11 +19,13 @@ class SaveManager
 				end
 			end
 		end
-		File.write fname, output	
+		puts output
+		fname += ".json" unless fname.ends_with? ".json"
+		File.write(fname, output)
 	end
 
-	def self.load(fname : String) : LE::LevelSet
-		LE::LevelSet.new fname	
+	def self.load(app : LE::App, fname : String) : LE::LevelSet
+		app.ls = LE::LevelSet.new(app, fname)
 	end
 end
 

@@ -8,6 +8,7 @@ module LE
 alias MenuCallback = Proc(LE::App, Bool)
 
 class Menu
+	# (Name, Button Shape, Button Text, Callback)
 	alias ButtonComponents = Tuple(String, SF::RectangleShape, SF::Text, MenuCallback)
 
 	BUTTON_NAMES = ["Save", "Load", "Quit", "<", ">", "Restore", "Rstr All"]
@@ -15,7 +16,7 @@ class Menu
 
 	property color
 
-	def initialize(@font : SF::Font, @w = LE::WIN_WIDTH, @h = LE::MENU_HEIGHT)
+	def initialize(@font, @w = LE::WIN_WIDTH, @h = LE::MENU_HEIGHT)
 		@rect = SF::RectangleShape.new(SF.vector2f @w, @h)
 		@color = SF.color 0, 0, 206
 		@rect.fill_color = @color
@@ -43,14 +44,17 @@ class Menu
 		BUTTON_NAMES.each do |name|
 			# The rectangle intercepting mouse clicks
 			rect = SF::RectangleShape.new(SF.vector2f width, @h)
-			rect.position = SF.vector2f x, y
+			rect.position = SF.vector2f(x, y)
 			#rect.fill_color = SF::Color::Transparent
-			rect.fill_color = SF.color 0, 0, 180 - x * 50 / width
+			rect.fill_color = SF.color(0, 0, 180 - x * 50 / width)
 			# The menu text
-			text = SF::Text.new name, @font, FONT_SIZE
-			text.position = rect.position + SF.vector2f 5, 7
+			if @font == nil
+				raise "Font is nil!"
+			end
+			text = SF::Text.new name, (@font as SF::Font), FONT_SIZE
+			text.position = rect.position + SF.vector2f(5, 7)
 			x += width 
-			btn << {name, rect, text, get_callback name}
+			btn << {name, rect, text, get_callback(name)}
 		end
 		btn
 	end
@@ -59,23 +63,23 @@ class Menu
 		case name
 		when "Save"
 			->(app : LE::App) { 
-				case NFD.save_dialog "json", app.lifish_dir, out fname
+				case NFD.save_dialog("json", app.lifish_dir, out fname)
 				when NFD::Result::ERROR
 					raise "Error selecting directory!"
 				when NFD::Result::CANCEL
 				else
-					LE::SaveManager.save app.ls, String.new fname
+					LE::SaveManager.save(app.ls, String.new fname)
 				end
 				true
 			}
 		when "Load"
 			->(app : LE::App) { 
-				case NFD.open_dialog "json", app.lifish_dir, out fname
+				case NFD.open_dialog("json", app.lifish_dir, out fname)
 				when NFD::Result::ERROR
 					raise "Error selecting directory!"
 				when NFD::Result::CANCEL
 				else
-					app.ls = LE::SaveManager.load String.new fname
+					app.ls = LE::SaveManager.load(app, String.new fname)
 				end
 				true 
 			}
@@ -117,14 +121,12 @@ class Menu
 				app.ls.each do |level|
 					level.restore!	
 				end
-				true
-				# XXX: this causes the compiler to crash
-				#begin
-				#	app.lr.load_level
-				#	true
-				#rescue
-				#	false
-				#end
+				begin
+					app.lr.load_level
+					true
+				rescue
+					false
+				end
 			}
 		else
 			raise "Unknown callback: #{name}"

@@ -11,10 +11,10 @@ class LevelRenderer
 	getter level, tiles
 	property offset
 
-	def initialize(@level)
+	def initialize(@app, @level)
 		@tiles = [] of Entity?
 		@bg = SF::Sprite.new
-		@offset = SF.vector2 0, 0
+		@offset = SF.vector2(0, 0)
 		load_level
 	end
 
@@ -25,15 +25,15 @@ class LevelRenderer
 	end
 
 	def draw(target, states : SF::RenderStates)
-		@bg.position = SF.vector2f LE::SIDE_PANEL_WIDTH, LE::MENU_HEIGHT
-		target.draw @bg
+		@bg.position = SF.vector2f(LE::SIDE_PANEL_WIDTH, LE::MENU_HEIGHT)
+		target.draw(@bg)
 		LE::LV_HEIGHT.times do |row|
 			LE::LV_WIDTH.times do |col|
 				entity = @tiles[col+LE::LV_WIDTH*row]
-				pos = SF.vector2 LE::TILE_SIZE*col, LE::TILE_SIZE*row
+				pos = SF.vector2(LE::TILE_SIZE*col, LE::TILE_SIZE*row)
 				if entity
 					entity.position = pos + offset
-					target.draw entity
+					target.draw(entity)
 				end
 			end
 		end
@@ -48,7 +48,7 @@ class LevelRenderer
 		tilemap = ""
 		@tiles.each do |tile|
 			if tile
-				tilemap += "#{LE.get_entity_symbol tile.type}"
+				tilemap += "#{LE.get_entity_symbol(tile.type)}"
 			else
 				tilemap += "0"
 			end
@@ -65,14 +65,14 @@ class LevelRenderer
 		@tiles = [] of LE::Entity?
 		@level.tilemap.each_char do |c|
 			break if c == '\0'
-			case entity = LE.get_entity c
+			case entity = LE.get_entity(c)
 			when :unknown
 				STDERR.puts "Invalid tile for level: #{c}. Setting tile to empty."
 				@tiles << nil
 			when :empty
 				@tiles << nil
 			else
-				@tiles << LE::Entity.new entity, @level.tileIDs
+				@tiles << LE::Entity.new(@app, entity, @level.tileIDs)
 			end
 		end
 		unless @tiles.size == @level.tilemap.size
@@ -80,8 +80,8 @@ class LevelRenderer
 		end
 		bg_texture = SF::Texture.from_file(get_graphic! "bg#{@level.tileIDs["bg"]}.png")
 		@bg.texture = bg_texture
-		@bg.texture_rect = SF.int_rect 0, 0, LE::TILE_SIZE *
-			LE::LV_WIDTH, LE::TILE_SIZE * LE::LV_HEIGHT
+		@bg.texture_rect = SF.int_rect(0, 0, LE::TILE_SIZE *
+			LE::LV_WIDTH, LE::TILE_SIZE * LE::LV_HEIGHT)
 		if @bg.texture.is_a? SF::Texture
 			(@bg.texture as SF::Texture).repeated = true
 		end

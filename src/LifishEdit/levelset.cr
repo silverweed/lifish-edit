@@ -9,12 +9,13 @@ module LE
 # The LevelSet is constructed with a JSON lifish levels file
 # containing the levels data and metadata.
 class LevelSet
+	getter json_fname
 	getter metadata, enemies
 
-	# Opens file `json_fname` containing a lifish level set
+	# Opens file `@json_fname` containing a lifish level set
 	# and deserializes it.
-	def initialize(json_fname : String)
-		@json = JSON.parse(File.open json_fname, "r")
+	def initialize(@app, @json_fname : String)
+		@json = JSON.parse(File.open(@json_fname, "r"))
 
 		# metadata
 		@metadata = {
@@ -33,7 +34,7 @@ class LevelSet
 		i = 0
 		lvjson.each do |description|
 			begin
-				@levels << LE::Level.new description 
+				@levels << LE::Level.new(description)
 			rescue
 				puts "Couldn't create level #{i}"
 			end
@@ -72,7 +73,7 @@ class LevelSet
 				nils += 1 
 			end
 		end
-		raise Exception.new "All levels nil!"
+		raise "All levels nil!"
 	end
 	
 	def dump

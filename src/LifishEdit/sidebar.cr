@@ -5,15 +5,15 @@ module LE
 class Sidebar
 	getter buttons
 
-	def initialize
+	def initialize(@app)
 		@rect = SF::RectangleShape.new(SF.vector2f LE::SIDE_PANEL_WIDTH, LE::WIN_HEIGHT)
-		@rect.fill_color = SF.color 217, 217, 217
+		@rect.fill_color = SF.color(217, 217, 217)
 		@buttons = [] of Button
 		init_buttons
 	end
 
 	def draw(target, states : SF::RenderStates)
-		target.draw @rect, states
+		target.draw(@rect, states)
 		@buttons.map { |btn| btn.draw target, states }
 	end
 
@@ -21,7 +21,7 @@ class Sidebar
 		pos = SF.vector2f LE::TILE_SIZE, 2 * LE::TILE_SIZE
 		i = 0
 		LE::ENTITIES.each_value do |v|
-			btn = Button.new v
+			btn = Button.new(@app, v)
 			@buttons << btn
 			btn.position = pos
 			if i % 2 == 0
@@ -37,15 +37,15 @@ class Sidebar
 	class Button
 		getter entity
 
-		def initialize(entity_sym)
-			@entity = LE::Entity.new entity_sym, { "breakable" => 1_i64, "fixed" => 1_i64 }
+		def initialize(@app, entity_sym)
+			@entity = LE::Entity.new(@app, entity_sym, { "breakable" => 1_i64, "fixed" => 1_i64 })
 			@bg_rect = SF::RectangleShape.new(SF.vector2f LE::TILE_SIZE, LE::TILE_SIZE)
-			@bg_rect.fill_color = SF.color 150, 150, 150
+			@bg_rect.fill_color = SF.color(150, 150, 150)
 		end
 
 		def draw(target, states : SF::RenderStates)
 			#target.draw @bg_rect, states
-			target.draw @entity, states
+			target.draw(@entity, states)
 		end
 
 		def position=(pos)

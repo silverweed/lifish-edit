@@ -13,7 +13,7 @@ class Entity
 
 	# Creates an Entity of type `@type`. If the entity is a wall,
 	# a `tileIDs` hash needs to be given to specify the tileset used.
-	def initialize(@type : Symbol, tileIDs = nil : Hash?)
+	def initialize(@app, @type : Symbol, tileIDs = nil : Hash?)
 		texture_name = @type.to_s + ".png"
 		@sprite = SF::Sprite.new
 		begin
@@ -32,7 +32,7 @@ class Entity
 	end
 
 	def draw(target, states : SF::RenderStates)
-		target.draw sprite, states
+		target.draw(sprite, states)
 	end
 
 	def position=(pos)

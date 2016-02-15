@@ -18,24 +18,28 @@ _args = _options[:args] as Array(String)
 STDERR.puts "options: #{_options}; args: #{_args}"
 STDERR.flush
 
+lifish_dir = ""
+levels_json = ""
+
 if ARGV.size > 0
-	$lifish_dir = _args[0]
+	levels_json = _args[0]
 else
 	start_dir = LE::Utils.read_start_dir || ENV["HOME"]
-	case NFD.open_dialog nil, start_dir, out exe
+	case NFD.open_dialog(nil, start_dir, out levels_json_ptr)
 	when NFD::Result::ERROR
 		raise "Error selecting directory!"
 	when NFD::Result::CANCEL
 		raise "Directory not selected!"
 	else
-		$lifish_dir = File.dirname String.new exe
-		LE::Utils.write_start_dir $lifish_dir
+		levels_json = String.new(levels_json_ptr)
+		lifish_dir = File.dirname(levels_json)
+		LE::Utils.write_start_dir(lifish_dir)
 	end
 end
 
-raise "Lifish dir is bogus or nil!" unless $lifish_dir.is_a?(String) && $lifish_dir.size > 0
+raise "Invalid levels_json selected!" unless levels_json.size > 0 
 
-app = LE::App.new
+app = LE::App.new(levels_json)
 app.verbose = _options.has_key? :verbose
 lr = app.lr
 window = app.window
@@ -64,18 +68,18 @@ while window.open?
 				when SF::Mouse::Left
 					
 				when SF::Mouse::Right
-					lr.remove_entity! entity if entity.is_a? LE::Entity
+					lr.remove_entity!(entity) if entity.is_a? LE::Entity
 				end
 			when LE::MenuCallback
 				callback = touched 
-				exit 0 unless callback.call app
+				exit 0 unless callback.call(app)
 			end
 		when SF::Event::MouseMoved
-			if SF::Mouse.is_button_pressed SF::Mouse::Left
+			if SF::Mouse.is_button_pressed(SF::Mouse::Left)
 				# TODO: put entity
-			elsif SF::Mouse.is_button_pressed SF::Mouse::Right
+			elsif SF::Mouse.is_button_pressed(SF::Mouse::Right)
 				touched = app.mouse_utils.get_touched
-				lr.remove_entity! touched if touched.is_a? LE::Entity
+				lr.remove_entity!(touched) if touched.is_a? LE::Entity
 			end
 		end
 	end

@@ -3,7 +3,7 @@ module LE
 		extend self
 
 		macro get_graphic!(name)
-			"#{$lifish_dir}/assets/graphics/#{{{name}}}"
+			"#{(@app as LE::App).lifish_dir}/assets/graphics/#{{{name}}}"
 		end
 
 		def read_cfg_file : Hash?
