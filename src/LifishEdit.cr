@@ -1,46 +1,46 @@
 # Lifish Edit
 # by Giacomo Parolini
 #
-# main.cr - Application entry point
+# Application entry point
 
 require "./LifishEdit/*"
 require "./clibs/*"
 require "crsfml/graphics"
 require "crsfml/window"
 
-_options = getopt! [
+options = getopt! [
 	{ "-l", :levels, String }, # the name of the levelset to load
 	{ "-v", :verbose },        # whether to be verbose or not
 ]
+args = options[:args] as Array(String)
+cfg = LE::Utils.read_cfg_file
 
-_args = _options[:args] as Array(String)
-
-STDERR.puts "options: #{_options}; args: #{_args}"
+STDERR.puts "options: #{options}; args: #{args}"
 STDERR.flush
 
 lifish_dir = ""
 levels_json = ""
 
 if ARGV.size > 0
-	levels_json = _args[0]
+	levels_json = args[0]
 else
-	start_dir = LE::Utils.read_start_dir || ENV["HOME"]
-	case NFD.open_dialog(nil, start_dir, out levels_json_ptr)
-	when NFD::Result::ERROR
+	start_dir = cfg["start_dir"]? || ENV["HOME"]
+	case LibNFD.open_dialog(nil, start_dir, out levels_json_ptr)
+	when LibNFD::Result::ERROR
 		raise "Error selecting directory!"
-	when NFD::Result::CANCEL
+	when LibNFD::Result::CANCEL
 		raise "Directory not selected!"
 	else
 		levels_json = String.new(levels_json_ptr)
 		lifish_dir = File.dirname(levels_json)
-		LE::Utils.write_start_dir(lifish_dir)
+		LE::Utils.write_cfg_file("start_dir", lifish_dir)
 	end
 end
 
 raise "Invalid levels_json selected!" unless levels_json.size > 0 
 
 app = LE::App.new(levels_json)
-app.verbose = _options.has_key? :verbose
+app.verbose = options.has_key? :verbose
 lr = app.lr
 window = app.window
 ls = app.ls

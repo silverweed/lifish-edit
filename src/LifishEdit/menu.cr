@@ -5,6 +5,8 @@ require "crsfml/graphics"
 
 module LE
 
+# A menu callback is a `Proc` taking a `LE::App` as an argument and returning
+# a `Bool`. If `false` is returned, the app exits after the callback.
 alias MenuCallback = Proc(LE::App, Bool)
 
 class Menu
@@ -63,23 +65,25 @@ class Menu
 		case name
 		when "Save"
 			->(app : LE::App) { 
-				case NFD.save_dialog("json", app.lifish_dir, out fname)
-				when NFD::Result::ERROR
+				case LibNFD.save_dialog("json", app.lifish_dir, out fname)
+				when LibNFD::Result::ERROR
 					raise "Error selecting directory!"
-				when NFD::Result::CANCEL
+				when LibNFD::Result::CANCEL
 				else
+					app.lr.save_level
 					LE::SaveManager.save(app.ls, String.new fname)
 				end
 				true
 			}
 		when "Load"
 			->(app : LE::App) { 
-				case NFD.open_dialog("json", app.lifish_dir, out fname)
-				when NFD::Result::ERROR
+				case LibNFD.open_dialog("json", app.lifish_dir, out fname)
+				when LibNFD::Result::ERROR
 					raise "Error selecting directory!"
-				when NFD::Result::CANCEL
+				when LibNFD::Result::CANCEL
 				else
 					app.ls = LE::SaveManager.load(app, String.new fname)
+					app.lr.level = app.ls[0]
 				end
 				true 
 			}

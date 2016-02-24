@@ -19,7 +19,6 @@ class SaveManager
 				end
 			end
 		end
-		puts output
 		fname += ".json" unless fname.ends_with? ".json"
 		File.write(fname, output)
 	end

@@ -35,8 +35,9 @@ class LevelSet
 		lvjson.each do |description|
 			begin
 				@levels << LE::Level.new(description)
-			rescue
-				puts "Couldn't create level #{i}"
+			rescue e
+				STDERR.puts "Couldn't create level #{i}:"
+				STDERR.puts e.backtrace.join "\n"
 			end
 			i += 1
 		end

@@ -1,6 +1,6 @@
 # Bridge for libnfd.so
 @[Link(ldflags: "-L./foreign -lnfd `pkg-config --libs gtk+-3.0`")]
-lib NFD
+lib LibNFD
 	enum Result
 		ERROR
 		OKAY

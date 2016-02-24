@@ -25,11 +25,13 @@ ENTITIES = {
 }
 
 # Gets entity value from its key
+# (e.g. `LE.get_entity('+') # => :teleport`)
 def self.get_entity(c)
 	ENTITIES[c] || :unknown
 end
 
 # Gets entity key from its value
+# (e.g. `LE.get_entity_symbol(:boss) # => '*'`)
 def self.get_entity_symbol(e) : Char
 	ENTITIES.each { |k, v| return k if v == e }
 	return '0'

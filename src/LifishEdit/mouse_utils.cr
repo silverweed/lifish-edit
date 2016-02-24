@@ -3,6 +3,7 @@ require "crsfml/window_obj"
 
 module LE
 
+# MouseUtils provides utility methods for the mouse within a `SF::RenderWindow`.
 class MouseUtils
 	def initialize(@window : SF::RenderWindow, @lr : LE::LevelRenderer, @menu : LE::Menu)
 	end

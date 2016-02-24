@@ -25,7 +25,7 @@ class Level
 			"music" => @music,
 			"tileIDs" => @tileIDs,
 			"tilemap" => @tilemap
-		}.to_json
+		}
 	end
 
 	# Prints a human-readable representation of this level.
