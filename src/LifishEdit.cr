@@ -8,7 +8,7 @@ require "./clibs/*"
 require "crsfml/graphics"
 require "crsfml/window"
 
-options = getopt! [
+options = getopt [
 	{ "-l", :levels, String }, # the name of the levelset to load
 	{ "-v", :verbose },        # whether to be verbose or not
 ]

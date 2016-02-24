@@ -1,8 +1,8 @@
 # getopt.cr - macro to get options
 
-# **getopt!** must be given an array of tuples like:
+# **getopt** must be given an array of tuples like:
 # ```
-# getopt!([{ "-l", :levels, String }, { "-v", :verbose }])
+# getopt([{ "-l", :levels, String }, { "-v", :verbose }])
 # ```
 # and it will return a variable _options containing a hash 
 # of all the options with their values and an array of all
@@ -18,7 +18,7 @@
 # ```
 # {:args => ["/my/path"], :levels => "levels.json", :verbose => true}
 # ```
-macro getopt!(optlist)
+macro getopt(optlist)
 	%i = 0
 	%opts_ended = false
 	_options = {} of Symbol => Array(String)|Int64|Float64|String|Bool
