@@ -4,7 +4,7 @@
 # ```
 # getopt([{ "-l", :levels, String }, { "-v", :verbose }])
 # ```
-# and it will return a variable _options containing a hash 
+# and it will return a variable %options containing a hash 
 # of all the options with their values and an array of all
 # non-options arguments under the key [:args].
 # If the passed tuple has a 3rd element, the option requires
@@ -21,7 +21,7 @@
 macro getopt(optlist)
 	%i = 0
 	%opts_ended = false
-	_options = {} of Symbol => Array(String)|Int64|Float64|String|Bool
+	%options = {} of Symbol => Array(String)|Int64|Float64|String|Bool
 	%args = [] of String
 	while %i < ARGV.size
 		unless %opts_ended
@@ -32,7 +32,7 @@ macro getopt(optlist)
 			when {{opt[0]}}
 				{% if opt.size < 3 %}
 				# unary flag
-				_options[{{opt[1]}}] = true
+				%options[{{opt[1]}}] = true
 				{% else %}
 				# needs an argument
 				%i += 1
@@ -42,7 +42,7 @@ macro getopt(optlist)
 					raise "Invalid type for option #{ARGV[%i - 1]} \
 					       (#{typeof(ARGV[%i - 1])} instead of #{{{opt[2]}}})"
 				end
-				_options[{{opt[1]}}] = ARGV[%i]
+				%options[{{opt[1]}}] = ARGV[%i]
 				{% end %}
 			{% end %}
 			else
@@ -57,6 +57,6 @@ macro getopt(optlist)
 		end
 		%i += 1
 	end
-	_options[:args] = %args
-	_options
+	%options[:args] = %args
+	%options
 end
