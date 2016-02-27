@@ -47,6 +47,7 @@ LE::Utils.write_cfg_file("start_dir", File.dirname(levels_json))
 class LE::App
 	def place_entity
 		if @selected_entity != nil
+			history.save
 			lr.place_entity!(mouse_utils.get_touched_tile,
 					 @selected_entity as LE::Entity)
 		end
@@ -62,9 +63,19 @@ while window.open?
 		when SF::Event::KeyPressed
 			case event.key.code
 			when SF::KeyCode::Add
+				lr.save_level
 				lr.level = ls.next
 			when SF::KeyCode::Subtract
+				lr.save_level
 				lr.level = ls.prev
+			when SF::KeyCode::Z
+				if SF::Keyboard.is_key_pressed(SF::KeyCode::LControl)
+					app.history.step_back
+				end
+			when SF::KeyCode::Y
+				if SF::Keyboard.is_key_pressed(SF::KeyCode::LControl)
+					app.history.step_forward
+				end
 			end
 
 		when SF::Event::MouseButtonPressed
@@ -84,7 +95,10 @@ while window.open?
 				when SF::Mouse::Left
 					app.place_entity
 				when SF::Mouse::Right
-					lr.remove_entity!(touched) if touched.is_a? LE::Entity
+					if touched.is_a? LE::Entity
+						app.history.save
+						lr.remove_entity!(touched) 
+					end
 				end
 			end
 
@@ -93,7 +107,10 @@ while window.open?
 				app.place_entity
 			elsif SF::Mouse.is_button_pressed(SF::Mouse::Right)
 				touched = app.mouse_utils.get_touched
-				lr.remove_entity!(touched) if touched.is_a? LE::Entity
+				if touched.is_a? LE::Entity
+					app.history.save
+					lr.remove_entity!(touched) 
+				end
 			end
 		end
 	end

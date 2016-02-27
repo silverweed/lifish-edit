@@ -54,6 +54,10 @@ class LevelSet
 		self
 	end
 
+	def cur_level
+		@current + 1
+	end
+
 	# Returns first non-nil level after the current one, cyclic.
 	def next
 		cyclic true

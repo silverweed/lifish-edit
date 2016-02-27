@@ -10,20 +10,19 @@ class LevelRenderer
 	property offset
 
 	def initialize(@app, @level)
-		@tiles = [] of Entity?
+		@tiles = [] of LE::Entity?
 		@bg = SF::Sprite.new
+		@bg.position = SF.vector2f(LE::SIDE_PANEL_WIDTH, LE::MENU_HEIGHT)
 		@offset = SF.vector2(0, 0)
 		load_level
 	end
 
 	def level=(lv)
-		save_level
 		@level = lv
 		load_level
 	end
 
 	def draw(target, states : SF::RenderStates)
-		@bg.position = SF.vector2f(LE::SIDE_PANEL_WIDTH, LE::MENU_HEIGHT)
 		target.draw(@bg)
 		LE::LV_HEIGHT.times do |row|
 			LE::LV_WIDTH.times do |col|

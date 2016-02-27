@@ -1,5 +1,5 @@
 build: deps
-	crystal build src/LifishEdit.cr
+	crystal build src/LifishEdit.cr -o lifishedit
 
 docs:
 	crystal docs 

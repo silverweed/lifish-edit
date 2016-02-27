@@ -2,6 +2,7 @@ require "./level_renderer"
 require "./levelset"
 require "./mouse_utils"
 require "./sidebar"
+require "./history"
 
 module LE
 
@@ -20,6 +21,7 @@ class App
 		@sidebar = LE::Sidebar.new(self)
 		@lr = LE::LevelRenderer.new(self, (@ls as LE::LevelSet)[0])
 		@mouse_utils = LE::MouseUtils.new(self)
+		@history = LE::History.new(self)
 
 		(@window as SF::RenderWindow).vertical_sync_enabled = true
 		(@lr as LE::LevelRenderer).offset = SF.vector2(LE::SIDE_PANEL_WIDTH, LE::MENU_HEIGHT)
@@ -56,6 +58,10 @@ class App
 
 	def sidebar
 		@sidebar as LE::Sidebar
+	end
+
+	def history
+		@history as LE::History
 	end
 end
 

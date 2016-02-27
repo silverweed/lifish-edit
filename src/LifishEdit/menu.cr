@@ -81,6 +81,7 @@ class Menu
 				when LibNFD::Result::CANCEL
 				else
 					app.ls = LE::SaveManager.load(app, String.new(fname))
+					app.lr.save_level
 					app.lr.level = app.ls[0]
 				end
 				true 
@@ -93,6 +94,7 @@ class Menu
 		when "<"
 			->(app : LE::App) {
 				begin
+					app.lr.save_level
 					app.lr.level = app.ls.prev
 					true
 				rescue
