@@ -5,8 +5,12 @@ module LE
 
 		CFG_FILE = ".lifishedit.cfg"
 
-		macro get_graphic!(name)
+		macro get_graphic(name)
 			"#{(@app as LE::App).lifish_dir}/assets/graphics/#{{{name}}}"
+		end
+
+		macro tile_to_idx(tile)
+			(({{tile}})[1] * LE::LV_WIDTH + ({{tile}})[0])
 		end
 
 		# Attempts to read the config file `CFG_FILE` and returns a Hash
@@ -18,7 +22,7 @@ module LE
 				s = line.split(" ", 2)
 				next unless s.size == 2
 				key, val = s
-				cfg[key] = val
+				cfg[key] = val.strip
 			end
 			cfg
 		rescue err

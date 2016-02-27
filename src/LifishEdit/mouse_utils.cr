@@ -5,29 +5,41 @@ module LE
 
 # MouseUtils provides utility methods for the mouse within a `SF::RenderWindow`.
 class MouseUtils
-	def initialize(@window : SF::RenderWindow, @lr : LE::LevelRenderer, @menu : LE::Menu)
+	def initialize(@app)
 	end
 
-	def get_touched : (Entity|MenuCallback)?
-		x, y = SF::Mouse.get_position @window
-		if x > LE::SIDE_PANEL_WIDTH && y > LE::MENU_HEIGHT
-			get_touched_entity
-		elsif y <= LE::MENU_HEIGHT
-			@menu.touch SF.vector2f x, y
-		else
+	def get_touched : (LE::Entity|MenuCallback)?
+		x, y = SF::Mouse.get_position(@app.window)
+
+		if y <= LE::MENU_HEIGHT
+			@app.menu.touch(SF.vector2f(x, y))
+		elsif x < LE::SIDE_PANEL_WIDTH
+			@app.selected_entity = @app.sidebar.touch(SF.vector2f(x, y))
 			nil
+		else
+			get_touched_entity
 		end
 	end
 
-	def get_touched_entity : Entity?
-		@lr.tiles.each do |tile|
-			if tile.is_a? Entity && tile.contains?(SF::Mouse.get_position @window)
-				# Since tiles are guaranteed to be non-overlapping,
-				# we can return here.
-				return tile
-			end
-		end
-		nil
+	def get_touched_entity : LE::Entity?
+		tile = get_touched_tile
+		return nil if tile == nil
+
+		@app.lr.tiles[LE::Utils.tile_to_idx(tile as Array)]
+	end
+
+	# Gets tile index from mouse position
+	def get_touched_tile
+		x, y = SF::Mouse.get_position(@app.window)
+
+		# Get tile index from mouse position
+		tx = (x - LE::SIDE_PANEL_WIDTH) / LE::TILE_SIZE
+		return nil if tx < 0 || tx >= LE::LV_WIDTH
+
+		ty = (y - LE::MENU_HEIGHT) / LE::TILE_SIZE
+		return nil if ty < 0 || ty >= LE::LV_HEIGHT
+
+		[tx, ty]
 	end
 end
 

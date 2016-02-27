@@ -6,8 +6,6 @@ module LE
 
 # A LevelRenderer manages and draws a `Level` with its entities.
 class LevelRenderer
-	include LE::Utils
-
 	getter level, tiles
 	property offset
 
@@ -41,6 +39,19 @@ class LevelRenderer
 
 	def remove_entity!(entity : LE::Entity)
 		@tiles.map! { |tile| tile == entity ? nil : tile }
+	end
+
+	def place_entity!(tile, entity : LE::Entity)
+		return if tile == nil
+		tx, ty = tile as Array
+		if tx < 0 || ty < 0 || tx >= LE::LV_WIDTH || ty >= LE::LV_HEIGHT
+			STDERR.puts "Attempted to place entity in tile #{tile}!"
+			return
+		end
+		idx = LE::Utils.tile_to_idx(tile as Array)
+		unless @tiles[idx].is_a?(LE::Entity) && (@tiles[idx] as LE::Entity).type == entity.type
+			@tiles[idx] = LE::Entity.new(@app, entity.type)
+		end
 	end
 
 	# Applies `@tiles` modifications to current `@level`
@@ -78,7 +89,7 @@ class LevelRenderer
 		unless @tiles.size == @level.tilemap.size
 			raise "Invalid number of tiles! (#{@tiles.size} instead of #{@level.tilemap.size})"
 		end
-		bg_texture = SF::Texture.from_file(get_graphic! "bg#{@level.tileIDs["bg"]}.png")
+		bg_texture = SF::Texture.from_file(LE::Utils.get_graphic("bg#{@level.tileIDs["bg"]}.png"))
 		@bg.texture = bg_texture
 		@bg.texture_rect = SF.int_rect(0, 0, LE::TILE_SIZE *
 			LE::LV_WIDTH, LE::TILE_SIZE * LE::LV_HEIGHT)

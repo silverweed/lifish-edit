@@ -20,7 +20,7 @@ class Menu
 
 	def initialize(@font, @w = LE::WIN_WIDTH, @h = LE::MENU_HEIGHT)
 		@rect = SF::RectangleShape.new(SF.vector2f @w, @h)
-		@color = SF.color 0, 0, 206
+		@color = SF.color(0, 0, 206)
 		@rect.fill_color = @color
 		@buttons = create_buttons
 	end
@@ -35,7 +35,7 @@ class Menu
 
 	def touch(pos) : MenuCallback?
 		@buttons.each do |btn|
-			return btn[3] if btn[1].global_bounds.contains pos
+			return btn[3] if btn[1].global_bounds.contains(pos)
 		end
 		nil
 	end
@@ -45,14 +45,12 @@ class Menu
 		x, y, width = 0, 0, @w / BUTTON_NAMES.size
 		BUTTON_NAMES.each do |name|
 			# The rectangle intercepting mouse clicks
-			rect = SF::RectangleShape.new(SF.vector2f width, @h)
+			rect = SF::RectangleShape.new(SF.vector2f(width, @h))
 			rect.position = SF.vector2f(x, y)
 			#rect.fill_color = SF::Color::Transparent
 			rect.fill_color = SF.color(0, 0, 180 - x * 50 / width)
 			# The menu text
-			if @font == nil
-				raise "Font is nil!"
-			end
+			raise "Font is nil!" if @font == nil
 			text = SF::Text.new name, (@font as SF::Font), FONT_SIZE
 			text.position = rect.position + SF.vector2f(5, 7)
 			x += width 
@@ -71,7 +69,7 @@ class Menu
 				when LibNFD::Result::CANCEL
 				else
 					app.lr.save_level
-					LE::SaveManager.save(app.ls, String.new fname)
+					LE::SaveManager.save(app.ls, String.new(fname))
 				end
 				true
 			}
@@ -82,7 +80,7 @@ class Menu
 					raise "Error selecting directory!"
 				when LibNFD::Result::CANCEL
 				else
-					app.ls = LE::SaveManager.load(app, String.new fname)
+					app.ls = LE::SaveManager.load(app, String.new(fname))
 					app.lr.level = app.ls[0]
 				end
 				true 
