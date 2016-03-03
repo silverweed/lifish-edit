@@ -32,7 +32,7 @@ class Entity
 	end
 
 	def draw(target, states : SF::RenderStates)
-		target.draw(sprite, states)
+		target.draw(@sprite, states)
 	end
 
 	def position=(pos)

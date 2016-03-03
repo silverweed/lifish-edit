@@ -1,1 +1,1 @@
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./foreign ./LifishEdit $@
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./foreign ./lifishedit $@

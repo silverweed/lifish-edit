@@ -76,6 +76,8 @@ while window.open?
 				if SF::Keyboard.is_key_pressed(SF::KeyCode::LControl)
 					app.history.step_forward
 				end
+			when SF::KeyCode::F
+				app.show_fps = !app.show_fps
 			end
 
 		when SF::Event::MouseButtonPressed

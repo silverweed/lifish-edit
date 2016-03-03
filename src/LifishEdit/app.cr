@@ -10,7 +10,8 @@ module LE
 # passed around across functions.
 class App
 	getter font, lifish_dir
-	property selected_entity, verbose
+	property selected_entity
+	property verbose
 
 	def initialize(levels_json)
 		@lifish_dir = File.dirname(levels_json)
@@ -22,16 +23,18 @@ class App
 		@lr = LE::LevelRenderer.new(self, (@ls as LE::LevelSet)[0])
 		@mouse_utils = LE::MouseUtils.new(self)
 		@history = LE::History.new(self)
+		@fps_counter = FPSCounter.new(self)
 
 		(@window as SF::RenderWindow).vertical_sync_enabled = true
 		(@lr as LE::LevelRenderer).offset = SF.vector2(LE::SIDE_PANEL_WIDTH, LE::MENU_HEIGHT)
+		(@fps_counter as FPSCounter).position = SF.vector2(2, LE::WIN_HEIGHT - 20)
 	end
 
 	def draw
-		w = @window as SF::RenderWindow
-		w.draw @sidebar as LE::Sidebar
-		w.draw @menu as LE::Menu
-		w.draw @lr as LE::LevelRenderer
+		window.draw sidebar 
+		window.draw menu 
+		window.draw lr 
+		window.draw fps_counter
 	end
 
 	def menu
@@ -62,6 +65,51 @@ class App
 
 	def history
 		@history as LE::History
+	end
+
+	def show_fps
+		fps_counter.active
+	end
+
+	def show_fps=(active)
+		fps_counter.active = active
+	end
+
+	private def fps_counter
+		@fps_counter as FPSCounter
+	end
+
+	class FPSCounter
+		INTERVAL = 1000 # ms
+
+		property active
+
+		def initialize(@app, @active = false)
+			@updates = 0
+			@time = 0
+			@clock = SF::Clock.new
+			@update_clock = SF::Clock.new
+			raise "Font is nil!" if @app.font == nil
+			@text = SF::Text.new("?? fps", @app.font as SF::Font, 14)
+			@text.color = SF::Color::Black
+		end
+
+		def draw(target, states : SF::RenderStates)
+			return unless @active
+			@updates += 1
+			@time += @clock.restart.as_seconds
+			if @update_clock.elapsed_time.as_milliseconds >= INTERVAL
+				@text.string = "#{(@updates / @time).round} fps"
+				@updates = 0
+				@time = 0
+				@update_clock.restart
+			end
+			target.draw(@text, states)
+		end
+
+		def position=(pos)
+			@text.position = pos
+		end
 	end
 end
 
