@@ -13,7 +13,12 @@ class LevelRenderer
 		@tiles = [] of LE::Entity?
 		@bg = SF::Sprite.new
 		@bg.position = SF.vector2f(LE::SIDE_PANEL_WIDTH, LE::MENU_HEIGHT)
+		@bg_texture = nil
 		@offset = SF.vector2(0, 0)
+		@level_text = SF::Text.new("#{@level.lvnum}", @app.font, 18)
+		@level_text.position = SF.vector2f(5, LE::WIN_HEIGHT - 23)
+		@level_text.color = SF::Color::Black
+		@level_text.style = SF::Text::Bold
 		load_level
 	end
 
@@ -29,11 +34,12 @@ class LevelRenderer
 				entity = @tiles[col+LE::LV_WIDTH*row]
 				pos = SF.vector2(LE::TILE_SIZE*col, LE::TILE_SIZE*row)
 				if entity
-					entity.position = pos + offset
+					entity.position = pos + @offset
 					target.draw(entity)
 				end
 			end
 		end
+		target.draw(@level_text)
 	end
 
 	def remove_entity!(entity : LE::Entity)
@@ -88,13 +94,15 @@ class LevelRenderer
 		unless @tiles.size == @level.tilemap.size
 			raise "Invalid number of tiles! (#{@tiles.size} instead of #{@level.tilemap.size})"
 		end
-		bg_texture = SF::Texture.from_file(LE::Utils.get_graphic("bg#{@level.tileIDs["bg"]}.png"))
-		@bg.texture = bg_texture
-		@bg.texture_rect = SF.int_rect(0, 0, LE::TILE_SIZE *
-			LE::LV_WIDTH, LE::TILE_SIZE * LE::LV_HEIGHT)
-		if @bg.texture.is_a? SF::Texture
+		begin
+			@bg_texture = SF::Texture.from_file(LE::Utils.get_graphic("bg#{@level.tileIDs["bg"]}.png"))
+			@bg.texture = @bg_texture as SF::Texture
+			@bg.texture_rect = SF.int_rect(0, 0, LE::TILE_SIZE * LE::LV_WIDTH,
+						       LE::TILE_SIZE * LE::LV_HEIGHT)
 			(@bg.texture as SF::Texture).repeated = true
+		rescue
 		end
+		@level_text.string = "#{@level.lvnum}"
 	end
 end
 

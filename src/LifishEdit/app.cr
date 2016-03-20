@@ -9,7 +9,7 @@ module LE
 # A container for all app components which can be conveniently
 # passed around across functions.
 class App
-	getter font, lifish_dir
+	getter lifish_dir
 	property selected_entity
 	property verbose
 
@@ -18,7 +18,7 @@ class App
 		@ls = LE::LevelSet.new(self, levels_json)
 		@window = SF::RenderWindow.new(SF.video_mode(LE::WIN_WIDTH, LE::WIN_HEIGHT), "Lifish Edit")
 		@font = SF::Font.from_file("#{@lifish_dir}/assets/fonts/pf_tempesta_seven.ttf")
-		@menu = LE::Menu.new(@font)
+		@menu = LE::Menu.new(@font as SF::Font)
 		@sidebar = LE::Sidebar.new(self)
 		@lr = LE::LevelRenderer.new(self, (@ls as LE::LevelSet)[0])
 		@mouse_utils = LE::MouseUtils.new(self)
@@ -35,6 +35,10 @@ class App
 		window.draw menu 
 		window.draw lr 
 		window.draw fps_counter
+	end
+
+	def font
+		@font as SF::Font
 	end
 
 	def menu
@@ -90,7 +94,7 @@ class App
 			@clock = SF::Clock.new
 			@update_clock = SF::Clock.new
 			raise "Font is nil!" if @app.font == nil
-			@text = SF::Text.new("?? fps", @app.font as SF::Font, 14)
+			@text = SF::Text.new("?? fps", @app.font, 14)
 			@text.color = SF::Color::Black
 		end
 

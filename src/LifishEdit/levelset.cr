@@ -31,10 +31,10 @@ class LevelSet
 
 		# Generate levels
 		lvjson = @json["levels"]
-		i = 0
+		i = 1
 		lvjson.each do |description|
 			begin
-				@levels << LE::Level.new(description)
+				@levels << LE::Level.new(description, i)
 			rescue e
 				STDERR.puts "Couldn't create level #{i}:"
 				STDERR.puts e.backtrace.join "\n"

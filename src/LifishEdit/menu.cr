@@ -51,7 +51,7 @@ class Menu
 			rect.fill_color = SF.color(0, 0, 180 - x * 50 / width)
 			# The menu text
 			raise "Font is nil!" if @font == nil
-			text = SF::Text.new name, (@font as SF::Font), FONT_SIZE
+			text = SF::Text.new(name, @font, FONT_SIZE)
 			text.position = rect.position + SF.vector2f(5, 7)
 			x += width 
 			btn << {name, rect, text, get_callback(name)}

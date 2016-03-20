@@ -7,11 +7,11 @@ module LE
 # Levels are usually created by a `LevelSet`.
 class Level
 	property time, music, tileIDs, tilemap
-	getter orig_tilemap
+	getter orig_tilemap, lvnum
 
 	# Initializes this level with the parameters given by
 	# the hash *json*. May fail if *json* is not a valid hash.
-	def initialize(json)
+	def initialize(json, @lvnum)
 		@time = json["time"].as_i
 		@music = json["music"].as_i
 		@tileIDs = json["tileIDs"].as_h
