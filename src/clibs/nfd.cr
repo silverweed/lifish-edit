@@ -1,5 +1,5 @@
 # Bridge for libnfd.so
-@[Link(ldflags: "-L./foreign -lnfd `pkg-config --libs gtk+-3.0`")]
+@[Link(ldflags: "-lnfd `pkg-config --libs gtk+-3.0`")]
 lib LibNFD
 	enum Result
 		ERROR

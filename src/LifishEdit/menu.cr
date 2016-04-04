@@ -13,7 +13,17 @@ class Menu
 	# (Name, Button Shape, Button Text, Callback)
 	alias ButtonComponents = Tuple(String, SF::RectangleShape, SF::Text, MenuCallback)
 
-	BUTTON_NAMES = ["Save", "Load", "Quit", "<", ">", "Restore", "Rstr All"]
+	BUTTON_NAMES = [
+		# role,        name,     width_override
+		{:save,        "Save"       },
+		{:save_as,     "Save as"    },
+		{:load,        "Load"       },
+		{:back,        "<",       40},
+		{:forward,     ">",       40},
+		{:restore,     "Restore"    },
+		{:restore_all, "Rstr All"   },
+		{:quit,        "Quit"       }
+	]
 	FONT_SIZE = 16
 
 	property color
@@ -26,10 +36,10 @@ class Menu
 	end
 	
 	def draw(target, states : SF::RenderStates)
-		target.draw @rect, states
+		target.draw(@rect, states)
 		@buttons.each do |btn|
-			target.draw btn[1], states
-			target.draw btn[2], states
+			target.draw(btn[1], states)
+			target.draw(btn[2], states)
 		end
 	end
 
@@ -42,26 +52,29 @@ class Menu
 	
 	private def create_buttons : Array(ButtonComponents)
 		btn = [] of ButtonComponents
-		x, y, width = 0, 0, @w / BUTTON_NAMES.size
-		BUTTON_NAMES.each do |name|
+		x, y = 0, 0
+		BUTTON_NAMES.each do |b|
+			width = 100 # @w / BUTTON_NAMES.size
+			if b.size > 2
+				width = (b as Tuple(Symbol, String, Int32))[2]
+			end
 			# The rectangle intercepting mouse clicks
 			rect = SF::RectangleShape.new(SF.vector2f(width, @h))
 			rect.position = SF.vector2f(x, y)
-			#rect.fill_color = SF::Color::Transparent
 			rect.fill_color = SF.color(0, 0, 180 - x * 50 / width)
 			# The menu text
 			raise "Font is nil!" if @font == nil
-			text = SF::Text.new(name, @font, FONT_SIZE)
+			text = SF::Text.new(b[1], @font, FONT_SIZE)
 			text.position = rect.position + SF.vector2f(5, 7)
 			x += width 
-			btn << {name, rect, text, get_callback(name)}
+			btn << {b[1], rect, text, get_callback(b[0])}
 		end
 		btn
 	end
 
-	private def get_callback(name : String) : MenuCallback
-		case name
-		when "Save"
+	private def get_callback(role : Symbol) : MenuCallback
+		case role
+		when :save, :save_as
 			->(app : LE::App) { 
 				case LibNFD.save_dialog("json", app.lifish_dir, out fname)
 				when LibNFD::Result::ERROR
@@ -73,7 +86,7 @@ class Menu
 				end
 				true
 			}
-		when "Load"
+		when :load
 			->(app : LE::App) { 
 				case LibNFD.open_dialog("json", app.lifish_dir, out fname)
 				when LibNFD::Result::ERROR
@@ -86,12 +99,12 @@ class Menu
 				end
 				true 
 			}
-		when "Quit"
+		when :quit 
 			->(app : LE::App) {
 				# TODO: confirm
 				false
 			}
-		when "<"
+		when :back
 			->(app : LE::App) {
 				begin
 					app.lr.save_level
@@ -101,7 +114,7 @@ class Menu
 					false
 				end
 			}
-		when ">"
+		when :forward 
 			->(app : LE::App) {
 				begin
 					app.lr.level = app.ls.next
@@ -110,7 +123,7 @@ class Menu
 					false
 				end
 			}
-		when "Restore"
+		when :restore
 			->(app : LE::App) {
 				begin
 					app.lr.level.restore!
@@ -120,7 +133,7 @@ class Menu
 					false
 				end
 			}
-		when "Rstr All"
+		when :restore_all
 			->(app : LE::App) {
 				app.ls.each do |level|
 					level.restore!	
@@ -133,7 +146,7 @@ class Menu
 				end
 			}
 		else
-			raise "Unknown callback: #{name}"
+			raise "Unknown callback: #{role.to_s}"
 		end
 	end
 end
