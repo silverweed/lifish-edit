@@ -9,12 +9,12 @@ class LevelRenderer
 	getter level, tiles
 	property offset
 
-	def initialize(@app, @level)
+	def initialize(@app : LE::App, @level : LE::Level)
 		@tiles = [] of LE::Entity?
 		@bg = SF::Sprite.new
 		@bg.position = SF.vector2f(LE::SIDE_PANEL_WIDTH, LE::MENU_HEIGHT)
-		@bg_texture = nil
-		@offset = SF.vector2(0, 0)
+		@bg_texture = nil as SF::Texture?
+		@offset = SF.vector2(0_f32, 0_f32) as SF::Vector2(Float32)
 		@level_text = SF::Text.new("#{@level.lvnum}", @app.font, 18)
 		@level_text.position = SF.vector2f(5, LE::WIN_HEIGHT - 23)
 		@level_text.color = SF::Color::Black
@@ -95,7 +95,7 @@ class LevelRenderer
 			raise "Invalid number of tiles! (#{@tiles.size} instead of #{@level.tilemap.size})"
 		end
 		begin
-			@bg_texture = SF::Texture.from_file(LE::Utils.get_graphic("bg#{@level.tileIDs["bg"]}.png"))
+			@bg_texture = SF::Texture.from_file(LE::Utils.get_graphic("bg#{@level.tileIDs.bg}.png"))
 			@bg.texture = @bg_texture as SF::Texture
 			@bg.texture_rect = SF.int_rect(0, 0, LE::TILE_SIZE * LE::LV_WIDTH,
 						       LE::TILE_SIZE * LE::LV_HEIGHT)

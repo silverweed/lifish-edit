@@ -1,6 +1,6 @@
 # LifishEdit
 LifishEdit is a small graphical level editor for [Lifish](https://github.com/silverweed/lifish).
-It's currently work-in-progress and not working yet.
+It's currently work-in-progress and not fully working yet.
 
 ## Installation
 

@@ -13,7 +13,9 @@ class App
 	property selected_entity
 	property verbose
 
-	def initialize(levels_json)
+	def initialize(levels_json : String)
+		@verbose = false
+		@selected_entity = nil as LE::Entity?
 		@lifish_dir = File.dirname(levels_json)
 		@ls = LE::LevelSet.new(self, levels_json)
 		@window = SF::RenderWindow.new(SF.video_mode(LE::WIN_WIDTH, LE::WIN_HEIGHT), "Lifish Edit")
@@ -26,7 +28,7 @@ class App
 		@fps_counter = FPSCounter.new(self)
 
 		(@window as SF::RenderWindow).vertical_sync_enabled = true
-		(@lr as LE::LevelRenderer).offset = SF.vector2(LE::SIDE_PANEL_WIDTH, LE::MENU_HEIGHT)
+		(@lr as LE::LevelRenderer).offset = SF.vector2(LE::SIDE_PANEL_WIDTH.to_f32, LE::MENU_HEIGHT.to_f32)
 		(@fps_counter as FPSCounter).position = SF.vector2(2, LE::WIN_HEIGHT - 20)
 	end
 
@@ -88,9 +90,9 @@ class App
 
 		property active
 
-		def initialize(@app, @active = false)
+		def initialize(@app : LE::App, @active = false)
 			@updates = 0
-			@time = 0
+			@time = 0_f32 
 			@clock = SF::Clock.new
 			@update_clock = SF::Clock.new
 			raise "Font is nil!" if @app.font == nil

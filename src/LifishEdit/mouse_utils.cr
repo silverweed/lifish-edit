@@ -5,7 +5,7 @@ module LE
 
 # MouseUtils provides utility methods for the mouse within a `SF::RenderWindow`.
 class MouseUtils
-	def initialize(@app)
+	def initialize(@app : LE::App)
 	end
 
 	def get_touched : (LE::Entity|MenuCallback)?

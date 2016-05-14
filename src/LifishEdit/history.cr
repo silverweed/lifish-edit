@@ -7,7 +7,7 @@ module LE
 class History
 	MAX_HIST_LEN = 50
 
-	def initialize(@app)
+	def initialize(@app : LE::App)
 		@hist = [] of Tuple(Int32, String)
 		@i = -1
 	end

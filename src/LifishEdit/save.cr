@@ -9,7 +9,7 @@ class SaveManager
 		output = String.build do |io|
 			io.json_object do |obj|
 				levelset.metadata.each { |k, v| obj.field k, v }
-				obj.field "enemies", levelset.enemies
+				obj.field "enemies", levelset.data.enemies
 				obj.field "levels" do
 					io.json_array do |arr|
 						levelset.each do |level|

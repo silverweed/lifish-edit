@@ -2,6 +2,7 @@
 # to translate them to JSON and vice-versa.
 
 require "json"
+require "./data"
 
 module LE
 
@@ -9,29 +10,22 @@ module LE
 # The LevelSet is constructed with a JSON lifish levels file
 # containing the levels data and metadata.
 class LevelSet
+
 	getter json_fname
-	getter metadata, enemies
+	getter data
 
 	# Opens file `@json_fname` containing a lifish level set
 	# and deserializes it.
-	def initialize(@app, @json_fname : String)
-		@json = JSON.parse(File.open(@json_fname, "r"))
+	def initialize(@app : LE::App, @json_fname : String)
+		@data = LE::Data::LevelSetData.from_json(File.open(@json_fname, "r"))
 
-		# metadata
-		@metadata = {
-			"name"       => @json["name"].as_s,
-			"author"     => @json["author"].as_s,
-			"difficulty" => @json["difficulty"].as_s,
-			"tracks"     => @json["tracks"]
-		}
-		@enemies = @json["enemies"]
 		@levels = [] of LE::Level
 		# currently pointed level
 		@current = 0
 
 		# Generate levels
-		lvjson = @json["levels"]
-		i = 1
+		lvjson = @data.levels
+		i = 1_u32
 		lvjson.each do |description|
 			begin
 				@levels << LE::Level.new(description, i)
@@ -45,6 +39,14 @@ class LevelSet
 
 	def [](i)
 		@levels[i]
+	end
+	
+	def metadata
+		{
+			name: data.name,
+			author: data.author,
+			difficulty: data.difficulty,
+		}
 	end
 
 	def each

@@ -1,5 +1,5 @@
 # level.cr - The level representation
-require "json"
+require "./data"
 
 module LE
 
@@ -10,12 +10,12 @@ class Level
 	getter orig_tilemap, lvnum
 
 	# Initializes this level with the parameters given by
-	# the hash *json*. May fail if *json* is not a valid hash.
-	def initialize(json, @lvnum)
-		@time = json["time"].as_i
-		@music = json["music"].as_i
-		@tileIDs = json["tileIDs"].as_h
-		@orig_tilemap = @tilemap = json["tilemap"].as_s
+	# the hash *description*. 
+	def initialize(description : LE::Data::Level, @lvnum : UInt32)
+		@time    = description.time as Int32
+		@music   = description.music as UInt16
+		@tileIDs = description.tileIDs as LE::Data::TileIDs 
+		@orig_tilemap = @tilemap = description.tilemap as String
 	end
 
 	# Serializes this level into JSON
@@ -33,10 +33,10 @@ class Level
 		puts "Time: #{@time} s\n\
 			Music: #{@music}\n\
 			TileIDs: {\n\
-			\tborder: #{@tileIDs["border"]},\n\
-			\tbreakable: #{@tileIDs["breakable"]},\n\
-			\tfixed: #{@tileIDs["fixed"]},\n\
-			\tbg: #{@tileIDs["bg"]}\n\
+			\tborder: #{@tileIDs.border},\n\
+			\tbreakable: #{@tileIDs.breakable},\n\
+			\tfixed: #{@tileIDs.fixed},\n\
+			\tbg: #{@tileIDs.bg}\n\
 			},\n\
 			Tilemap: #{@tilemap}"
 	end

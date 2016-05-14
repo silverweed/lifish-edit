@@ -1,5 +1,6 @@
 require "./consts"
 require "./utils"
+require "./data"
 require "crsfml/graphics"
 
 module LE
@@ -13,20 +14,31 @@ class Entity
 
 	# Creates an Entity of type `@type`. If the entity is a wall,
 	# a `tileIDs` hash needs to be given to specify the tileset used.
-	def initialize(@app, @type : Symbol, tileIDs = { "fixed" => 1_i64, "breakable" => 1_i64 })
-		texture_name = @type.to_s + ".png"
+	def initialize(@app : LE::App, @type : Symbol,
+		       tileIDs : LE::Data::TileIDs = LE::Data::TileIDs.new(fixed: 1_u16, breakable: 1_u16))
+
 		@sprite = SF::Sprite.new
-		begin
-			@texture = SF::Texture.from_file(get_graphic(texture_name))
-			@sprite.texture = @texture as SF::Texture if @texture
-		rescue
+
+		unless @type == :empty
+			texture_name = @type.to_s + ".png"
+			begin
+				texture = SF::Texture.from_file(get_graphic(texture_name)) 
+			rescue
+			end
 		end
-		rect = SF.int_rect 0, 0, TILE_SIZE, TILE_SIZE
+		if texture.is_a? SF::Texture
+			@texture = texture as SF::Texture
+			@sprite.texture = @texture 
+		else
+			@texture = SF::Texture.new(0, 0)
+		end
+		
+		rect = SF.int_rect(0, 0, TILE_SIZE, TILE_SIZE)
 		case @type
 		when :fixed
-			rect.left = TILE_SIZE * (tileIDs["fixed"] as Int64 - 1)
+			rect.left = TILE_SIZE * (tileIDs.fixed.to_i64 - 1)
 		when :breakable
-			rect.top = TILE_SIZE * (tileIDs["breakable"] as Int64 - 1)
+			rect.top = TILE_SIZE * (tileIDs.breakable.to_i64 - 1)
 		end
 		@sprite.texture_rect = rect
 	end

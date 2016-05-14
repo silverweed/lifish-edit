@@ -5,11 +5,11 @@ module LE
 class Sidebar
 	getter buttons
 
-	def initialize(@app)
+	def initialize(@app : LE::App)
 		@rect = SF::RectangleShape.new(SF.vector2f LE::SIDE_PANEL_WIDTH, LE::WIN_HEIGHT)
 		@rect.fill_color = SF.color(217, 217, 217)
 		@buttons = [] of Button
-		@selected_button = nil
+		@selected_button = nil as Button?
 		init_buttons
 	end
 
@@ -57,8 +57,8 @@ class Sidebar
 		getter entity
 		property selected
 
-		def initialize(@app, entity_sym)
-			@entity = LE::Entity.new(@app, entity_sym, { "breakable" => 1_i64, "fixed" => 1_i64 })
+		def initialize(@app : LE::App, entity_sym)
+			@entity = LE::Entity.new(@app, entity_sym, LE::Data::TileIDs.new(breakable: 1_u16, fixed: 1_u16))
 			@bg_rect = SF::RectangleShape.new(SF.vector2f(1.2 * LE::TILE_SIZE, 1.2 * LE::TILE_SIZE))
 			@bg_rect.fill_color = SF.color(0, 0, 255, 150)
 			@selected = false

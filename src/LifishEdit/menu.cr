@@ -28,11 +28,11 @@ class Menu
 
 	property color
 
-	def initialize(@font, @w = LE::WIN_WIDTH, @h = LE::MENU_HEIGHT)
+	def initialize(@font : SF::Font, @w : Int32 = LE::WIN_WIDTH, @h : Int32 = LE::MENU_HEIGHT)
 		@rect = SF::RectangleShape.new(SF.vector2f @w, @h)
-		@color = SF.color(0, 0, 206)
+		@color = SF.color(0, 0, 206) as SF::Color
 		@rect.fill_color = @color
-		@buttons = create_buttons
+		@buttons = create_buttons as Array(ButtonComponents)
 	end
 	
 	def draw(target, states : SF::RenderStates)
