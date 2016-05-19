@@ -23,9 +23,9 @@ class MouseUtils
 
 	def get_touched_entity : LE::Entity?
 		tile = get_touched_tile
-		return nil if tile == nil
+		return nil unless tile.is_a? Tuple
 
-		@app.lr.tiles[LE::Utils.tile_to_idx(tile as Array)]
+		@app.lr.tiles[LE::Utils.tile_to_idx(tile)]
 	end
 
 	# Gets tile index from mouse position
@@ -39,7 +39,7 @@ class MouseUtils
 		ty = (y - LE::MENU_HEIGHT) / LE::TILE_SIZE
 		return nil if ty < 0 || ty >= LE::LV_HEIGHT
 
-		[tx, ty]
+		{tx, ty}
 	end
 end
 

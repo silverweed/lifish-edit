@@ -21,10 +21,10 @@ class Level
 	# Serializes this level into JSON
 	def serialize
 		{
-			"time" => @time,
-			"music" => @music,
-			"tileIDs" => @tileIDs,
-			"tilemap" => @tilemap
+			time: @time,
+			music: @music,
+			tileIDs: @tileIDs,
+			tilemap: @tilemap
 		}
 	end
 

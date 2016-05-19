@@ -13,7 +13,7 @@ class Menu
 	# (Name, Button Shape, Button Text, Callback)
 	alias ButtonComponents = Tuple(String, SF::RectangleShape, SF::Text, MenuCallback)
 
-	BUTTON_NAMES = [
+	BUTTON_NAMES = {
 		# role,        name,     width_override
 		{:save,        "Save"       },
 		{:save_as,     "Save as"    },
@@ -23,7 +23,7 @@ class Menu
 		{:restore,     "Restore"    },
 		{:restore_all, "Rstr All"   },
 		{:quit,        "Quit"       }
-	]
+	}
 	FONT_SIZE = 16
 
 	property color

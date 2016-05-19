@@ -47,13 +47,13 @@ class LevelRenderer
 	end
 
 	def place_entity!(tile, entity : LE::Entity)
-		return if tile == nil
-		tx, ty = tile as Array
+		return unless tile.is_a? Tuple
+		tx, ty = tile 
 		if tx < 0 || ty < 0 || tx >= LE::LV_WIDTH || ty >= LE::LV_HEIGHT
 			STDERR.puts "Attempted to place entity in tile #{tile}!"
 			return
 		end
-		idx = LE::Utils.tile_to_idx(tile as Array)
+		idx = LE::Utils.tile_to_idx(tile)
 		unless @tiles[idx].is_a?(LE::Entity) && (@tiles[idx] as LE::Entity).type == entity.type
 			@tiles[idx] = LE::Entity.new(@app, entity.type)
 		end
