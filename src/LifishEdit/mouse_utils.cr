@@ -33,10 +33,10 @@ class MouseUtils
 		x, y = SF::Mouse.get_position(@app.window)
 
 		# Get tile index from mouse position
-		tx = (x - LE::SIDE_PANEL_WIDTH) / LE::TILE_SIZE
+		tx = (x - LE::SIDE_PANEL_WIDTH - LE::TILE_SIZE) / LE::TILE_SIZE
 		return nil if tx < 0 || tx >= LE::LV_WIDTH
 
-		ty = (y - LE::MENU_HEIGHT) / LE::TILE_SIZE
+		ty = (y - LE::MENU_HEIGHT - LE::TILE_SIZE) / LE::TILE_SIZE
 		return nil if ty < 0 || ty >= LE::LV_HEIGHT
 
 		{tx, ty}

@@ -3,6 +3,7 @@ require "./levelset"
 require "./mouse_utils"
 require "./sidebar"
 require "./history"
+require "./cache"
 
 module LE
 
@@ -26,9 +27,10 @@ class App
 		@mouse_utils = LE::MouseUtils.new(self)
 		@history = LE::History.new(self)
 		@fps_counter = FPSCounter.new(self)
+		@cache = LE::Cache.new(self)
 
 		(@window as SF::RenderWindow).vertical_sync_enabled = true
-		(@lr as LE::LevelRenderer).offset = SF.vector2(LE::SIDE_PANEL_WIDTH.to_f32, LE::MENU_HEIGHT.to_f32)
+		(@lr as LE::LevelRenderer).offset = SF.vector2f(LE::SIDE_PANEL_WIDTH.to_f32, LE::MENU_HEIGHT.to_f32)
 		(@fps_counter as FPSCounter).position = SF.vector2(2, LE::WIN_HEIGHT - 20)
 	end
 
@@ -79,6 +81,10 @@ class App
 
 	def show_fps=(active)
 		fps_counter.active = active
+	end
+
+	def cache
+		@cache as LE::Cache
 	end
 
 	private def fps_counter

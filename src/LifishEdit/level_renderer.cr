@@ -7,19 +7,31 @@ module LE
 # A LevelRenderer manages and draws a `Level` with its entities.
 class LevelRenderer
 	getter level, tiles
-	property offset
+	getter offset
 
 	def initialize(@app : LE::App, @level : LE::Level)
 		@tiles = [] of LE::Entity?
 		@bg = SF::Sprite.new
-		@bg.position = SF.vector2f(LE::SIDE_PANEL_WIDTH, LE::MENU_HEIGHT)
+		@bg.position = SF.vector2f(LE::SIDE_PANEL_WIDTH + LE::TILE_SIZE, 
+					   LE::MENU_HEIGHT + LE::TILE_SIZE)
 		@bg_texture = nil as SF::Texture?
-		@offset = SF.vector2(0_f32, 0_f32) as SF::Vector2(Float32)
+		@border_texture = nil as SF::Texture?
+		@borders = {
+			    :upper => SF::Sprite.new,
+			    :upper_left => SF::Sprite.new,
+			    :upper_right => SF::Sprite.new,
+			    :left => SF::Sprite.new,
+			    :right => SF::Sprite.new,
+			    :lower => SF::Sprite.new,
+			    :lower_left => SF::Sprite.new,
+			    :lower_right => SF::Sprite.new,
+		}
+
+		@offset = SF.vector2f(0_f32 + LE::TILE_SIZE, 0_f32 + LE::TILE_SIZE)
 		@level_text = SF::Text.new("#{@level.lvnum}", @app.font, 18)
 		@level_text.position = SF.vector2f(5, LE::WIN_HEIGHT - 23)
 		@level_text.color = SF::Color::Black
 		@level_text.style = SF::Text::Bold
-		load_level
 	end
 
 	def level=(lv)
@@ -27,19 +39,57 @@ class LevelRenderer
 		load_level
 	end
 
+	def offset=(o)
+		@offset = SF.vector2f(LE::TILE_SIZE + o.x, LE::TILE_SIZE + o.y)
+	end
+
 	def draw(target, states : SF::RenderStates)
-		target.draw(@bg)
+		# Background
+		target.draw(@bg, states)
+	
+		# Borders
+		(1..LE::LV_WIDTH + 1).each do |t|
+			@borders[:upper].position = SF.vector2f(LE::SIDE_PANEL_WIDTH + t * LE::TILE_SIZE,
+								LE::MENU_HEIGHT)
+			target.draw(@borders[:upper], states)
+			@borders[:lower].position = SF.vector2f(LE::SIDE_PANEL_WIDTH + t * LE::TILE_SIZE,
+								LE::MENU_HEIGHT + (LE::LV_HEIGHT + 1) * LE::TILE_SIZE)
+			target.draw(@borders[:lower], states)
+		end
+		(1..LE::LV_HEIGHT + 1).each do |t|
+			@borders[:left].position = SF.vector2f(LE::SIDE_PANEL_WIDTH,
+								LE::MENU_HEIGHT + t * LE::TILE_SIZE)
+			target.draw(@borders[:left], states)
+			@borders[:right].position = SF.vector2f(LE::SIDE_PANEL_WIDTH + (LE::LV_WIDTH + 1) *  LE::TILE_SIZE,
+								LE::MENU_HEIGHT + t * LE::TILE_SIZE)
+			target.draw(@borders[:right], states)
+		end
+		@borders[:upper_left].position = SF.vector2f(LE::SIDE_PANEL_WIDTH, LE::MENU_HEIGHT)
+		target.draw(@borders[:upper_left], states)
+		@borders[:upper_right].position = SF.vector2f(LE::SIDE_PANEL_WIDTH + (LE::LV_WIDTH + 1) * LE::TILE_SIZE,
+							      LE::MENU_HEIGHT)
+		target.draw(@borders[:upper_right], states)
+		@borders[:lower_left].position = SF.vector2f(LE::SIDE_PANEL_WIDTH, 
+							     LE::MENU_HEIGHT + (LE::LV_HEIGHT + 1) * LE::TILE_SIZE)
+		target.draw(@borders[:lower_left], states)
+		@borders[:lower_right].position = SF.vector2f(LE::SIDE_PANEL_WIDTH + (LE::LV_WIDTH + 1) * LE::TILE_SIZE,
+							      LE::MENU_HEIGHT + (LE::LV_HEIGHT + 1) * LE::TILE_SIZE)
+		target.draw(@borders[:lower_right], states)
+
+		# Entities
 		LE::LV_HEIGHT.times do |row|
 			LE::LV_WIDTH.times do |col|
 				entity = @tiles[col+LE::LV_WIDTH*row]
 				pos = SF.vector2(LE::TILE_SIZE*col, LE::TILE_SIZE*row)
 				if entity
 					entity.position = pos + @offset
-					target.draw(entity)
+					target.draw(entity, states)
 				end
 			end
 		end
-		target.draw(@level_text)
+
+		# Level text
+		target.draw(@level_text, states)
 	end
 
 	def remove_entity!(entity : LE::Entity)
@@ -94,12 +144,34 @@ class LevelRenderer
 		unless @tiles.size == @level.tilemap.size
 			raise "Invalid number of tiles! (#{@tiles.size} instead of #{@level.tilemap.size})"
 		end
+		# Load background and border textures
 		begin
-			@bg_texture = SF::Texture.from_file(LE::Utils.get_graphic("bg#{@level.tileIDs.bg}.png"))
+			@bg_texture = @app.cache.texture("bg#{@level.tileIDs.bg}.png")
 			@bg.texture = @bg_texture as SF::Texture
 			@bg.texture_rect = SF.int_rect(0, 0, LE::TILE_SIZE * LE::LV_WIDTH,
 						       LE::TILE_SIZE * LE::LV_HEIGHT)
 			(@bg.texture as SF::Texture).repeated = true
+
+			@border_texture = @app.cache.texture("border.png")
+			@borders.each_value { |b| b.texture = @border_texture as SF::Texture }
+			b = (@level.tileIDs.border - 1) * LE::TILE_SIZE
+			@borders[:upper].texture_rect = SF.int_rect(0, b, LE::TILE_SIZE, LE::TILE_SIZE)
+			@borders[:lower].texture_rect = SF.int_rect(0, b + LE::TILE_SIZE, 
+								    LE::TILE_SIZE, -LE::TILE_SIZE)
+			@borders[:left].texture_rect = SF.int_rect(LE::TILE_SIZE,
+								   b, LE::TILE_SIZE, LE::TILE_SIZE)
+			@borders[:right].texture_rect = SF.int_rect(2 * LE::TILE_SIZE,
+								   b, -LE::TILE_SIZE, LE::TILE_SIZE)
+			@borders[:upper_left].texture_rect = SF.int_rect(2 * LE::TILE_SIZE,
+									 b, LE::TILE_SIZE, LE::TILE_SIZE)
+			@borders[:lower_left].texture_rect = SF.int_rect(2 * LE::TILE_SIZE,
+									 b + LE::TILE_SIZE,
+									 LE::TILE_SIZE, -LE::TILE_SIZE)
+			@borders[:lower_right].texture_rect = SF.int_rect(3 * LE::TILE_SIZE,
+									  b, LE::TILE_SIZE, LE::TILE_SIZE)
+			@borders[:upper_right].texture_rect = SF.int_rect(3 * LE::TILE_SIZE,
+									  b + LE::TILE_SIZE,
+									  LE::TILE_SIZE, -LE::TILE_SIZE)
 		rescue
 		end
 		@level_text.string = "#{@level.lvnum}"
