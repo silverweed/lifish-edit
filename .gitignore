@@ -9,3 +9,4 @@ lifish
 lifishedit
 *.o
 shard.lock
+deps
