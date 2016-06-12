@@ -42,6 +42,7 @@ lr = app.lr
 window = app.window
 ls = app.ls
 lr.load_level
+app.sidebar.refresh_selected
 
 LE::Utils.write_cfg_file("start_dir", File.dirname(levels_json))
 
@@ -50,7 +51,7 @@ class LE::App
 		tile = mouse_utils.get_touched_tile
 		if @selected_entity != nil && tile.is_a? Tuple
 			history.save
-			lr.place_entity!(tile, @selected_entity as LE::Entity)
+			lr.place_entity(tile, @selected_entity as LE::Entity)
 		end
 	end
 end
@@ -100,7 +101,7 @@ while window.open?
 				when SF::Mouse::Right
 					if touched.is_a? LE::Entity
 						app.history.save
-						lr.remove_entity!(touched) 
+						lr.remove_entity(touched) 
 					end
 				end
 			end
@@ -112,7 +113,7 @@ while window.open?
 				touched = app.mouse_utils.get_touched
 				if touched.is_a? LE::Entity
 					app.history.save
-					lr.remove_entity!(touched) 
+					lr.remove_entity(touched) 
 				end
 			end
 		end

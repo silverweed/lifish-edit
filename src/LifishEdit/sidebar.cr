@@ -11,9 +11,10 @@ class Sidebar
 			nums[{{name}}][idx[{{name}}]] = ids.{{name.id}}
 			idx[{{name}}] += 1
 			
-			btn = CallbackButton.new(->() {
-				STDERR.puts "Setting #{{{name}}} to #{ids.{{name.id}}}" if @app.verbose
-				@app.lr.set_{{name.id}}!(ids.{{name.id}})	
+			STDERR.puts "Constructing button #{{{name}}}[#{ids.{{name.id}}}]" if @app.verbose
+			btn = CallbackButton.new(@app, {{name}}, ids.{{name.id}}, ->() {
+				STDERR.puts("Setting #{{{name}}} to #{ids.{{name.id}}}") if @app.verbose
+				@app.lr.set_{{name.id}}(ids.{{name.id}})	
 			})
 			@{{name.id}}_buttons << btn
 			btn.position = pos[{{name}}]
@@ -27,9 +28,13 @@ class Sidebar
 		@entity_buttons = [] of EntityButton
 		@selected_button = nil as EntityButton?
 		@bg_buttons = [] of CallbackButton
+		@selected_bg = nil as Button?
 		@border_buttons = [] of CallbackButton
+		@selected_border = nil as Button?
 		@fixed_buttons = [] of CallbackButton
+		@selected_fixed = nil as Button?
 		@breakable_buttons = [] of CallbackButton
+		@selected_breakable = nil as Button?
 		init_buttons
 	end
 
@@ -48,7 +53,7 @@ class Sidebar
 			if btn.contains?(pos)
 				btn.selected = true
 				if @selected_button != nil
-					(@selected_button as EntityButton).selected = false 
+					(@selected_button as Button).selected = false 
 				end
 				return (@selected_button = btn).entity
 			end
@@ -56,13 +61,33 @@ class Sidebar
 		{% for name in %w(bg border fixed breakable) %}
 			@{{name.id}}_buttons.each do |btn|
 				if btn.contains?(pos)
-					STDERR.puts "Callback"
-					btn.callback
+					STDERR.puts "Callback #{{{name}}}[#{btn.id}]" if @app.verbose
+					if @selected_{{name.id}} != nil
+						(@selected_{{name.id}} as Button).selected = false
+					end	
+					btn.callback.call
+					btn.selected = true
+					@selected_{{name.id}} = btn
 					return
 				end
 			end
 		{% end %}
 		nil
+	end
+	
+	# Autoselects bg/border/fixed/breakable buttons according to the current level
+	def refresh_selected
+		{% for name in %w(bg border fixed breakable) %}
+			(@selected_{{name.id}} as Button).selected = false if @selected_{{name.id}} != nil
+			@selected_{{name.id}} = nil
+			@{{name.id}}_buttons.each do |btn|
+				if @app.lr.level.tileIDs.{{name.id}} == btn.id
+					@selected_{{name.id}} = btn
+					btn.selected = true
+					break
+				end
+			end
+		{% end %}
 	end
 
 	private def init_buttons
@@ -109,11 +134,14 @@ class Sidebar
 	end
 	
 	class Button
+		property selected
+
 		def initialize()
 			@bg_rect = SF::RectangleShape.new(SF.vector2f(1.2 * LE::TILE_SIZE, 1.2 * LE::TILE_SIZE))
 			@bg_rect.fill_color = SF.color(0, 0, 255, 150)
 			@bg_rect.outline_thickness = 1
 			@bg_rect.outline_color = SF.color(50, 50, 50, 255)
+			@selected = false
 		end
 
 		def position=(pos)
@@ -125,26 +153,25 @@ class Sidebar
 		end
 
 		def draw(target, states : SF::RenderStates)
+			if @selected
+				@bg_rect.fill_color = SF.color(0, 0, 255, 150)
+			else
+				@bg_rect.fill_color = SF.color(0, 0, 0, 0)
+			end
 			target.draw(@bg_rect, states)
 		end
 	end
 
 	class EntityButton < Button
 		getter entity
-		property selected
 
 		def initialize(@app : LE::App, entity_sym)
 			super()
-			@entity = LE::Entity.new(@app, entity_sym, LE::Data::TileIDs.new(breakable: 1_u16, fixed: 1_u16))
-			@selected = false
+			@entity = LE::Entity.new(@app, entity_sym, 
+						 LE::Data::TileIDs.new(breakable: 1_u16, fixed: 1_u16))
 		end
 
 		def draw(target, states : SF::RenderStates)
-			if @selected
-				@bg_rect.fill_color = SF.color(0, 0, 255, 150)
-			else
-				@bg_rect.fill_color = SF.color(0, 0, 0, 0)
-			end
 			super
 			target.draw(@entity, states)
 		end
@@ -157,15 +184,38 @@ class Sidebar
 
 	class CallbackButton < Button
 		getter callback
+		getter id
 
-		def initialize(@callback : -> Void)
+		def initialize(@app : LE::App, type, @id : UInt16, @callback : -> Void)
 			super()
 			@bg_rect.fill_color = SF.color(0, 0, 0, 0)
+			@sprite = SF::Sprite.new
+			texture = nil
+			begin
+				texture = case type
+				when :bg
+					@app.cache.texture("bg#{id}.png")
+				else
+					@app.cache.texture("#{type}.png")
+				end as SF::Texture
+				@sprite.texture = texture
+				@sprite.texture_rect = SF.int_rect(type == :fixed ? (id-1) * LE::TILE_SIZE : 0,
+								   type == :bg || type == :fixed ?
+									0
+									: (id-1) * LE::TILE_SIZE,
+								   LE::TILE_SIZE, LE::TILE_SIZE)
+			rescue
+			end
 		end
 
 		def draw(target, states : SF::RenderStates)
 			super
-			# TODO
+			target.draw(@sprite, states)
+		end
+
+		def position=(pos)
+			super
+			@sprite.position = SF.vector2f(pos.x + 0.1 * LE::TILE_SIZE, pos.y + 0.1 * LE::TILE_SIZE)
 		end
 	end
 end

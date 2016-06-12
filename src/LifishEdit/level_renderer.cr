@@ -37,6 +37,7 @@ class LevelRenderer
 	def level=(lv)
 		@level = lv
 		load_level
+		@app.sidebar.refresh_selected
 	end
 
 	def offset=(o)
@@ -160,11 +161,11 @@ class LevelRenderer
 		@level_text.string = "#{@level.lvnum}"
 	end
 
-	def remove_entity!(entity : LE::Entity)
+	def remove_entity(entity : LE::Entity)
 		@tiles.map! { |tile| tile == entity ? nil : tile }
 	end
 
-	def place_entity!(tile : Tuple, entity : LE::Entity)
+	def place_entity(tile : Tuple, entity : LE::Entity)
 		tx, ty = tile 
 		if tx < 0 || ty < 0 || tx >= LE::LV_WIDTH || ty >= LE::LV_HEIGHT
 			STDERR.puts "Attempted to place entity in tile #{tile}!"
@@ -177,7 +178,7 @@ class LevelRenderer
 	end
 
 	{% for name in %w(bg border fixed breakable) %}
-		def set_{{name.id}}!(id : UInt16)
+		def set_{{name.id}}(id : UInt16)
 			@level.tileIDs.{{name.id}} = id
 			load_level
 		end
