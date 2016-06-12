@@ -92,23 +92,6 @@ class LevelRenderer
 		target.draw(@level_text, states)
 	end
 
-	def remove_entity!(entity : LE::Entity)
-		@tiles.map! { |tile| tile == entity ? nil : tile }
-	end
-
-	def place_entity!(tile, entity : LE::Entity)
-		return unless tile.is_a? Tuple
-		tx, ty = tile 
-		if tx < 0 || ty < 0 || tx >= LE::LV_WIDTH || ty >= LE::LV_HEIGHT
-			STDERR.puts "Attempted to place entity in tile #{tile}!"
-			return
-		end
-		idx = LE::Utils.tile_to_idx(tile)
-		unless @tiles[idx].is_a?(LE::Entity) && (@tiles[idx] as LE::Entity).type == entity.type
-			@tiles[idx] = LE::Entity.new(@app, entity.type)
-		end
-	end
-
 	# Applies `@tiles` modifications to current `@level`
 	def save_level
 		tilemap = ""
@@ -176,6 +159,29 @@ class LevelRenderer
 		end
 		@level_text.string = "#{@level.lvnum}"
 	end
+
+	def remove_entity!(entity : LE::Entity)
+		@tiles.map! { |tile| tile == entity ? nil : tile }
+	end
+
+	def place_entity!(tile : Tuple, entity : LE::Entity)
+		tx, ty = tile 
+		if tx < 0 || ty < 0 || tx >= LE::LV_WIDTH || ty >= LE::LV_HEIGHT
+			STDERR.puts "Attempted to place entity in tile #{tile}!"
+			return
+		end
+		idx = LE::Utils.tile_to_idx(tile)
+		unless @tiles[idx].is_a?(LE::Entity) && (@tiles[idx] as LE::Entity).type == entity.type
+			@tiles[idx] = LE::Entity.new(@app, entity.type)
+		end
+	end
+
+	{% for name in %w(bg border fixed breakable) %}
+		def set_{{name.id}}!(id : UInt16)
+			@level.tileIDs.{{name.id}} = id
+			load_level
+		end
+	{% end %}
 end
 
 end # module LE

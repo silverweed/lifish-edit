@@ -22,7 +22,7 @@ class Entity
 		unless @type == :empty
 			texture_name = @type.to_s + ".png"
 			begin
-				texture = SF::Texture.from_file(get_graphic(texture_name)) 
+				texture = @app.cache.texture(texture_name)
 			rescue
 			end
 		end

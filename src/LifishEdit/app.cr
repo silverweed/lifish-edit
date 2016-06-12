@@ -19,15 +19,16 @@ class App
 		@selected_entity = nil as LE::Entity?
 		@lifish_dir = File.dirname(levels_json)
 		@ls = LE::LevelSet.new(self, levels_json)
-		@window = SF::RenderWindow.new(SF.video_mode(LE::WIN_WIDTH, LE::WIN_HEIGHT), "Lifish Edit")
+		@window = SF::RenderWindow.new(SF.video_mode(LE::WIN_WIDTH, LE::WIN_HEIGHT), "Lifish Edit", 
+					       SF::DefaultStyle & ~SF::Resize)
 		@font = SF::Font.from_file("#{@lifish_dir}/assets/fonts/pf_tempesta_seven.ttf")
 		@menu = LE::Menu.new(@font as SF::Font)
+		@cache = LE::Cache.new(self)
 		@sidebar = LE::Sidebar.new(self)
 		@lr = LE::LevelRenderer.new(self, (@ls as LE::LevelSet)[0])
 		@mouse_utils = LE::MouseUtils.new(self)
 		@history = LE::History.new(self)
 		@fps_counter = FPSCounter.new(self)
-		@cache = LE::Cache.new(self)
 
 		(@window as SF::RenderWindow).vertical_sync_enabled = true
 		(@lr as LE::LevelRenderer).offset = SF.vector2f(LE::SIDE_PANEL_WIDTH.to_f32, LE::MENU_HEIGHT.to_f32)

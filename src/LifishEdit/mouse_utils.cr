@@ -29,7 +29,7 @@ class MouseUtils
 	end
 
 	# Gets tile index from mouse position
-	def get_touched_tile
+	def get_touched_tile : Tuple(Int32, Int32)?
 		x, y = SF::Mouse.get_position(@app.window)
 
 		# Get tile index from mouse position

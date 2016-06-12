@@ -7,7 +7,7 @@ module LE
 	# Tile size in pixel
 	TILE_SIZE = 32
 	# Width of the side left panel, in pixel
-	SIDE_PANEL_WIDTH = 240
+	SIDE_PANEL_WIDTH = 300
 	# Vertical offset in pixel (i.e. menu height)
 	MENU_HEIGHT = 32
 	WIN_WIDTH = (LV_WIDTH + 2) * TILE_SIZE + SIDE_PANEL_WIDTH
