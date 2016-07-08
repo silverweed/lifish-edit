@@ -11,7 +11,7 @@ class Sidebar
 			nums[{{name}}][idx[{{name}}]] = ids.{{name.id}}
 			idx[{{name}}] += 1
 			
-			STDERR.puts "Constructing button #{{{name}}}[#{ids.{{name.id}}}]" if @app.verbose
+			#STDERR.puts "Constructing button #{{{name}}}[#{ids.{{name.id}}}]" 
 			btn = CallbackButton.new(@app, {{name}}, ids.{{name.id}}, ->() {
 				STDERR.puts("Setting #{{{name}}} to #{ids.{{name.id}}}") if @app.verbose
 				@app.lr.set_{{name.id}}(ids.{{name.id}})	
@@ -136,7 +136,7 @@ class Sidebar
 	class Button
 		property selected
 
-		def initialize()
+		def initialize
 			@bg_rect = SF::RectangleShape.new(SF.vector2f(1.2 * LE::TILE_SIZE, 1.2 * LE::TILE_SIZE))
 			@bg_rect.fill_color = SF.color(0, 0, 255, 150)
 			@bg_rect.outline_thickness = 1
