@@ -1,5 +1,5 @@
 build: deps
-	crystal compile src/LifishEdit.cr -o lifishedit --link-flags -L$(PWD)/foreign
+	crystal build src/LifishEdit.cr -o lifishedit --link-flags -L$(PWD)/foreign
 
 docs:
 	crystal docs 
