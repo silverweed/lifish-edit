@@ -9,9 +9,9 @@ require "crsfml/graphics"
 require "crsfml/window"
 
 options = getopt [
-	{ "-l", :levels, String }, # the name of the levelset to load
-	{ "-v", :verbose },        # whether to be verbose or not
-	{ "-V", :version },        # only output program version
+	{ "-v", :verbose }, # whether to be verbose or not
+	{ "-V", :version }, # only output program version
+	{ "-h", :help },    # only output help
 ]
 
 if options[:version]
@@ -22,6 +22,17 @@ if options[:version]
 	puts "  * get Lifish for free at https://github.com/silverweed/lifish"
 	exit 0
 end
+
+def help
+	puts "Usage: #{$0} [flags] <levelset>"
+	puts "flags:"
+	puts "        -h: print this help and exit"
+	puts "        -v: be verbose"
+	puts "        -V: print version and exit"
+	exit 0
+end
+
+help if options[:help]
 
 args = options[:args] as Array(String)
 cfg = LE::Utils.read_cfg_file
@@ -48,7 +59,7 @@ end
 raise "Invalid levels_json selected!" unless levels_json.size > 0 
 
 app = LE::App.new(levels_json)
-app.verbose = options.has_key? :verbose
+app.verbose = !!options[:verbose]
 lr = app.lr
 window = app.window
 ls = app.ls

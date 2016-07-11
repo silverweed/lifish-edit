@@ -23,6 +23,12 @@ macro getopt(optlist)
 	%opts_ended = false
 	%options = {} of Symbol => Array(String)|Int64|Float64|String|Bool
 	%args = [] of String
+	
+	# Fill %options of false values
+	{% for opt in optlist %}
+	%options[{{opt[1]}}] = false
+	{% end %}
+
 	while %i < ARGV.size
 		unless %opts_ended
 			case ARGV[%i]
@@ -31,8 +37,8 @@ macro getopt(optlist)
 			{% for opt in optlist %}
 			when {{opt[0]}}
 				{% if opt.size < 3 %}
-				# unary flag
-				%options[{{opt[1]}}] = true
+					# unary flag
+					%options[{{opt[1]}}] = true
 				{% else %}
 				# needs an argument
 				%i += 1
