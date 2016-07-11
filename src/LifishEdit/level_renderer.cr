@@ -152,10 +152,11 @@ class LevelRenderer
 									 b + LE::TILE_SIZE,
 									 LE::TILE_SIZE, -LE::TILE_SIZE)
 			@borders[:lower_right].texture_rect = SF.int_rect(3 * LE::TILE_SIZE,
-									  b, LE::TILE_SIZE, LE::TILE_SIZE)
-			@borders[:upper_right].texture_rect = SF.int_rect(3 * LE::TILE_SIZE,
 									  b + LE::TILE_SIZE,
-									  LE::TILE_SIZE, -LE::TILE_SIZE)
+									  -LE::TILE_SIZE, -LE::TILE_SIZE)
+			@borders[:upper_right].texture_rect = SF.int_rect(3 * LE::TILE_SIZE,
+									  b,
+									  -LE::TILE_SIZE, LE::TILE_SIZE)
 		rescue
 		end
 		@level_text.string = "#{@level.lvnum}"

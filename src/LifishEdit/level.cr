@@ -1,5 +1,6 @@
 # level.cr - The level representation
 require "./data"
+require "./entities.cr"
 
 module LE
 
@@ -43,6 +44,10 @@ class Level
 
 	def restore!
 		@tilemap = @orig_tilemap
+	end
+
+	def clear!
+		@tilemap = "#{LE.get_entity_symbol(:empty)}" * @tilemap.size
 	end
 end
 

@@ -22,6 +22,7 @@ class Menu
 		{:forward,     ">",       40},
 		{:restore,     "Restore"    },
 		{:restore_all, "Rstr All"   },
+		{:clear,       "Clear"      },
 		{:quit,        "Quit"       }
 	}
 	FONT_SIZE = 16
@@ -144,6 +145,12 @@ class Menu
 				rescue
 					false
 				end
+			}
+		when :clear
+			->(app : LE::App) {
+				app.lr.level.clear!
+				app.lr.load_level
+				true
 			}
 		else
 			raise "Unknown callback: #{role.to_s}"
