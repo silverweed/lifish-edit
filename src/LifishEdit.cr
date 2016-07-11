@@ -11,7 +11,18 @@ require "crsfml/window"
 options = getopt [
 	{ "-l", :levels, String }, # the name of the levelset to load
 	{ "-v", :verbose },        # whether to be verbose or not
+	{ "-V", :version },        # only output program version
 ]
+
+if options[:version]
+	puts "LifishEdit #{LE::VERSION} by Giacomo Parolini"
+	puts "  * compiled with Crystal #{Crystal::VERSION}"
+	puts "  * LifishEdit is free software release under the MIT license"
+	puts "  * source code available at https://github.com/silverweed/lifish-edit"
+	puts "  * get Lifish for free at https://github.com/silverweed/lifish"
+	exit 0
+end
+
 args = options[:args] as Array(String)
 cfg = LE::Utils.read_cfg_file
 
