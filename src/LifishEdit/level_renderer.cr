@@ -106,8 +106,11 @@ class LevelRenderer
 		if tilemap.size == @level.tilemap.size
 			@level.tilemap = tilemap
 		else
-			STDERR.puts "tilemap.size = #{tilemap.size} versus #{@level.tilemap.size}!"
+			raise "tilemap.size = #{tilemap.size} versus #{@level.tilemap.size}!"
 		end
+		
+		@app.ls.data.levels[@level.lvnum - 1] = LE::Data::Level.from_json(
+			@level.serialize.to_json)
 	end
 
 	# Loads current `@level` into `@tiles`

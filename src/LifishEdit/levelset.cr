@@ -11,6 +11,7 @@ module LE
 # containing the levels data and metadata.
 class LevelSet
 
+	getter app
 	getter json_fname
 	getter data
 

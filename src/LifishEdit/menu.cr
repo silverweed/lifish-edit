@@ -73,20 +73,32 @@ class Menu
 		btn
 	end
 
+	private def show_save_dialog(app : LE::App)
+		case LibNFD.save_dialog("json", app.lifish_dir, out fname)
+		when LibNFD::Result::ERROR
+			raise "Error selecting directory!"
+		when LibNFD::Result::CANCEL
+		else
+			app.lr.save_level
+			LE::SaveManager.save(app.ls, String.new(fname))
+		end
+		true
+	end
+
 	private def get_callback(role : Symbol) : MenuCallback
 		case role
-		when :save, :save_as
-			->(app : LE::App) { 
-				case LibNFD.save_dialog("json", app.lifish_dir, out fname)
-				when LibNFD::Result::ERROR
-					raise "Error selecting directory!"
-				when LibNFD::Result::CANCEL
-				else
-					app.lr.save_level
-					LE::SaveManager.save(app.ls, String.new(fname))
-				end
-				true
+		when :save
+			->(app : LE::App) {
+			begin	
+				app.lr.save_level
+				LE::SaveManager.save(app.ls, app.ls.json_fname)
+			rescue
+				show_save_dialog(app)
+			end
+			true
 			}
+		when :save_as
+			->(app : LE::App) { show_save_dialog(app) }
 		when :load
 			->(app : LE::App) { 
 				case LibNFD.open_dialog("json", app.lifish_dir, out fname)
