@@ -115,6 +115,8 @@ class LevelRenderer
 		else
 			raise "tilemap.size = #{tilemap.size} versus #{@level.tilemap.size}!"
 		end
+
+		STDERR.puts("Tilemap now: #{@level.tilemap}") if @app.verbose
 		
 		@app.ls.data.levels[@level.lvnum - 1] = LE::Data::Level.from_json(
 			@level.serialize.to_json)

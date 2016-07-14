@@ -14,6 +14,7 @@ class Sidebar
 			#STDERR.puts "Constructing button #{{{name}}}[#{ids.{{name.id}}}]" 
 			btn = CallbackButton.new(@app, {{name}}, ids.{{name.id}}, ->() {
 				STDERR.puts("Setting #{{{name}}} to #{ids.{{name.id}}}") if @app.verbose
+				@app.lr.save_level
 				@app.lr.set_{{name.id}}(ids.{{name.id}})	
 			})
 			@{{name.id}}_buttons << btn
