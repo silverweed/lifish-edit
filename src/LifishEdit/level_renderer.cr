@@ -28,10 +28,16 @@ class LevelRenderer
 		}
 
 		@offset = SF.vector2f(0_f32 + LE::TILE_SIZE, 0_f32 + LE::TILE_SIZE)
-		@level_text = SF::Text.new("#{@level.lvnum}", @app.font, 18)
-		@level_text.position = SF.vector2f(5, LE::WIN_HEIGHT - 23)
-		@level_text.color = SF::Color::Black
+		@level_text = SF::Text.new("#{@level.lvnum}", @app.font, 20)
+		@level_text.position = SF.vector2f(LE::SIDE_PANEL_WIDTH + LE::TILE_SIZE * (LE::LV_WIDTH + 1), 
+						   LE::MENU_HEIGHT)
+		@level_text.color = SF::Color::White
 		@level_text.style = SF::Text::Bold
+		@level_text_shadow = SF::Text.new(@level_text.string, @level_text.font as SF::Font,
+						  @level_text.character_size)
+		@level_text_shadow.position = @level_text.position + SF.vector2f(2, 2)
+		@level_text_shadow.style = SF::Text::Bold 
+		@level_text_shadow.color = SF::Color::Black 
 	end
 
 	def level=(lv)
@@ -90,6 +96,7 @@ class LevelRenderer
 		end
 
 		# Level text
+		target.draw(@level_text_shadow, states)
 		target.draw(@level_text, states)
 	end
 
@@ -163,6 +170,7 @@ class LevelRenderer
 		rescue
 		end
 		@level_text.string = "#{@level.lvnum}"
+		@level_text_shadow.string = @level_text.string
 	end
 
 	def remove_entity(entity : LE::Entity)

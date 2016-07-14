@@ -35,6 +35,11 @@ class Sidebar
 		@selected_fixed = nil as Button?
 		@breakable_buttons = [] of CallbackButton
 		@selected_breakable = nil as Button?
+		@gotolv_button = TextButton.new(@app, 
+						callback: ->() { puts "Not implemented." }, # TODO
+						string: "Go to lv",
+						width: 2.4 * LE::TILE_SIZE, 
+						height: LE::TILE_SIZE)
 		init_buttons
 	end
 
@@ -43,12 +48,17 @@ class Sidebar
 		{% for name in %i(entity bg border fixed breakable) %}
 			@{{name.id}}_buttons.map { |btn| btn.draw target, states }
 		{% end %}
+		target.draw(@gotolv_button, states)
 	end
 
 	# Checks if a touch in position `pos` intercepts a Button and:
 	# 	if it's an EntityButton, select it and return it
 	#	if it's a BG/Border button, change BG/Border to level and return nil
 	def touch(pos) : LE::Entity?
+		if @gotolv_button.contains?(pos)
+			@gotolv_button.callback.call
+			return nil
+		end
 		@entity_buttons.each do |btn|
 			if btn.contains?(pos)
 				btn.selected = true
@@ -131,6 +141,9 @@ class Sidebar
 			new_button_if_necessary(:fixed)
 			new_button_if_necessary(:breakable)
 		end
+
+		@gotolv_button.position = SF.vector2f(LE::TILE_SIZE, 
+						      @entity_buttons[-1].position.y + 1.2 * LE::TILE_SIZE + 1)
 	end
 	
 	class Button
@@ -142,6 +155,10 @@ class Sidebar
 			@bg_rect.outline_thickness = 1
 			@bg_rect.outline_color = SF.color(50, 50, 50, 255)
 			@selected = false
+		end
+
+		def position
+			@bg_rect.position
 		end
 
 		def position=(pos)
@@ -159,6 +176,34 @@ class Sidebar
 				@bg_rect.fill_color = SF.color(0, 0, 0, 0)
 			end
 			target.draw(@bg_rect, states)
+		end
+	end
+
+	class TextButton < Button
+		getter callback
+
+		def initialize(@app : LE::App, @callback : -> Void, string = "", width = 0, height = 0)
+			super()
+			@text = SF::Text.new(string, @app.font, 14)
+			@text.color = SF::Color::Black
+			b = @text.local_bounds
+			@bg_rect.size = SF.vector2f([width, b.width + 4].max, [height, b.height + 4].max)
+			bs = @bg_rect.size
+			@text.position = @bg_rect.position + SF.vector2f((bs.x - b.width) / 2, (bs.y - b.height) / 2)
+			@bg_rect.fill_color = SF::Color::Blue
+			@text.color = SF::Color::White
+		end
+
+		def draw(target, states : SF::RenderStates)
+			target.draw(@bg_rect, states)
+			target.draw(@text, states)
+		end
+
+		def position=(pos)
+			super
+			b = @text.local_bounds
+			bs = @bg_rect.size
+			@text.position = @bg_rect.position + SF.vector2f((bs.x - b.width) / 2, (bs.y - b.height) / 2)
 		end
 	end
 
