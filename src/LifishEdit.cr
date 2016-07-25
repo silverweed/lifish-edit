@@ -12,6 +12,7 @@ options = getopt [
 	{ "-v", :verbose }, # whether to be verbose or not
 	{ "-V", :version }, # only output program version
 	{ "-h", :help },    # only output help
+	{ "-g", :graphics_dir, String }, # manually select graphics dir
 ]
 
 if options[:version]
@@ -27,6 +28,7 @@ def help
 	puts "Usage: #{$0} [flags] <levelset>"
 	puts "flags:"
 	puts "        -h: print this help and exit"
+	puts "        -g: graphics directory (default: lifish_dir/assets/graphics)"
 	puts "        -v: be verbose"
 	puts "        -V: print version and exit"
 	exit 0
@@ -58,7 +60,7 @@ end
 
 raise "Invalid levels_json selected!" unless levels_json.size > 0 
 
-app = LE::App.new(levels_json)
+app = LE::App.new(levels_json, options[:graphics_dir] as String)
 app.verbose = !!options[:verbose]
 lr = app.lr
 window = app.window

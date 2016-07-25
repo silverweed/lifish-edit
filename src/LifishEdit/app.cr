@@ -11,13 +11,15 @@ module LE
 # passed around across functions.
 class App
 	getter lifish_dir
+	getter graphics_dir
 	property selected_entity
 	property verbose
 
-	def initialize(levels_json : String)
+	def initialize(levels_json : String, graphics_dir : String?)
 		@verbose = false
 		@selected_entity = nil as LE::Entity?
 		@lifish_dir = File.dirname(levels_json)
+		@graphics_dir = graphics_dir || "#{@lifish_dir}/assets/graphics"
 		@ls = LE::LevelSet.new(self, levels_json)
 		@window = SF::RenderWindow.new(SF.video_mode(LE::WIN_WIDTH, LE::WIN_HEIGHT), "Lifish Edit", 
 					       SF::DefaultStyle & ~SF::Resize)
