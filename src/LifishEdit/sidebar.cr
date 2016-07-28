@@ -36,9 +36,25 @@ class Sidebar
 		@selected_fixed = nil as Button?
 		@breakable_buttons = [] of CallbackButton
 		@selected_breakable = nil as Button?
-		@gotolv_button = TextButton.new(@app, 
-						callback: ->() { puts "Not implemented." }, # TODO
-						string: "Go to lv",
+		@backten_button = TextButton.new(@app, 
+						callback: ->() { 
+							@app.lr.save_level
+							i = @app.ls.cur_level - 11
+							i = @app.ls.n_levels + i if i < 0
+							@app.lr.level = @app.ls.set(i)
+							return
+						}, 
+						string: "<< -10",
+						width: 2.4 * LE::TILE_SIZE, 
+						height: LE::TILE_SIZE)
+		@fwten_button = TextButton.new(@app, 
+						callback: ->() { 
+							@app.lr.save_level
+							i = (@app.ls.cur_level + 9) % @app.ls.n_levels
+							@app.lr.level = @app.ls.set(i)
+							return
+						},
+						string: "+10 >>",
 						width: 2.4 * LE::TILE_SIZE, 
 						height: LE::TILE_SIZE)
 		init_buttons
@@ -49,15 +65,20 @@ class Sidebar
 		{% for name in %i(entity bg border fixed breakable) %}
 			@{{name.id}}_buttons.map { |btn| btn.draw target, states }
 		{% end %}
-		target.draw(@gotolv_button, states)
+		target.draw(@backten_button, states)
+		target.draw(@fwten_button, states)
 	end
 
 	# Checks if a touch in position `pos` intercepts a Button and:
 	# 	if it's an EntityButton, select it and return it
 	#	if it's a BG/Border button, change BG/Border to level and return nil
 	def touch(pos) : LE::Entity?
-		if @gotolv_button.contains?(pos)
-			@gotolv_button.callback.call
+		if @backten_button.contains?(pos)
+			@backten_button.callback.call
+			return nil
+		end
+		if @fwten_button.contains?(pos)
+			@fwten_button.callback.call
 			return nil
 		end
 		@entity_buttons.each do |btn|
@@ -143,8 +164,10 @@ class Sidebar
 			new_button_if_necessary(:breakable)
 		end
 
-		@gotolv_button.position = SF.vector2f(LE::TILE_SIZE, 
+		@backten_button.position = SF.vector2f(LE::TILE_SIZE, 
 						      @entity_buttons[-1].position.y + 1.2 * LE::TILE_SIZE + 1)
+		@fwten_button.position = SF.vector2f(@backten_button.position.x + @backten_button.bounds.width,
+						     @backten_button.position.y)
 	end
 	
 	class Button
@@ -156,6 +179,10 @@ class Sidebar
 			@bg_rect.outline_thickness = 1
 			@bg_rect.outline_color = SF.color(50, 50, 50, 255)
 			@selected = false
+		end
+
+		def bounds
+			@bg_rect.local_bounds
 		end
 
 		def position

@@ -92,10 +92,11 @@ class Menu
 			begin	
 				app.lr.save_level
 				LE::SaveManager.save(app.ls, app.ls.json_fname)
+				puts "Saved levels in #{app.ls.json_fname}"
 			rescue
 				show_save_dialog(app)
 			end
-			true
+				true
 			}
 		when :save_as
 			->(app : LE::App) { show_save_dialog(app) }

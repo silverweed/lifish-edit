@@ -41,6 +41,15 @@ class LevelSet
 	def [](i)
 		@levels[i]
 	end
+
+	def set(i)
+		@current = i
+		@levels[@current]
+	end
+
+	def n_levels
+		@levels.size
+	end
 	
 	def metadata
 		{

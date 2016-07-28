@@ -60,7 +60,7 @@ end
 
 raise "Invalid levels_json selected!" unless levels_json.size > 0 
 
-app = LE::App.new(levels_json, options[:graphics_dir] as String)
+app = LE::App.new(levels_json, options[:graphics_dir] ? options[:graphics_dir] as String : nil)
 app.verbose = !!options[:verbose]
 lr = app.lr
 window = app.window
