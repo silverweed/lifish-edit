@@ -66,7 +66,7 @@ lr = app.lr
 window = app.window
 ls = app.ls
 lr.load_level
-app.sidebar.refresh_selected
+app.sidebar.refresh
 
 LE::Utils.write_cfg_file("start_dir", File.dirname(levels_json))
 

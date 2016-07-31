@@ -43,7 +43,7 @@ class LevelRenderer
 	def level=(lv)
 		@level = lv
 		load_level
-		@app.sidebar.refresh_selected
+		@app.sidebar.refresh
 	end
 
 	def offset=(o)

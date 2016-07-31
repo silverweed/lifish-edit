@@ -36,7 +36,7 @@ class Sidebar
 		@selected_fixed = nil as Button?
 		@breakable_buttons = [] of CallbackButton
 		@selected_breakable = nil as Button?
-		@backten_button = TextButton.new(@app, 
+		@backten_button = TextButton.new(@app.font, 
 						callback: ->() { 
 							@app.lr.save_level
 							i = @app.ls.cur_level - 11
@@ -47,7 +47,7 @@ class Sidebar
 						string: "<< -10",
 						width: 2.4 * LE::TILE_SIZE, 
 						height: LE::TILE_SIZE)
-		@fwten_button = TextButton.new(@app, 
+		@fwten_button = TextButton.new(@app.font, 
 						callback: ->() { 
 							@app.lr.save_level
 							i = (@app.ls.cur_level + 9) % @app.ls.n_levels
@@ -57,6 +57,7 @@ class Sidebar
 						string: "+10 >>",
 						width: 2.4 * LE::TILE_SIZE, 
 						height: LE::TILE_SIZE)
+		@time_tweaker = TimeTweaker.new(@app)
 		init_buttons
 	end
 
@@ -67,6 +68,7 @@ class Sidebar
 		{% end %}
 		target.draw(@backten_button, states)
 		target.draw(@fwten_button, states)
+		target.draw(@time_tweaker, states)
 	end
 
 	# Checks if a touch in position `pos` intercepts a Button and:
@@ -79,6 +81,9 @@ class Sidebar
 		end
 		if @fwten_button.contains?(pos)
 			@fwten_button.callback.call
+			return nil
+		end
+		if @time_tweaker.touch(pos)
 			return nil
 		end
 		@entity_buttons.each do |btn|
@@ -108,7 +113,12 @@ class Sidebar
 	end
 	
 	# Autoselects bg/border/fixed/breakable buttons according to the current level
-	def refresh_selected
+	def refresh
+		refresh_selected
+		@time_tweaker.refresh
+	end
+
+	private def refresh_selected
 		{% for name in %w(bg border fixed breakable) %}
 			(@selected_{{name.id}} as Button).selected = false if @selected_{{name.id}} != nil
 			@selected_{{name.id}} = nil
@@ -168,6 +178,7 @@ class Sidebar
 						      @entity_buttons[-1].position.y + 1.2 * LE::TILE_SIZE + 1)
 		@fwten_button.position = SF.vector2f(@backten_button.position.x + @backten_button.bounds.width,
 						     @backten_button.position.y)
+		@time_tweaker.position = @bg_buttons[-1].position + SF.vector2f(0, 1.2 * LE::TILE_SIZE + 1)
 	end
 	
 	class Button
@@ -194,7 +205,7 @@ class Sidebar
 		end
 
 		def contains?(pos)
-			@bg_rect.global_bounds.contains pos
+			@bg_rect.global_bounds.contains(pos)
 		end
 
 		def draw(target, states : SF::RenderStates)
@@ -210,16 +221,34 @@ class Sidebar
 	class TextButton < Button
 		getter callback
 
-		def initialize(@app : LE::App, @callback : -> Void, string = "", width = 0, height = 0)
+		def initialize(font, @callback : -> Void, string = "", width = 0, height = 0)
 			super()
-			@text = SF::Text.new(string, @app.font, 14)
+			@text = SF::Text.new(string, font, 14)
 			@text.color = SF::Color::Black
 			b = @text.local_bounds
 			@bg_rect.size = SF.vector2f([width, b.width + 4].max, [height, b.height + 4].max)
-			bs = @bg_rect.size
-			@text.position = @bg_rect.position + SF.vector2f((bs.x - b.width) / 2, (bs.y - b.height) / 2)
+			center_text
 			@bg_rect.fill_color = SF::Color::Blue
 			@text.color = SF::Color::White
+		end
+
+		def fill_color=(col)
+			@bg_rect.fill_color = col
+		end
+
+		def color=(col)
+			@text.color = col
+		end
+		
+		def string=(s)
+			@text.string = s
+			center_text
+		end
+
+		private def center_text
+			tb = @text.local_bounds
+			rb = @bg_rect.size
+			@text.position = @bg_rect.position + SF.vector2f((rb.x - tb.width) / 2, (rb.y - tb.height) / 2)
 		end
 
 		def draw(target, states : SF::RenderStates)
@@ -290,6 +319,73 @@ class Sidebar
 			super
 			@sprite.position = SF.vector2f(pos.x + 0.1 * LE::TILE_SIZE, pos.y + 0.1 * LE::TILE_SIZE)
 		end
+	end
+
+	class TimeTweaker
+		def initialize(@app : LE::App)
+			@back_button = TextButton.new(@app.font, ->() { back }, "<", 
+						      width: 1.2 * LE::TILE_SIZE, height: 1.2 * LE::TILE_SIZE)
+			@back_button.fill_color = SF.color(207, 210, 218)
+			@back_button.color = SF::Color::Black
+			@fw_button = TextButton.new(@app.font, ->() { fw }, ">",
+						      width: 1.2 * LE::TILE_SIZE, height: 1.2 * LE::TILE_SIZE)
+			@fw_button.fill_color = SF.color(207, 210, 218)
+			@fw_button.color = SF::Color::Black
+			@time_displayer = TextButton.new(@app.font, ->() {}, 
+							 width: 2.4 * LE::TILE_SIZE + 1, height: 1.2 * LE::TILE_SIZE)
+			@time_displayer.fill_color = SF::Color::White
+			@time_displayer.color = SF::Color::Black
+			@time = Time::Span.new(0, 0, 0)
+		end
+
+		def refresh
+			@time = Time::Span.new(0, 0, @app.lr.level.time)
+			update_time_string
+		end
+
+		def position=(pos)
+			@back_button.position = pos
+			@time_displayer.position = SF.vector2f(@back_button.position.x +
+							       @back_button.bounds.width - 1, pos.y)
+			@fw_button.position = SF.vector2f(@time_displayer.position.x +
+							  @time_displayer.bounds.width - 1, pos.y)
+		end
+
+		def draw(target, states : SF::RenderStates)
+			target.draw(@back_button, states)
+			target.draw(@time_displayer, states)
+			target.draw(@fw_button, states)
+		end
+
+		def touch(pos)
+			if @back_button.contains?(pos)
+				@back_button.callback.call
+				return true
+			elsif @fw_button.contains?(pos)
+				@fw_button.callback.call
+				return true
+			end
+			false
+		end
+
+		private def update_time_string
+			@time_displayer.string = "#{@time.minutes}m #{@time.seconds}s"
+		end
+
+		private def back
+			@app.lr.level.time -= 1 unless @app.lr.level.time == 0
+			@time = Time::Span.new(0, 0, @app.lr.level.time)
+			update_time_string
+			nil
+		end
+
+		private def fw 
+			@app.lr.level.time += 1
+			@time = Time::Span.new(0, 0, @app.lr.level.time)
+			update_time_string
+			nil
+		end
+
 	end
 end
 
