@@ -7,6 +7,7 @@ class SaveManager
 	# Serializes a `LevelSet` into a JSON string, saving it to `fname`
 	def self.save(levelset : LE::LevelSet, fname : String)
 		fname += ".json" unless fname.ends_with? ".json"
+		levelset.date = Time.now.to_s
 		File.write(fname, levelset.data.to_pretty_json)
 		if levelset.app.verbose
 			STDERR.puts "Saved levelset in #{fname}"

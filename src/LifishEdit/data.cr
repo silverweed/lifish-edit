@@ -10,6 +10,7 @@ class LevelSetData
 		name:       String,
 		author:     { type: String, nilable: true },
 		difficulty: { type: String, nilable: true },
+		created:    { type: String, nilable: true },
 		tracks:     Array(Track),
 		enemies:    Array(Enemy),
 		levels:     Array(Level),

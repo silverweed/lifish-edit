@@ -94,11 +94,16 @@ class LevelSet
 	end
 	
 	def dump
-		puts "LevelSet: #{@name || "Unnamed set"}\n\
-			Author: #{@author || "Unknown"}\n\
-			Difficulty: #{@difficulty || "Unknown"}\n\
-			#Tracks: #{@tracks.size}\n\
-			#Levels: #{@levels.size}"
+		puts "LevelSet: #{@data.name || "Unnamed set"}\n\
+			Author: #{@data.author || "Unknown"}\n\
+			Difficulty: #{@data.difficulty || "Unknown"}\n\
+			Created: #{@data.created || "Unknown"}\n\
+			#Tracks: #{@data.tracks.size}\n\
+			#Levels: #{@data.levels.size}"
+	end
+
+	def date=(date)
+		@data.created = date
 	end
 end
 
