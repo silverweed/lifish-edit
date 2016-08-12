@@ -138,7 +138,14 @@ class Sidebar
 			pos = SF.vector2f(LE::TILE_SIZE, 2 * LE::TILE_SIZE)
 			i = 0
 			LE::ENTITIES.each_value do |v|
-				btn = EntityButton.new(@app, v)
+				next if v == :empty
+
+				btn = 
+					if v == :boss
+						BossButton.new(@app, v)
+					else 
+						EntityButton.new(@app, v)
+					end
 				@entity_buttons << btn
 				btn.position = pos
 				if i % 2 == 0
@@ -281,6 +288,14 @@ class Sidebar
 		def position=(pos)
 			super
 			@entity.position = SF.vector2f(pos.x + 0.1 * LE::TILE_SIZE, pos.y + 0.1 * LE::TILE_SIZE)
+		end
+	end
+	
+	class BossButton < EntityButton
+		def initialize(@app : LE::App, entity_sym)
+			super
+			@entity.sprite.texture_rect = SF.int_rect(0, 0, 3 * LE::TILE_SIZE, 3 * LE::TILE_SIZE)
+			@entity.sprite.scale(SF.vector2f(1.0 / 3, 1.0 / 3))
 		end
 	end
 

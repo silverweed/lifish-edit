@@ -6,6 +6,7 @@ ENTITIES = {
 	'0' => :empty,
 	'1' => :fixed,
 	'2' => :breakable,
+	'4' => :transparent,
 	'3' => :coin,
 	'X' => :player1,
 	'Y' => :player2,
@@ -21,7 +22,6 @@ ENTITIES = {
 	'I' => :enemy9,
 	'J' => :enemy10,
 	'*' => :boss,
-	'4' => :transparent
 }
 
 # Gets entity value from its key
