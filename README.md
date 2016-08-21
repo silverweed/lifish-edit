@@ -2,6 +2,10 @@
 LifishEdit is a small graphical level editor for [Lifish](https://github.com/silverweed/lifish).
 It's currently work-in-progress and not fully working yet.
 
+Currently working on:  
+- Linux  
+- MacOS 
+
 ## Installation
 
 Building:
@@ -16,6 +20,13 @@ Running:
 
 ```
 ./run.sh [lifish directory]
+```
+
+On Mac, you may need to specify the location of CSFML if it isn't in `rpath` already. 
+In this case, use:
+
+```
+LD_LIBRARY_PATH=/path/to/CSFML ./run.sh [opts]
 ```
 
 ## Development
