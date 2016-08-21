@@ -9,3 +9,4 @@ license: MIT
 dependencies:
   crsfml:
     github: blaxpirit/crsfml
+    version: 2.3.7
