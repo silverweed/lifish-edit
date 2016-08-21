@@ -80,6 +80,31 @@ class LE::App
 	end
 end
 
+def highlight_tile(window, app)
+	touched = app.mouse_utils.get_touched_tile
+	hlrect = SF::RectangleShape.new(SF.vector2f(LE::TILE_SIZE, LE::TILE_SIZE))
+	hlrect.fill_color = SF.color(200, 200, 200, 70)
+	hlrect.outline_color = SF.color(0, 0, 0, 255)
+	hlrect.outline_thickness = 2
+	draw = false
+
+	if touched
+		x, y = touched as Tuple(Int32, Int32)
+		hlrect.position = SF.vector2f((x + 1) * LE::TILE_SIZE + LE::SIDE_PANEL_WIDTH,
+					      (y + 1) * LE::TILE_SIZE + LE::MENU_HEIGHT)
+		draw = true
+	else
+		btn = app.sidebar.get_touched_button(SF::Mouse.get_position(window))
+		if btn
+			hlrect.position = btn
+			hlrect.size = SF.vector2f(1.2 * LE::TILE_SIZE, 1.2 * LE::TILE_SIZE)
+			draw = true
+		end
+	end
+
+	window.draw(hlrect) if draw
+end
+
 while window.open?
 	while event = window.poll_event
 		case event.type
@@ -144,5 +169,6 @@ while window.open?
 	end
 	window.clear
 	app.draw
+	highlight_tile(window, app)
 	window.display
 end

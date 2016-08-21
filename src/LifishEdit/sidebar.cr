@@ -71,6 +71,22 @@ class Sidebar
 		target.draw(@time_tweaker, states)
 	end
 
+	def get_touched_button(pos) : SF::Vector2(Float32)?
+		@entity_buttons.each do |btn|
+			if btn.contains?(pos)
+				return btn.position
+			end
+		end
+		{% for name in %w(bg border fixed breakable) %}
+			@{{name.id}}_buttons.each do |btn|
+				if btn.contains?(pos)
+					return btn.position	
+				end
+			end
+		{% end %}
+		nil
+	end
+
 	# Checks if a touch in position `pos` intercepts a Button and:
 	# 	if it's an EntityButton, select it and return it
 	#	if it's a BG/Border button, change BG/Border to level and return nil
