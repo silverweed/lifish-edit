@@ -1,5 +1,9 @@
 # Bridge for libnfd.so
-@[Link(ldflags: "-lnfd `pkg-config --libs gtk+-3.0`")]
+ifdef linux
+@[Link(ldflags: "-lnfd-linux `pkg-config --libs gtk+-3.0`")]
+elsif darwin
+@[Link(ldflags: "-lnfd-mac")]
+end
 lib LibNFD
 	enum Result
 		ERROR
