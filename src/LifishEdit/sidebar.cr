@@ -16,6 +16,24 @@ class Sidebar
 				STDERR.puts("Setting #{{{name}}} to #{ids.{{name.id}}}") if @app.verbose
 				@app.lr.save_level
 				@app.lr.set_{{name.id}}(ids.{{name.id}})	
+				if {{name}} == :fixed || {{name}} == :breakable
+					b = @entity_buttons.find { |bt| bt.entity.type == {{name}} } 
+					if b != nil
+						eb = b as EntityButton
+						if {{name}} == :fixed
+							eb.entity.sprite.texture_rect = SF.int_rect(
+								LE::TILE_SIZE * (ids.{{name.id}} - 1),
+								eb.entity.sprite.texture_rect.top, 
+								LE::TILE_SIZE, LE::TILE_SIZE)
+						else
+							eb.entity.sprite.texture_rect = SF.int_rect(
+								eb.entity.sprite.texture_rect.left, 
+								LE::TILE_SIZE * (ids.{{name.id}} - 1),
+								LE::TILE_SIZE, LE::TILE_SIZE)
+						end
+					end
+				end
+				return
 			})
 			@{{name.id}}_buttons << btn
 			btn.position = pos[{{name}}]
