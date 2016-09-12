@@ -33,7 +33,13 @@ class Entity
 			@texture = SF::Texture.new(0, 0)
 		end
 		
-		rect = SF.int_rect(0, 0, TILE_SIZE, TILE_SIZE)
+		case @type
+		when :boss
+			rect = SF.int_rect(0, 0, 3 * TILE_SIZE, 3 * TILE_SIZE)
+		else
+			rect = SF.int_rect(0, 0, TILE_SIZE, TILE_SIZE)
+		end
+
 		case @type
 		when :fixed
 			rect.left = TILE_SIZE * (tileIDs.fixed.to_i64 - 1)
