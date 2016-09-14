@@ -31,11 +31,13 @@ class Menu
 
 	def initialize(@font : SF::Font, @w : Int32 = LE::WIN_WIDTH, @h : Int32 = LE::MENU_HEIGHT)
 		@rect = SF::RectangleShape.new(SF.vector2f @w, @h)
-		@color = SF.color(0, 0, 206) as SF::Color
+		@color = SF.color(0, 0, 206).as SF::Color
 		@rect.fill_color = @color
-		@buttons = create_buttons as Array(ButtonComponents)
+		@buttons = create_buttons.as Array(ButtonComponents)
 	end
 	
+	include SF::Drawable
+
 	def draw(target, states : SF::RenderStates)
 		target.draw(@rect, states)
 		@buttons.each do |btn|
@@ -46,7 +48,7 @@ class Menu
 
 	def touch(pos) : MenuCallback?
 		@buttons.each do |btn|
-			return btn[3] if btn[1].global_bounds.contains(pos)
+			return btn[3] if btn[1].global_bounds.contains?(pos)
 		end
 		nil
 	end
@@ -57,7 +59,7 @@ class Menu
 		BUTTON_NAMES.each do |b|
 			width = 100 # @w / BUTTON_NAMES.size
 			if b.size > 2
-				width = (b as Tuple(Symbol, String, Int32))[2]
+				width = (b.as Tuple(Symbol, String, Int32))[2]
 			end
 			# The rectangle intercepting mouse clicks
 			rect = SF::RectangleShape.new(SF.vector2f(width, @h))

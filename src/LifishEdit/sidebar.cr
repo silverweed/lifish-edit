@@ -19,7 +19,7 @@ class Sidebar
 				if {{name}} == :fixed || {{name}} == :breakable
 					b = @entity_buttons.find { |bt| bt.entity.type == {{name}} } 
 					if b != nil
-						eb = b as EntityButton
+						eb = b.as EntityButton
 						if {{name}} == :fixed
 							eb.entity.sprite.texture_rect = SF.int_rect(
 								LE::TILE_SIZE * (ids.{{name.id}} - 1),
@@ -45,15 +45,15 @@ class Sidebar
 		@rect = SF::RectangleShape.new(SF.vector2f LE::SIDE_PANEL_WIDTH, LE::WIN_HEIGHT)
 		@rect.fill_color = SF.color(217, 217, 217)
 		@entity_buttons = [] of EntityButton
-		@selected_button = nil as EntityButton?
+		@selected_button = nil.as EntityButton?
 		@bg_buttons = [] of CallbackButton
-		@selected_bg = nil as Button?
+		@selected_bg = nil.as Button?
 		@border_buttons = [] of CallbackButton
-		@selected_border = nil as Button?
+		@selected_border = nil.as Button?
 		@fixed_buttons = [] of CallbackButton
-		@selected_fixed = nil as Button?
+		@selected_fixed = nil.as Button?
 		@breakable_buttons = [] of CallbackButton
-		@selected_breakable = nil as Button?
+		@selected_breakable = nil.as Button?
 		@backten_button = TextButton.new(@app.font, 
 						callback: ->() { 
 							@app.lr.save_level
@@ -78,6 +78,8 @@ class Sidebar
 		@time_tweaker = TimeTweaker.new(@app)
 		init_buttons
 	end
+
+	include SF::Drawable 
 
 	def draw(target, states : SF::RenderStates)
 		target.draw(@rect, states)
@@ -124,7 +126,7 @@ class Sidebar
 			if btn.contains?(pos)
 				btn.selected = true
 				if @selected_button != nil
-					(@selected_button as Button).selected = false 
+					(@selected_button.as Button).selected = false 
 				end
 				return (@selected_button = btn).entity
 			end
@@ -134,7 +136,7 @@ class Sidebar
 				if btn.contains?(pos)
 					STDERR.puts "Callback #{{{name}}}[#{btn.id}]" if @app.verbose
 					if @selected_{{name.id}} != nil
-						(@selected_{{name.id}} as Button).selected = false
+						(@selected_{{name.id}}.as Button).selected = false
 					end	
 					btn.callback.call
 					btn.selected = true
@@ -154,7 +156,7 @@ class Sidebar
 
 	private def refresh_selected
 		{% for name in %w(bg border fixed breakable) %}
-			(@selected_{{name.id}} as Button).selected = false if @selected_{{name.id}} != nil
+			(@selected_{{name.id}}.as Button).selected = false if @selected_{{name.id}} != nil
 			@selected_{{name.id}} = nil
 			@{{name.id}}_buttons.each do |btn|
 				if @app.lr.level.tileIDs.{{name.id}} == btn.id
@@ -186,7 +188,7 @@ class Sidebar
 					pos.x += 1.2 * LE::TILE_SIZE + 1
 				else
 					pos.y += 1.2 * LE::TILE_SIZE + 1
-					pos.x = LE::TILE_SIZE
+					pos.x = LE::TILE_SIZE.to_f32
 				end
 				i += 1
 			end
@@ -246,8 +248,10 @@ class Sidebar
 		end
 
 		def contains?(pos)
-			@bg_rect.global_bounds.contains(pos)
+			@bg_rect.global_bounds.contains?(pos)
 		end
+
+		include SF::Drawable 
 
 		def draw(target, states : SF::RenderStates)
 			if @selected
@@ -348,7 +352,7 @@ class Sidebar
 					@app.cache.texture("bg#{id}.png")
 				else
 					@app.cache.texture("#{type}.png")
-				end as SF::Texture
+				end.as SF::Texture
 				@sprite.texture = texture
 				@sprite.texture_rect = SF.int_rect(type == :fixed ? (id-1) * LE::TILE_SIZE : 0,
 								   type == :bg || type == :fixed ?
@@ -399,6 +403,8 @@ class Sidebar
 			@fw_button.position = SF.vector2f(@time_displayer.position.x +
 							  @time_displayer.bounds.width - 1, pos.y)
 		end
+
+		include SF::Drawable 
 
 		def draw(target, states : SF::RenderStates)
 			target.draw(@back_button, states)

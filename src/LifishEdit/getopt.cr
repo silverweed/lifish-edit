@@ -48,7 +48,7 @@ macro getopt(optlist)
 					raise "Invalid type for option #{ARGV[%i - 1]} \
 					       (#{typeof(ARGV[%i - 1])} instead of #{{{opt[2]}}})"
 				end
-				%options[{{opt[1]}}] = ARGV[%i] as {{opt[2]}}
+				%options[{{opt[1]}}] = ARGV[%i].as {{opt[2]}}
 				{% end %}
 			{% end %}
 			else

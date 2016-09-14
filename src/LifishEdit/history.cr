@@ -29,7 +29,7 @@ class History
 
 	private def load_state(state)
 		return if state == nil
-		lvnum, tilemap = state as Tuple(Int32, String)
+		lvnum, tilemap = state.as Tuple(Int32, String)
 		@app.ls[lvnum - 1].tilemap = tilemap
 		@app.lr.level = @app.ls[lvnum - 1]
 	end

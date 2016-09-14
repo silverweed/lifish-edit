@@ -36,7 +36,7 @@ end
 
 help if options[:help]
 
-args = options[:args] as Array(String)
+args = options[:args].as Array(String)
 cfg = LE::Utils.read_cfg_file
 
 STDERR.puts "options: #{options}; args: #{args}"
@@ -60,7 +60,7 @@ end
 
 raise "Invalid levels_json selected!" unless levels_json.size > 0 
 
-app = LE::App.new(levels_json, options[:graphics_dir] ? options[:graphics_dir] as String : nil)
+app = LE::App.new(levels_json, options[:graphics_dir] ? options[:graphics_dir].as String : nil)
 app.verbose = !!options[:verbose]
 lr = app.lr
 window = app.window
@@ -75,7 +75,7 @@ class LE::App
 		tile = mouse_utils.get_touched_tile
 		if @selected_entity != nil && tile.is_a? Tuple
 			history.save
-			lr.place_entity(tile, @selected_entity as LE::Entity)
+			lr.place_entity(tile, @selected_entity.as LE::Entity)
 		end
 	end
 end
@@ -89,7 +89,7 @@ def highlight_tile(window, app)
 	draw = false
 
 	if touched
-		x, y = touched as Tuple(Int32, Int32)
+		x, y = touched.as Tuple(Int32, Int32)
 		hlrect.position = SF.vector2f((x + 1) * LE::TILE_SIZE + LE::SIDE_PANEL_WIDTH,
 					      (y + 1) * LE::TILE_SIZE + LE::MENU_HEIGHT)
 		draw = true
@@ -107,27 +107,27 @@ end
 
 while window.open?
 	while event = window.poll_event
-		case event.type
+		case event
 		when SF::Event::Closed
 			window.close
 
 		when SF::Event::KeyPressed
-			case event.key.code
-			when SF::KeyCode::Add
+			case event.code
+			when SF::Keyboard::Add
 				lr.save_level
 				lr.level = ls.next
-			when SF::KeyCode::Subtract
+			when SF::Keyboard::Subtract
 				lr.save_level
 				lr.level = ls.prev
-			when SF::KeyCode::Z
-				if SF::Keyboard.is_key_pressed(SF::KeyCode::LControl)
+			when SF::Keyboard::Z
+				if SF::Keyboard.key_pressed?(SF::Keyboard::LControl)
 					app.history.step_back
 				end
-			when SF::KeyCode::Y
-				if SF::Keyboard.is_key_pressed(SF::KeyCode::LControl)
+			when SF::Keyboard::Y
+				if SF::Keyboard.key_pressed?(SF::Keyboard::LControl)
 					app.history.step_forward
 				end
-			when SF::KeyCode::F
+			when SF::Keyboard::F
 				app.show_fps = !app.show_fps
 			end
 
@@ -141,10 +141,10 @@ while window.open?
 			end
 
 			if touched.is_a? LE::MenuCallback
-				callback = touched as LE::MenuCallback
+				callback = touched.as LE::MenuCallback
 				exit 0 unless callback.call(app)
 			else
-				case event.mouse_button.button
+				case event.button
 				when SF::Mouse::Left
 					app.place_entity
 				when SF::Mouse::Right
@@ -156,9 +156,9 @@ while window.open?
 			end
 
 		when SF::Event::MouseMoved
-			if SF::Mouse.is_button_pressed(SF::Mouse::Left)
+			if SF::Mouse.button_pressed?(SF::Mouse::Left)
 				app.place_entity
-			elsif SF::Mouse.is_button_pressed(SF::Mouse::Right)
+			elsif SF::Mouse.button_pressed?(SF::Mouse::Right)
 				touched = app.mouse_utils.get_touched
 				if touched.is_a? LE::Entity
 					app.history.save
@@ -168,7 +168,7 @@ while window.open?
 		end
 	end
 	window.clear
-	app.draw
+	window.draw app
 	highlight_tile(window, app)
 	window.display
 end

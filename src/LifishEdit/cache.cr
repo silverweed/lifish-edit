@@ -12,7 +12,7 @@ class Cache
 		return @textures[key] if @textures.has_key? key
 		begin
 			STDERR.puts "Loading #{key}"
-			return @textures[key] = SF::Texture.from_file(LE::Utils.get_graphic(key)) as SF::Texture
+			return @textures[key] = SF::Texture.from_file(LE::Utils.get_graphic(key)).as SF::Texture
 		rescue e
 			STDERR.puts "Error loading texture #{key}: #{e}"
 			return nil

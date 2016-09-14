@@ -14,8 +14,8 @@ class LevelRenderer
 		@bg = SF::Sprite.new
 		@bg.position = SF.vector2f(LE::SIDE_PANEL_WIDTH + LE::TILE_SIZE, 
 					   LE::MENU_HEIGHT + LE::TILE_SIZE)
-		@bg_texture = nil as SF::Texture?
-		@border_texture = nil as SF::Texture?
+		@bg_texture = nil.as SF::Texture?
+		@border_texture = nil.as SF::Texture?
 		@borders = {
 			    :upper => SF::Sprite.new,
 			    :upper_left => SF::Sprite.new,
@@ -33,7 +33,7 @@ class LevelRenderer
 						   LE::MENU_HEIGHT)
 		@level_text.color = SF::Color::White
 		@level_text.style = SF::Text::Bold
-		@level_text_shadow = SF::Text.new(@level_text.string, @level_text.font as SF::Font,
+		@level_text_shadow = SF::Text.new(@level_text.string, @level_text.font.as SF::Font,
 						  @level_text.character_size)
 		@level_text_shadow.position = @level_text.position + SF.vector2f(2, 2)
 		@level_text_shadow.style = SF::Text::Bold 
@@ -49,6 +49,8 @@ class LevelRenderer
 	def offset=(o)
 		@offset = SF.vector2f(LE::TILE_SIZE + o.x, LE::TILE_SIZE + o.y)
 	end
+
+	include SF::Drawable
 
 	def draw(target, states : SF::RenderStates)
 		# Background
@@ -143,13 +145,13 @@ class LevelRenderer
 		# Load background and border textures
 		begin
 			@bg_texture = @app.cache.texture("bg#{@level.tileIDs.bg}.png")
-			@bg.texture = @bg_texture as SF::Texture
+			@bg.texture = @bg_texture.as SF::Texture
 			@bg.texture_rect = SF.int_rect(0, 0, LE::TILE_SIZE * LE::LV_WIDTH,
 						       LE::TILE_SIZE * LE::LV_HEIGHT)
-			(@bg.texture as SF::Texture).repeated = true
+			(@bg.texture.as SF::Texture).repeated = true
 
 			@border_texture = @app.cache.texture("border.png")
-			@borders.each_value { |b| b.texture = @border_texture as SF::Texture }
+			@borders.each_value { |b| b.texture = @border_texture.as SF::Texture }
 			b = (@level.tileIDs.border - 1) * LE::TILE_SIZE
 			@borders[:upper].texture_rect = SF.int_rect(0, b, LE::TILE_SIZE, LE::TILE_SIZE)
 			@borders[:lower].texture_rect = SF.int_rect(0, b + LE::TILE_SIZE, 
@@ -186,7 +188,7 @@ class LevelRenderer
 			return
 		end
 		idx = LE::Utils.tile_to_idx(tile)
-		unless @tiles[idx].is_a?(LE::Entity) && (@tiles[idx] as LE::Entity).type == entity.type
+		unless @tiles[idx].is_a?(LE::Entity) && (@tiles[idx].as LE::Entity).type == entity.type
 			@tiles[idx] = LE::Entity.new(@app, entity.type)
 		end
 	end

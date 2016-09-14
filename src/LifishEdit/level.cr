@@ -13,10 +13,10 @@ class Level
 	# Initializes this level with the parameters given by
 	# the hash *description*. 
 	def initialize(description : LE::Data::Level, @lvnum : UInt32)
-		@time    = description.time as Int32
-		@music   = description.music as UInt16
-		@tileIDs = description.tileIDs as LE::Data::TileIDs 
-		@orig_tilemap = @tilemap = description.tilemap as String
+		@time    = description.time.as Int32
+		@music   = description.music.as UInt16
+		@tileIDs = description.tileIDs.as LE::Data::TileIDs 
+		@orig_tilemap = @tilemap = description.tilemap.as String
 	end
 
 	# Serializes this level into JSON

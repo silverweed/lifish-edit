@@ -27,7 +27,7 @@ class Entity
 			end
 		end
 		if texture.is_a? SF::Texture
-			@texture = texture as SF::Texture
+			@texture = texture.as SF::Texture
 			@sprite.texture = @texture 
 		else
 			@texture = SF::Texture.new(0, 0)
@@ -48,6 +48,8 @@ class Entity
 		end
 		@sprite.texture_rect = rect
 	end
+
+	include SF::Drawable
 
 	def draw(target, states : SF::RenderStates)
 		target.draw(@sprite, states)

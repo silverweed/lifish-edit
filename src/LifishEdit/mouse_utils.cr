@@ -1,5 +1,5 @@
 require "./consts"
-require "crsfml/window_obj"
+require "crsfml/window"
 
 module LE
 

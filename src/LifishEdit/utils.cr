@@ -6,7 +6,7 @@ module LE
 		CFG_FILE = ".lifishedit.cfg"
 
 		macro get_graphic(name)
-			"#{(@app as LE::App).graphics_dir}/#{{{name}}}"
+			"#{(@app.as LE::App).graphics_dir}/#{{{name}}}"
 		end
 
 		macro tile_to_idx(tile)
