@@ -18,16 +18,15 @@ class Sidebar
 				@app.lr.set_{{name.id}}(ids.{{name.id}})	
 				if {{name}} == :fixed || {{name}} == :breakable
 					b = @entity_buttons.find { |bt| bt.entity.type == {{name}} } 
-					if b != nil
-						eb = b.as EntityButton
+					if b.is_a? EntityButton
 						if {{name}} == :fixed
-							eb.entity.sprite.texture_rect = SF.int_rect(
+							b.entity.sprite.texture_rect = SF.int_rect(
 								LE::TILE_SIZE * (ids.{{name.id}} - 1),
-								eb.entity.sprite.texture_rect.top, 
+								b.entity.sprite.texture_rect.top, 
 								LE::TILE_SIZE, LE::TILE_SIZE)
 						else
-							eb.entity.sprite.texture_rect = SF.int_rect(
-								eb.entity.sprite.texture_rect.left, 
+							b.entity.sprite.texture_rect = SF.int_rect(
+								b.entity.sprite.texture_rect.left, 
 								LE::TILE_SIZE * (ids.{{name.id}} - 1),
 								LE::TILE_SIZE, LE::TILE_SIZE)
 						end
@@ -41,19 +40,20 @@ class Sidebar
 		end
 	end
 
+	@selected_button : EntityButton?
+	@selected_bg : Button?
+	@selected_border : Button?
+	@selected_fixed : Button?
+	@selected_breakable : Button ?
+
 	def initialize(@app : LE::App)
 		@rect = SF::RectangleShape.new(SF.vector2f LE::SIDE_PANEL_WIDTH, LE::WIN_HEIGHT)
 		@rect.fill_color = SF.color(217, 217, 217)
 		@entity_buttons = [] of EntityButton
-		@selected_button = nil.as EntityButton?
 		@bg_buttons = [] of CallbackButton
-		@selected_bg = nil.as Button?
 		@border_buttons = [] of CallbackButton
-		@selected_border = nil.as Button?
 		@fixed_buttons = [] of CallbackButton
-		@selected_fixed = nil.as Button?
 		@breakable_buttons = [] of CallbackButton
-		@selected_breakable = nil.as Button?
 		@backten_button = TextButton.new(@app.font, 
 						callback: ->() { 
 							@app.lr.save_level
@@ -126,7 +126,7 @@ class Sidebar
 			if btn.contains?(pos)
 				btn.selected = true
 				if @selected_button != nil
-					(@selected_button.as Button).selected = false 
+					@selected_button.not_nil!.selected = false 
 				end
 				return (@selected_button = btn).entity
 			end
@@ -136,7 +136,7 @@ class Sidebar
 				if btn.contains?(pos)
 					STDERR.puts "Callback #{{{name}}}[#{btn.id}]" if @app.verbose
 					if @selected_{{name.id}} != nil
-						(@selected_{{name.id}}.as Button).selected = false
+						@selected_{{name.id}}.not_nil!.selected = false
 					end	
 					btn.callback.call
 					btn.selected = true
@@ -156,7 +156,7 @@ class Sidebar
 
 	private def refresh_selected
 		{% for name in %w(bg border fixed breakable) %}
-			(@selected_{{name.id}}.as Button).selected = false if @selected_{{name.id}} != nil
+			@selected_{{name.id}}.not_nil!.selected = false if @selected_{{name.id}} != nil
 			@selected_{{name.id}} = nil
 			@{{name.id}}_buttons.each do |btn|
 				if @app.lr.level.tileIDs.{{name.id}} == btn.id

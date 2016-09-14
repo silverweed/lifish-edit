@@ -27,7 +27,7 @@ class Entity
 			end
 		end
 		if texture.is_a? SF::Texture
-			@texture = texture.as SF::Texture
+			@texture = texture
 			@sprite.texture = @texture 
 		else
 			@texture = SF::Texture.new(0, 0)

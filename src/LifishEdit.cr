@@ -75,7 +75,7 @@ class LE::App
 		tile = mouse_utils.get_touched_tile
 		if @selected_entity != nil && tile.is_a? Tuple
 			history.save
-			lr.place_entity(tile, @selected_entity.as LE::Entity)
+			lr.place_entity(tile, @selected_entity.not_nil!)
 		end
 	end
 end
@@ -141,7 +141,7 @@ while window.open?
 			end
 
 			if touched.is_a? LE::MenuCallback
-				callback = touched.as LE::MenuCallback
+				callback = touched
 				exit 0 unless callback.call(app)
 			else
 				case event.button

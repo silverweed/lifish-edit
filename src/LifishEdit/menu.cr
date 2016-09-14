@@ -31,7 +31,7 @@ class Menu
 
 	def initialize(@font : SF::Font, @w : Int32 = LE::WIN_WIDTH, @h : Int32 = LE::MENU_HEIGHT)
 		@rect = SF::RectangleShape.new(SF.vector2f @w, @h)
-		@color = SF.color(0, 0, 206).as SF::Color
+		@color = SF::Color.new(0, 0, 206)
 		@rect.fill_color = @color
 		@buttons = create_buttons.as Array(ButtonComponents)
 	end
