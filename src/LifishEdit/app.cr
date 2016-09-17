@@ -72,7 +72,7 @@ class App
 	end
 
 	class FPSCounter
-		INTERVAL = 1000 # ms
+		INTERVAL = SF.seconds(1)
 
 		property active
 
@@ -92,7 +92,7 @@ class App
 			return unless @active
 			@updates += 1
 			@time += @clock.restart.as_seconds
-			if @update_clock.elapsed_time.as_milliseconds >= INTERVAL
+			if @update_clock.elapsed_time >= INTERVAL
 				@text.string = "#{(@updates / @time).round} fps"
 				@updates = 0
 				@time = 0
