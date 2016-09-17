@@ -30,7 +30,7 @@ class Entity
 			@texture = texture
 			@sprite.texture = @texture 
 		else
-			@texture = SF::Texture.new(0, 0)
+			@texture = SF::Texture.new(TILE_SIZE, TILE_SIZE)
 		end
 		
 		case @type
