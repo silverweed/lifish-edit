@@ -25,7 +25,7 @@ class App
 	setter ls
 
 	property selected_entity
-	property verbose
+	property? verbose
 
 	@selected_entity : LE::Entity?
 

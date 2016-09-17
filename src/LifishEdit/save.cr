@@ -9,7 +9,7 @@ class SaveManager
 		fname += ".json" unless fname.ends_with? ".json"
 		levelset.date = Time.now.to_s
 		File.write(fname, levelset.data.to_pretty_json)
-		if levelset.app.verbose
+		if levelset.app.verbose?
 			STDERR.puts "Saved levelset in #{fname}"
 		end
 	end

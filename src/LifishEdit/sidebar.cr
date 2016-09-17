@@ -13,7 +13,7 @@ class Sidebar
 			
 			#STDERR.puts "Constructing button #{{{name}}}[#{ids.{{name.id}}}]" 
 			btn = CallbackButton.new(@app, {{name}}, ids.{{name.id}}, ->() {
-				STDERR.puts("Setting #{{{name}}} to #{ids.{{name.id}}}") if @app.verbose
+				STDERR.puts("Setting #{{{name}}} to #{ids.{{name.id}}}") if @app.verbose?
 				@app.lr.save_level
 				@app.lr.set_{{name.id}}(ids.{{name.id}})	
 				if {{name}} == :fixed || {{name}} == :breakable
@@ -134,7 +134,7 @@ class Sidebar
 		{% for name in %w(bg border fixed breakable) %}
 			@{{name.id}}_buttons.each do |btn|
 				if btn.contains?(pos)
-					STDERR.puts "Callback #{{{name}}}[#{btn.id}]" if @app.verbose
+					STDERR.puts "Callback #{{{name}}}[#{btn.id}]" if @app.verbose?
 					if @selected_{{name.id}} != nil
 						@selected_{{name.id}}.not_nil!.selected = false
 					end	

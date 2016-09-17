@@ -135,7 +135,7 @@ while window.open?
 		when SF::Event::MouseButtonPressed
 			touched = app.mouse_utils.get_touched 
 			
-			if app.verbose
+			if app.verbose?
 				puts "Mouse in #{SF::Mouse.get_position window};" +
 					" tile = #{app.mouse_utils.get_touched_tile};" +
 					" touched = #{touched}" 
