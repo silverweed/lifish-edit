@@ -6,6 +6,8 @@ Currently working on:
 - Linux  
 - MacOS 
 
+**TODO**: fix walls; change RClick to something else on Mac.
+
 ## Installation
 
 Building:
