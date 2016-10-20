@@ -9,7 +9,7 @@ class MouseUtils
 	end
 
 	def get_touched : (LE::Entity|MenuCallback)?
-		x, y = SF::Mouse.get_position(@app.window)
+		x, y = @app.window.map_pixel_to_coords(SF::Mouse.get_position(@app.window))
 
 		if y <= LE::MENU_HEIGHT
 			@app.menu.touch(SF.vector2f(x, y))
@@ -30,8 +30,9 @@ class MouseUtils
 
 	# Gets tile index from mouse position
 	def get_touched_tile : Tuple(Int32, Int32)?
-		x, y = SF::Mouse.get_position(@app.window)
-
+		x, y = @app.window.map_pixel_to_coords(SF::Mouse.get_position(@app.window))
+		
+		STDERR.puts "#{x}, #{y}"
 		# Get tile index from mouse position
 		tx = ((x.to_f32 - LE::SIDE_PANEL_WIDTH - LE::TILE_SIZE) / LE::TILE_SIZE).floor.to_i32
 		return nil if tx < 0 || tx >= LE::LV_WIDTH

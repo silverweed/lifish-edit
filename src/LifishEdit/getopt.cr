@@ -53,7 +53,7 @@ macro getopt(optlist)
 			{% end %}
 			else
 				if ARGV[%i][0] == '-'
-					raise "Unknown option: #{ARGV[%i]}"
+					STDERR.puts("Ignoring unknown option: #{ARGV[%i]}")
 				else
 					%args << ARGV[%i]
 				end

@@ -34,8 +34,7 @@ class App
 		@lifish_dir = File.dirname(levels_json)
 		@graphics_dir = graphics_dir || "#{@lifish_dir}/assets/graphics"
 		@ls = LE::LevelSet.new(self, levels_json)
-		@window = SF::RenderWindow.new(SF::VideoMode.new(LE::WIN_WIDTH, LE::WIN_HEIGHT), "Lifish Edit", 
-					       SF::Style::Default & ~SF::Style::Resize)
+		@window = SF::RenderWindow.new(SF::VideoMode.new(LE::WIN_WIDTH, LE::WIN_HEIGHT), "Lifish Edit")
 		@font = SF::Font.from_file("#{@lifish_dir}/assets/fonts/pf_tempesta_seven.ttf")
 		@menu = LE::Menu.new(font.not_nil!)
 		@cache = LE::Cache.new(self)

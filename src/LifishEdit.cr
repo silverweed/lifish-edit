@@ -95,7 +95,7 @@ def highlight_tile(window, app)
 					      (y + 1) * LE::TILE_SIZE + LE::MENU_HEIGHT)
 		draw = true
 	else
-		btn = app.sidebar.get_touched_button(SF::Mouse.get_position(window))
+		btn = app.sidebar.get_touched_button(window.map_pixel_to_coords(SF::Mouse.get_position(window)))
 		if btn
 			hlrect.position = btn
 			hlrect.size = SF.vector2f(1.2 * LE::TILE_SIZE, 1.2 * LE::TILE_SIZE)
@@ -106,11 +106,32 @@ def highlight_tile(window, app)
 	window.draw(hlrect) if draw
 end
 
+def keep_ratio(size, designedsize)
+	viewport = SF::FloatRect.new(0_f32, 0_f32, 1_f32, 1_f32)
+	screenw = size.width / designedsize[0].to_f32
+	screenh = size.height / designedsize[1].to_f32
+
+	if screenw > screenh
+		viewport.width = screenh / screenw
+		viewport.left = (1 - viewport.width) / 2_f32
+	elsif screenh > screenw
+		viewport.height = screenw / screenh
+		viewport.top = (1 - viewport.height) / 2_f32
+	end
+
+	view = SF::View.new(SF::FloatRect.new(0_f32, 0_f32, designedsize[0].to_f32, designedsize[1].to_f32))
+	view.viewport = viewport
+	return view
+end
+
 while window.open?
 	while event = window.poll_event
 		case event
 		when SF::Event::Closed
 			window.close
+		
+		when SF::Event::Resized
+			window.view = keep_ratio(event, {LE::WIN_WIDTH, LE::WIN_HEIGHT})
 
 		when SF::Event::KeyPressed
 			case event.code
