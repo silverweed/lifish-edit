@@ -8,8 +8,15 @@ class MouseUtils
 	def initialize(@app : LE::App)
 	end
 
-	def get_touched : (LE::Entity|MenuCallback)?
-		x, y = @app.window.map_pixel_to_coords(SF::Mouse.get_position(@app.window))
+	macro get_mouse_xy
+		@app.window.map_pixel_to_coords(SF::Mouse.get_position(@app.window))
+	end
+
+	# Returns whichever object the mouse is currently hovering on.
+	# That may be either an Entity (if the mouse is over the level),
+	# a MenuCallback (if it's over the menu), or nil.
+	def touch : (LE::Entity|MenuCallback)?
+		x, y = get_mouse_xy
 
 		if y <= LE::MENU_HEIGHT
 			@app.menu.touch(SF.vector2f(x, y))
@@ -21,6 +28,18 @@ class MouseUtils
 		end
 	end
 
+	# Returns :back, :fw or nil depending of which the mouse is hovering.
+	def get_touching_time_tweaker : Symbol?
+		x, y = get_mouse_xy
+		case @app.sidebar.get_touched_button(SF.vector2f(x, y))
+		when @app.sidebar.time_tweaker.back_button
+			return :back
+		when @app.sidebar.time_tweaker.fw_button 
+			return :fw
+		end
+		nil
+	end
+
 	def get_touched_entity : LE::Entity?
 		tile = get_touched_tile
 		return nil unless tile.is_a? Tuple
@@ -30,7 +49,7 @@ class MouseUtils
 
 	# Gets tile index from mouse position
 	def get_touched_tile : Tuple(Int32, Int32)?
-		x, y = @app.window.map_pixel_to_coords(SF::Mouse.get_position(@app.window))
+		x, y = get_mouse_xy
 		
 		# Get tile index from mouse position
 		tx = ((x.to_f32 - LE::SIDE_PANEL_WIDTH - LE::TILE_SIZE) / LE::TILE_SIZE).floor.to_i32

@@ -3,7 +3,7 @@ require "crsfml/graphics"
 module LE
 
 class Sidebar
-	getter entity_buttons
+	getter entity_buttons, time_tweaker
 
 	macro new_button_if_necessary(name)
 		unless nums[{{name}}].includes?(ids.{{name.id}})
@@ -44,11 +44,13 @@ class Sidebar
 	@selected_bg : Button?
 	@selected_border : Button?
 	@selected_fixed : Button?
-	@selected_breakable : Button ?
+	@selected_breakable : Button?
 
 	def initialize(@app : LE::App)
-		@rect = SF::RectangleShape.new(SF.vector2f LE::SIDE_PANEL_WIDTH, LE::WIN_HEIGHT)
+		# Create sidebar background
+		@rect = SF::RectangleShape.new(SF.vector2f(LE::SIDE_PANEL_WIDTH, LE::WIN_HEIGHT))
 		@rect.fill_color = SF.color(217, 217, 217)
+		# and all its content
 		@entity_buttons = [] of EntityButton
 		@bg_buttons = [] of CallbackButton
 		@border_buttons = [] of CallbackButton
@@ -79,7 +81,7 @@ class Sidebar
 		init_buttons
 	end
 
-	include SF::Drawable 
+	include SF::Drawable
 
 	def draw(target, states : SF::RenderStates)
 		target.draw(@rect, states)
@@ -91,6 +93,8 @@ class Sidebar
 		target.draw(@time_tweaker, states)
 	end
 
+	# Given a position `pos`, returns the position of the button containing
+	# it, or nil if no button contains that `pos`.
 	def get_touched_button(pos) : SF::Vector2(Float32)?
 		@entity_buttons.each do |btn|
 			if btn.contains?(pos)
@@ -104,6 +108,11 @@ class Sidebar
 				end
 			end
 		{% end %}
+		{% for name in %w(back fw) %}
+			if @time_tweaker.{{name.id}}_button.contains?(pos)
+				return @time_tweaker.{{name.id}}_button.position
+			end
+		{% end %}
 		nil
 	end
 
@@ -115,22 +124,24 @@ class Sidebar
 			@backten_button.callback.call
 			return nil
 		end
+		
 		if @fwten_button.contains?(pos)
 			@fwten_button.callback.call
 			return nil
 		end
-		if @time_tweaker.touch(pos)
-			return nil
-		end
+		
+		return nil if @time_tweaker.touch(pos)
+
 		@entity_buttons.each do |btn|
 			if btn.contains?(pos)
 				btn.selected = true
 				if @selected_button != nil
-					@selected_button.not_nil!.selected = false 
+					@selected_button.not_nil!.selected = false
 				end
 				return (@selected_button = btn).entity
 			end
 		end
+
 		{% for name in %w(bg border fixed breakable) %}
 			@{{name.id}}_buttons.each do |btn|
 				if btn.contains?(pos)
@@ -374,7 +385,32 @@ class Sidebar
 		end
 	end
 
+	module LongPressable
+		@press_listeners = {} of Symbol => {SF::Time, -> Void}
+
+		# Feeds us with information about long presses.
+		def press(what : Symbol?, t : SF::Time)
+			#if what == nil
+				#@press_listeners.each { |x| x = {SF::Time::Zero, x[1]} }
+			#else
+				#pl = @press_listeners[what.not_nil!]
+				#@press_listeners[what.not_nil!] = {pl[0] + t, pl[1]}
+				#if pl[0] + t > SF.seconds(1)
+					#pl[1].call
+				#end
+			#end
+		end
+
+		def register(what : Symbol, cb : -> Void)
+			@press_listeners[what] = {SF::Time::Zero, cb}
+		end
+	end
+
 	class TimeTweaker
+		getter back_button, fw_button
+
+		include LongPressable
+
 		def initialize(@app : LE::App)
 			@back_button = TextButton.new(@app.font, ->() { back }, "<", 
 						      width: 1.2 * LE::TILE_SIZE, height: 1.2 * LE::TILE_SIZE)
@@ -388,11 +424,14 @@ class Sidebar
 							 width: 2.4 * LE::TILE_SIZE + 1, height: 1.2 * LE::TILE_SIZE)
 			@time_displayer.fill_color = SF::Color::White
 			@time_displayer.color = SF::Color::Black
-			@time = Time::Span.new(0, 0, 0)
+			@time = 0.seconds
+
+			register(:back, -> back)
+			register(:fw, -> fw)
 		end
 
 		def refresh
-			@time = Time::Span.new(0, 0, @app.lr.level.time)
+			@time = @app.lr.level.time.seconds
 			update_time_string
 		end
 

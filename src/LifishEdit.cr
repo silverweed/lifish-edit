@@ -124,6 +124,7 @@ def keep_ratio(size, designedsize)
 	return view
 end
 
+clock = SF::Clock.new
 while window.open?
 	while event = window.poll_event
 		case event
@@ -154,7 +155,7 @@ while window.open?
 			end
 
 		when SF::Event::MouseButtonPressed
-			touched = app.mouse_utils.get_touched 
+			touched = app.mouse_utils.touch
 			
 			if app.verbose?
 				puts "Mouse in #{SF::Mouse.get_position window};" +
@@ -181,13 +182,17 @@ while window.open?
 			if SF::Mouse.button_pressed?(SF::Mouse::Left)
 				app.place_entity
 			elsif SF::Mouse.button_pressed?(SF::Mouse::Right)
-				touched = app.mouse_utils.get_touched
+				touched = app.mouse_utils.touch
 				if touched.is_a? LE::Entity
 					app.history.save
 					lr.remove_entity(touched) 
 				end
 			end
 		end
+	end
+	# Check long press on time tweaker
+	if SF::Mouse.button_pressed?(SF::Mouse::Left) 
+		app.sidebar.time_tweaker.press(app.mouse_utils.get_touching_time_tweaker, clock.restart)
 	end
 	window.clear
 	window.draw app
