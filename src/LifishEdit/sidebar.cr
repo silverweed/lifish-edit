@@ -390,6 +390,7 @@ class Sidebar
 
 		# Feeds us with information about long presses.
 		def press(what : Symbol?, t : SF::Time)
+			# XXX Until they fix https://github.com/crystal-lang/crystal/issues/3512
 			#if what == nil
 				#@press_listeners.each { |x| x = {SF::Time::Zero, x[1]} }
 			#else
