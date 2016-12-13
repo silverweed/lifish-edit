@@ -8,7 +8,7 @@ class SaveManager
 	def self.save(levelset : LE::LevelSet, fname : String)
 		fname += ".json" unless fname.ends_with? ".json"
 		levelset.date = Time.now.to_s
-		File.write(fname, levelset.data.to_pretty_json)
+		File.write(fname, levelset.data.to_pretty_json("\t"))
 		if levelset.app.verbose?
 			STDERR.puts "Saved levelset in #{fname}"
 		end

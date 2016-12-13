@@ -5,26 +5,30 @@ module LE
 # The data contained in levels.json
 module Data
 
-class LevelSetData
+struct LevelSetData
 	JSON.mapping(
 		name:       String,
 		author:     { type: String, nilable: true },
 		difficulty: { type: String, nilable: true },
 		created:    { type: String, nilable: true },
+		comment:    { type: String, nilable: true },
 		tracks:     Array(Track),
 		enemies:    Array(Enemy),
 		levels:     Array(Level),
 	)
 end
 
-class Enemy
-	class Attack
+struct Enemy
+	struct Attack
 		JSON.mapping(
-			type:     Array(String),
-			damage:   UInt16,
-			id:       { type: UInt16, nilable: true },
-			speed:    { type: Float32, nilable: true },
-			fireRate: { type: Float32, nilable: true },
+			type:      Array(String),
+			damage:    UInt16,
+			id:        { type: UInt16,  nilable: true },
+			speed:     { type: Float32, nilable: true },
+			fireRate:  { type: Float32, nilable: true },
+			blockTime: { type: Float32, nilable: true },
+			range:     { type: Float32, nilable: true },
+			tileRange: { type: UInt16,  nilable: true }
 		)
 	end
 	JSON.mapping(
@@ -35,8 +39,8 @@ class Enemy
 	)
 end
 
-class Track
-	class Loop
+struct Track
+	struct Loop
 		JSON.mapping(
 			start:  Float32,
 			length: Float32,
@@ -49,7 +53,7 @@ class Track
 	)
 end
 
-class Level
+struct Level
 	JSON.mapping(
 		time:    Int32,
 		music:   UInt16,
@@ -58,7 +62,7 @@ class Level
 	)
 end
 
-class TileIDs
+struct TileIDs
 	def initialize(@bg : UInt16 = 1_u16,
 		       @border : UInt16 = 1_u16,
 		       @fixed : UInt16 = 1_u16,

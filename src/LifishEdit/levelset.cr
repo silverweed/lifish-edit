@@ -19,6 +19,7 @@ class LevelSet
 	# and deserializes it.
 	def initialize(@app : LE::App, @json_fname : String)
 		@data = LE::Data::LevelSetData.from_json(File.open(@json_fname, "r"))
+		@data.comment = "Created with LifishEdit #{LE::VERSION}"
 
 		@levels = [] of LE::Level
 		# currently pointed level
