@@ -36,6 +36,8 @@ class Entity
 		case @type
 		when :boss
 			rect = SF.int_rect(0, 0, 3 * TILE_SIZE, 3 * TILE_SIZE)
+		when :haunted_statue
+			rect = SF.int_rect(0, 0, TILE_SIZE, 2 * TILE_SIZE)
 		else
 			rect = SF.int_rect(0, 0, TILE_SIZE, TILE_SIZE)
 		end

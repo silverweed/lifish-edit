@@ -22,7 +22,8 @@ ENTITIES = {
 	'J' => :enemy10,
 	'*' => :boss,
 	'4' => :transparent_wall,
-	'5' => :acid_pond
+	'5' => :acid_pond,
+	'6' => :haunted_statue
 }
 
 # Gets entity value from its key
