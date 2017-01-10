@@ -35,9 +35,8 @@ if options[:version]
 	puts "LifishEdit #{LE::VERSION} by Giacomo Parolini"
 	puts "  * compiled with Crystal #{Crystal::VERSION}"
 	puts "  * using CrSFML #{SF::VERSION}"
-	puts "  * LifishEdit is free software release under the MIT license"
+	puts "  * LifishEdit is free software release under the zlib/libpng license"
 	puts "  * source code available at https://github.com/silverweed/lifish-edit"
-	puts "  * get Lifish for free at https://github.com/silverweed/lifish"
 	exit 0
 end
 
