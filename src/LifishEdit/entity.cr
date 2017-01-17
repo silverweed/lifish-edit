@@ -73,7 +73,7 @@ class Entity
 	def draw(target, states : SF::RenderStates)
 		target.draw(@sprite, states)
 		target.draw(@bounding_rect, states)
-		target.draw(@pivot_sprite.not_nil!, states)
+		target.draw(@pivot_sprite, states)
 	end
 
 	def position=(pos)
