@@ -8,13 +8,20 @@ class Cache
 		@textures = {} of String => SF::Texture
 	end
 
+	# Load and return texture `key`.
+	# If `key` is a relative path, assume base dir is `(lifish_dir)/assets/graphics`.
 	def texture(key : String)
 		return @textures[key] if @textures.has_key? key
+		path = if key == File.basename(key)
+			       LE::Utils.get_graphic(key)
+		       else
+			       key
+		       end
 		begin
-			STDERR.puts "Loading #{key}"
-			return @textures[key] = SF::Texture.from_file(LE::Utils.get_graphic(key))
+			STDERR.puts "Loading #{path}"
+			return @textures[key] = SF::Texture.from_file(path)
 		rescue e
-			STDERR.puts "Error loading texture #{key}: #{e}"
+			STDERR.puts "Error loading texture #{path}: #{e}"
 			return nil
 		end
 	end

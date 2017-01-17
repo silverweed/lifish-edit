@@ -9,6 +9,10 @@ module LE
 			"#{@app.graphics_dir}/#{{{name}}}"
 		end
 
+		macro get_resource(name)
+			"#{File.dirname $0}/res/#{{{name}}}"
+		end
+
 		macro tile_to_idx(tile)
 			(({{tile}})[1] * LE::LV_WIDTH + ({{tile}})[0])
 		end

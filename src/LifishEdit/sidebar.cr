@@ -5,29 +5,25 @@ module LE
 class Sidebar
 	getter entity_buttons, time_tweaker
 
-	macro new_button_if_necessary(name)
-		unless nums[{{name}}].includes?(ids.{{name.id}})
-			# Save up to 10 ids
-			nums[{{name}}][idx[{{name}}]] = ids.{{name.id}}
-			idx[{{name}}] += 1
-			
-			#STDERR.puts "Constructing button #{{{name}}}[#{ids.{{name.id}}}]" 
-			btn = CallbackButton.new(@app, {{name}}, ids.{{name.id}}, ->() {
-				STDERR.puts("Setting #{{{name}}} to #{ids.{{name.id}}}") if @app.verbose?
+	BUTTONS_WIDTH = 1.2 * LE::TILE_SIZE
+
+	macro make_buttons(name)
+		(1..8).each do |i|
+			btn = CallbackButton.new(@app, {{name}}, i.to_u16, ->() {
 				@app.lr.save_level
-				@app.lr.set_{{name.id}}(ids.{{name.id}})	
+				@app.lr.set_{{name.id}}(i.to_u16)
 				if {{name}} == :fixed || {{name}} == :breakable
-					b = @entity_buttons.find { |bt| bt.entity.type == {{name}} } 
+					b = @entity_buttons.find { |bt| bt.entity.type == {{name}} }
 					if b.is_a? EntityButton
 						if {{name}} == :fixed
 							b.entity.sprite.texture_rect = SF.int_rect(
-								LE::TILE_SIZE * (ids.{{name.id}} - 1),
-								b.entity.sprite.texture_rect.top, 
+								LE::TILE_SIZE * (i.to_u16 - 1),
+								b.entity.sprite.texture_rect.top,
 								LE::TILE_SIZE, LE::TILE_SIZE)
 						else
 							b.entity.sprite.texture_rect = SF.int_rect(
-								b.entity.sprite.texture_rect.left, 
-								LE::TILE_SIZE * (ids.{{name.id}} - 1),
+								b.entity.sprite.texture_rect.left,
+								LE::TILE_SIZE * (i.to_u16 - 1),
 								LE::TILE_SIZE, LE::TILE_SIZE)
 						end
 					end
@@ -36,7 +32,7 @@ class Sidebar
 			})
 			@{{name.id}}_buttons << btn
 			btn.position = pos[{{name}}]
-			pos[{{name}}] = SF.vector2f(pos[{{name}}].x, pos[{{name}}].y + 1.2 * LE::TILE_SIZE + 1)
+			pos[{{name}}] = SF.vector2f(pos[{{name}}].x, pos[{{name}}].y + BUTTONS_WIDTH + 1)
 		end
 	end
 
@@ -65,7 +61,7 @@ class Sidebar
 							return
 						}, 
 						string: "<< -10",
-						width: 2.4 * LE::TILE_SIZE, 
+						width: BUTTONS_WIDTH * 3/2,
 						height: LE::TILE_SIZE)
 		@fwten_button = TextButton.new(@app.font, 
 						callback: ->() { 
@@ -75,7 +71,7 @@ class Sidebar
 							return
 						},
 						string: "+10 >>",
-						width: 2.4 * LE::TILE_SIZE, 
+						width: BUTTONS_WIDTH * 3/2 + 1,
 						height: LE::TILE_SIZE)
 		@time_tweaker = TimeTweaker.new(@app)
 		init_buttons
@@ -180,57 +176,45 @@ class Sidebar
 	end
 
 	private def init_buttons
+		# Padding of buttons inside side panel
+		buttons_padding = 13
 		# Entities' buttons
 		begin
-			pos = SF.vector2f(LE::TILE_SIZE, 2 * LE::TILE_SIZE)
+			pos = SF.vector2f(buttons_padding, LE::MENU_HEIGHT + buttons_padding)
 			i = 0
 			LE::ENTITIES.each_value do |v|
 				next if v == :empty
 
-				btn = 
-					if v == :boss
-						BossButton.new(@app, v)
-					else 
-						EntityButton.new(@app, v)
-					end
+				btn = EntityButton.new(@app, v)
 				@entity_buttons << btn
 				btn.position = pos
-				if i % 2 == 0
-					pos.x += 1.2 * LE::TILE_SIZE + 1
+				if i % 3 != 2
+					pos.x += BUTTONS_WIDTH + 1
 				else
-					pos.y += 1.2 * LE::TILE_SIZE + 1
-					pos.x = LE::TILE_SIZE.to_f32
+					pos.y += BUTTONS_WIDTH + 1
+					pos.x = buttons_padding.to_f32
 				end
 				i += 1
 			end
 		end
 
 		# Border/bg buttons
+		bp = @entity_buttons[2].position
 		pos = {
-			:bg        => SF.vector2f(3.4 * LE::TILE_SIZE + 10, 2 * LE::TILE_SIZE),
-			:border    => SF.vector2f(4.6 * LE::TILE_SIZE + 11, 2 * LE::TILE_SIZE),
-			:fixed     => SF.vector2f(5.8 * LE::TILE_SIZE + 12, 2 * LE::TILE_SIZE),
-			:breakable => SF.vector2f(7.0 * LE::TILE_SIZE + 13, 2 * LE::TILE_SIZE),
+			:bg        => SF.vector2f(bp.x + BUTTONS_WIDTH + 1, bp.y),
+			:border    => SF.vector2f(bp.x + 2 * (BUTTONS_WIDTH + 1), bp.y),
+			:fixed     => SF.vector2f(bp.x + 3 * (BUTTONS_WIDTH + 1), bp.y),
+			:breakable => SF.vector2f(bp.x + 4 * (BUTTONS_WIDTH + 1), bp.y),
 		}
-		nums = {
-			:bg        => Array(UInt16?).new(10, nil),
-			:border    => Array(UInt16?).new(10, nil),
-			:fixed     => Array(UInt16?).new(10, nil),
-			:breakable => Array(UInt16?).new(10, nil),
-		}
-		idx = { :bg => 0, :border => 0, :fixed => 0, :breakable => 0 }
 		
-		@app.ls.data.levels.each do |lv|
-			ids = lv.tileIDs
-			new_button_if_necessary(:bg)
-			new_button_if_necessary(:border)
-			new_button_if_necessary(:fixed)
-			new_button_if_necessary(:breakable)
-		end
+		make_buttons(:bg)
+		make_buttons(:border)
+		make_buttons(:fixed)
+		make_buttons(:breakable)
 
-		@backten_button.position = SF.vector2f(LE::TILE_SIZE, 
+		@backten_button.position = SF.vector2f(@entity_buttons[0].position.x,
 						      @entity_buttons[-1].position.y + 1.2 * LE::TILE_SIZE + 1)
-		@fwten_button.position = SF.vector2f(@backten_button.position.x + @backten_button.bounds.width,
+		@fwten_button.position = SF.vector2f(@backten_button.position.x + @backten_button.bounds.width - 1,
 						     @backten_button.position.y)
 		@time_tweaker.position = @bg_buttons[-1].position + SF.vector2f(0, 1.2 * LE::TILE_SIZE + 1)
 	end
@@ -284,8 +268,7 @@ class Sidebar
 			b = @text.local_bounds
 			@bg_rect.size = SF.vector2f([width, b.width + 4].max, [height, b.height + 4].max)
 			center_text
-			@bg_rect.fill_color = SF::Color::Blue
-			@text.color = SF::Color::White
+			@bg_rect.fill_color = SF::Color.new(207, 210, 218)
 		end
 
 		def fill_color=(col)
@@ -325,26 +308,21 @@ class Sidebar
 
 		def initialize(@app : LE::App, entity_sym)
 			super()
+			STDERR.puts(entity_sym)
 			@entity = LE::Entity.new(@app, entity_sym, 
 						 LE::Data::TileIDs.new(breakable: 1_u16, fixed: 1_u16))
 		end
 
 		def draw(target, states : SF::RenderStates)
 			super
-			target.draw(@entity, states)
+			target.draw(@entity.button_sprite, states)
 		end
 
 		def position=(pos)
 			super
-			@entity.position = SF.vector2f(pos.x + 0.1 * LE::TILE_SIZE, pos.y + 0.1 * LE::TILE_SIZE)
-		end
-	end
-	
-	class BossButton < EntityButton
-		def initialize(@app : LE::App, entity_sym)
-			super
-			@entity.sprite.texture_rect = SF.int_rect(0, 0, 3 * LE::TILE_SIZE, 3 * LE::TILE_SIZE)
-			@entity.sprite.scale(SF.vector2f(1.0 / 3, 1.0 / 3))
+			@entity.button_sprite.position = SF.vector2f(
+				pos.x + 0.1 * LE::TILE_SIZE,
+				pos.y + 0.1 * LE::TILE_SIZE)
 		end
 	end
 
@@ -359,8 +337,8 @@ class Sidebar
 			texture = nil
 			begin
 				texture = case type
-				when :bg
-					@app.cache.texture("bg#{id}.png")
+				when :bg, :border
+					@app.cache.texture("#{type}#{id}.png")
 				else
 					@app.cache.texture("#{type}.png")
 				end.as SF::Texture

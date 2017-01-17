@@ -17,16 +17,8 @@ class LevelRenderer
 		@bg = SF::Sprite.new
 		@bg.position = SF.vector2f(LE::SIDE_PANEL_WIDTH + LE::TILE_SIZE, 
 					   LE::MENU_HEIGHT + LE::TILE_SIZE)
-		@borders = {
-			    :upper => SF::Sprite.new,
-			    :upper_left => SF::Sprite.new,
-			    :upper_right => SF::Sprite.new,
-			    :left => SF::Sprite.new,
-			    :right => SF::Sprite.new,
-			    :lower => SF::Sprite.new,
-			    :lower_left => SF::Sprite.new,
-			    :lower_right => SF::Sprite.new,
-		}
+		@border = SF::Sprite.new
+		@border.position = SF.vector2f(LE::SIDE_PANEL_WIDTH, LE::MENU_HEIGHT)
 
 		@offset = SF.vector2f(0_f32 + LE::TILE_SIZE, 0_f32 + LE::TILE_SIZE)
 		@level_text = SF::Text.new("#{@level.lvnum}", @app.font, 20)
@@ -58,33 +50,7 @@ class LevelRenderer
 		target.draw(@bg, states)
 	
 		# Borders
-		(1..LE::LV_WIDTH + 1).each do |t|
-			@borders[:upper].position = SF.vector2f(LE::SIDE_PANEL_WIDTH + t * LE::TILE_SIZE,
-								LE::MENU_HEIGHT)
-			target.draw(@borders[:upper], states)
-			@borders[:lower].position = SF.vector2f(LE::SIDE_PANEL_WIDTH + t * LE::TILE_SIZE,
-								LE::MENU_HEIGHT + (LE::LV_HEIGHT + 1) * LE::TILE_SIZE)
-			target.draw(@borders[:lower], states)
-		end
-		(1..LE::LV_HEIGHT + 1).each do |t|
-			@borders[:left].position = SF.vector2f(LE::SIDE_PANEL_WIDTH,
-								LE::MENU_HEIGHT + t * LE::TILE_SIZE)
-			target.draw(@borders[:left], states)
-			@borders[:right].position = SF.vector2f(LE::SIDE_PANEL_WIDTH + (LE::LV_WIDTH + 1) *  LE::TILE_SIZE,
-								LE::MENU_HEIGHT + t * LE::TILE_SIZE)
-			target.draw(@borders[:right], states)
-		end
-		@borders[:upper_left].position = SF.vector2f(LE::SIDE_PANEL_WIDTH, LE::MENU_HEIGHT)
-		target.draw(@borders[:upper_left], states)
-		@borders[:upper_right].position = SF.vector2f(LE::SIDE_PANEL_WIDTH + (LE::LV_WIDTH + 1) * LE::TILE_SIZE,
-							      LE::MENU_HEIGHT)
-		target.draw(@borders[:upper_right], states)
-		@borders[:lower_left].position = SF.vector2f(LE::SIDE_PANEL_WIDTH, 
-							     LE::MENU_HEIGHT + (LE::LV_HEIGHT + 1) * LE::TILE_SIZE)
-		target.draw(@borders[:lower_left], states)
-		@borders[:lower_right].position = SF.vector2f(LE::SIDE_PANEL_WIDTH + (LE::LV_WIDTH + 1) * LE::TILE_SIZE,
-							      LE::MENU_HEIGHT + (LE::LV_HEIGHT + 1) * LE::TILE_SIZE)
-		target.draw(@borders[:lower_right], states)
+		target.draw(@border, states)
 
 		# Entities
 		LE::LV_HEIGHT.times do |row|
@@ -151,28 +117,12 @@ class LevelRenderer
 						       LE::TILE_SIZE * LE::LV_HEIGHT)
 			@bg.texture.not_nil!.repeated = true
 
-			@border_texture = @app.cache.texture("border.png")
-			@borders.each_value { |b| b.texture = @border_texture.not_nil! }
-			b = (@level.tileIDs.border - 1) * LE::TILE_SIZE
-			@borders[:upper].texture_rect = SF.int_rect(0, b, LE::TILE_SIZE, LE::TILE_SIZE)
-			@borders[:lower].texture_rect = SF.int_rect(0, b + LE::TILE_SIZE, 
-								    LE::TILE_SIZE, -LE::TILE_SIZE)
-			@borders[:left].texture_rect = SF.int_rect(LE::TILE_SIZE,
-								   b, LE::TILE_SIZE, LE::TILE_SIZE)
-			@borders[:right].texture_rect = SF.int_rect(2 * LE::TILE_SIZE,
-								   b, -LE::TILE_SIZE, LE::TILE_SIZE)
-			@borders[:upper_left].texture_rect = SF.int_rect(2 * LE::TILE_SIZE,
-									 b, LE::TILE_SIZE, LE::TILE_SIZE)
-			@borders[:lower_left].texture_rect = SF.int_rect(2 * LE::TILE_SIZE,
-									 b + LE::TILE_SIZE,
-									 LE::TILE_SIZE, -LE::TILE_SIZE)
-			@borders[:lower_right].texture_rect = SF.int_rect(3 * LE::TILE_SIZE,
-									  b + LE::TILE_SIZE,
-									  -LE::TILE_SIZE, -LE::TILE_SIZE)
-			@borders[:upper_right].texture_rect = SF.int_rect(3 * LE::TILE_SIZE,
-									  b,
-									  -LE::TILE_SIZE, LE::TILE_SIZE)
-		rescue
+			@border_texture = @app.cache.texture("border#{@level.tileIDs.border}.png")
+			@border.texture = @border_texture.not_nil!
+			@border.texture_rect = SF.int_rect(0, 0, LE::TILE_SIZE * (LE::LV_WIDTH + 2),
+							   LE::TILE_SIZE * (LE::LV_HEIGHT + 2))
+		rescue ex
+			STDERR.puts(ex)
 		end
 		@level_text.string = "#{@level.lvnum}"
 		@level_text_shadow.string = @level_text.string
