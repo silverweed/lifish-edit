@@ -99,6 +99,7 @@ class LevelSet
 			Author: #{@data.author || "Unknown"}\n\
 			Difficulty: #{@data.difficulty || "Unknown"}\n\
 			Created: #{@data.created || "Unknown"}\n\
+			Comment: #{@data.comment || "--"}\n\
 			#Tracks: #{@data.tracks.size}\n\
 			#Levels: #{@data.levels.size}"
 	end

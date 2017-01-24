@@ -59,6 +59,7 @@ struct Level
 		music:   UInt16,
 		tileIDs: TileIDs,
 		tilemap: String,
+		effects: { type: Array(String), nilable: true }
 	)
 end
 

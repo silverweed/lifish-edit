@@ -15,8 +15,9 @@ class Level
 	def initialize(description : LE::Data::Level, @lvnum : UInt32)
 		@time    = description.time.as Int32
 		@music   = description.music.as UInt16
-		@tileIDs = description.tileIDs.as LE::Data::TileIDs 
+		@tileIDs = description.tileIDs.as LE::Data::TileIDs
 		@orig_tilemap = @tilemap = description.tilemap.as String
+		@effects = description.effects || [] of String
 	end
 
 	# Serializes this level into JSON
@@ -25,7 +26,8 @@ class Level
 			time: @time,
 			music: @music,
 			tileIDs: @tileIDs,
-			tilemap: @tilemap
+			tilemap: @tilemap,
+			effects: @effects
 		}
 	end
 
