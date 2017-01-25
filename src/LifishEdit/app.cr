@@ -38,8 +38,8 @@ class App
 		@font = SF::Font.from_file("#{@lifish_dir}/assets/fonts/pf_tempesta_seven.ttf")
 		@menu = LE::Menu.new(font.not_nil!)
 		@cache = LE::Cache.new(self)
-		@sidebar = LE::Sidebar.new(self)
 		@lr = LE::LevelRenderer.new(self, ls[0])
+		@sidebar = LE::Sidebar.new(self)
 		@mouse_utils = LE::MouseUtils.new(self)
 		@history = LE::History.new(self)
 		@fps_counter = FPSCounter.new(self)
@@ -50,7 +50,7 @@ class App
 		fps_counter.position = SF.vector2(2, LE::WIN_HEIGHT - 20)
 	end
 
-	include SF::Drawable 
+	include SF::Drawable
 
 	def draw(target, states : SF::RenderStates)
 		target.draw(sidebar, states)

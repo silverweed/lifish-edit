@@ -7,7 +7,7 @@ module LE
 # A Lifish level, containing data deserialized from a JSON file.
 # Levels are usually created by a `LevelSet`.
 class Level
-	property time, music, tileIDs, tilemap
+	property time, music, tileIDs, tilemap, effects
 	getter orig_tilemap, lvnum
 
 	# Initializes this level with the parameters given by

@@ -24,7 +24,7 @@ ENTITIES = {
 	'4' => :transparent_wall,
 	'5' => :acid_pond,
 	'6' => :haunted_statue,
-	'=' => :haunting_spirit_boss
+	'=' => :haunting_spirit_boss,
 }
 
 # Gets entity value from its key
@@ -49,6 +49,8 @@ def self.get_entity_size(e)
 		{4, 4}
 	when :haunted_statue
 		{1, 2}
+	when :fog
+		{15, 13}
 	else
 		{1, 1}
 	end

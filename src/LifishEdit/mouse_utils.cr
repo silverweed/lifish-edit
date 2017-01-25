@@ -40,6 +40,7 @@ class MouseUtils
 		nil
 	end
 
+	# If the mouse is on the level, return the entity it's hovering on (or nil)
 	def get_touched_entity : LE::Entity?
 		tile = get_touched_tile
 		return nil unless tile.is_a? Tuple

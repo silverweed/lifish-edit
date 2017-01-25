@@ -6,6 +6,11 @@ class Sidebar
 	getter entity_buttons, time_tweaker
 
 	BUTTONS_WIDTH = 1.2 * LE::TILE_SIZE
+	# {Effect, texture}
+	EFFECTS = [
+		{:fog, "fog.png"},
+		{:darkness, nil}
+	]
 
 	macro make_buttons(name)
 		(1..8).each do |i|
@@ -52,6 +57,7 @@ class Sidebar
 		@border_buttons = [] of CallbackButton
 		@fixed_buttons = [] of CallbackButton
 		@breakable_buttons = [] of CallbackButton
+		@effect_buttons = [] of CallbackButton
 		@backten_button = TextButton.new(@app.font, 
 						callback: ->() { 
 							@app.lr.save_level
@@ -81,7 +87,7 @@ class Sidebar
 
 	def draw(target, states : SF::RenderStates)
 		target.draw(@rect, states)
-		{% for name in %i(entity bg border fixed breakable) %}
+		{% for name in %i(entity bg border fixed breakable effect) %}
 			@{{name.id}}_buttons.map { |btn| btn.draw target, states }
 		{% end %}
 		target.draw(@backten_button, states)
@@ -97,7 +103,7 @@ class Sidebar
 				return btn.position
 			end
 		end
-		{% for name in %w(bg border fixed breakable) %}
+		{% for name in %w(bg border fixed breakable effect) %}
 			@{{name.id}}_buttons.each do |btn|
 				if btn.contains?(pos)
 					return btn.position	
@@ -138,16 +144,18 @@ class Sidebar
 			end
 		end
 
-		{% for name in %w(bg border fixed breakable) %}
+		{% for name in %w(bg border fixed breakable effect) %}
 			@{{name.id}}_buttons.each do |btn|
 				if btn.contains?(pos)
 					STDERR.puts "Callback #{{{name}}}[#{btn.id}]" if @app.verbose?
+				{% if name != "effect" %}
 					if @selected_{{name.id}} != nil
 						@selected_{{name.id}}.not_nil!.selected = false
 					end	
-					btn.callback.call
 					btn.selected = true
 					@selected_{{name.id}} = btn
+				{% end %}
+					btn.callback.call
 					return
 				end
 			end
@@ -173,6 +181,10 @@ class Sidebar
 				end
 			end
 		{% end %}
+		fx = @app.lr.level.effects
+		@effect_buttons.each_with_index do |btn, i|
+			btn.selected = fx.includes?(EFFECTS[i][0].to_s)
+		end
 	end
 
 	private def init_buttons
@@ -213,17 +225,40 @@ class Sidebar
 		make_buttons(:breakable)
 
 		@backten_button.position = SF.vector2f(@entity_buttons[0].position.x,
-						      @entity_buttons[-1].position.y + 1.2 * LE::TILE_SIZE + 1)
+						      @entity_buttons[-1].position.y + BUTTONS_WIDTH + 1)
 		@fwten_button.position = SF.vector2f(@backten_button.position.x + @backten_button.bounds.width - 1,
 						     @backten_button.position.y)
-		@time_tweaker.position = @bg_buttons[-1].position + SF.vector2f(0, 1.2 * LE::TILE_SIZE + 1)
+		@time_tweaker.position = @bg_buttons[-1].position + SF.vector2f(0, BUTTONS_WIDTH + 1)
+
+		# Effects buttons
+		fxcb = ->(id : Int32) {
+			->() {
+				fx = @app.lr.level.effects
+				if fx.includes?(EFFECTS[id][0].to_s)
+					@app.lr.level.effects.delete(EFFECTS[id][0].to_s)
+					@effect_buttons[id].selected = false
+				else
+					@app.lr.level.effects << EFFECTS[id][0].to_s
+					@effect_buttons[id].selected = true
+				end
+				@app.lr.save_level
+				nil
+			}
+		}
+		pos = @time_tweaker.position + SF.vector2f(0, BUTTONS_WIDTH + 1)
+		2.times do |i|
+			btn = CallbackButton.new(@app, :effect, i.to_u16, fxcb.call(i))
+			btn.position = pos
+			pos.x += BUTTONS_WIDTH
+			@effect_buttons << btn
+		end
 	end
 	
 	class Button
 		property selected
 
 		def initialize
-			@bg_rect = SF::RectangleShape.new(SF.vector2f(1.2 * LE::TILE_SIZE, 1.2 * LE::TILE_SIZE))
+			@bg_rect = SF::RectangleShape.new(SF.vector2f(BUTTONS_WIDTH, BUTTONS_WIDTH))
 			@bg_rect.fill_color = SF.color(0, 0, 255, 150)
 			@bg_rect.outline_thickness = 1
 			@bg_rect.outline_color = SF.color(50, 50, 50, 255)
@@ -339,15 +374,28 @@ class Sidebar
 				texture = case type
 				when :bg, :border
 					@app.cache.texture("#{type}#{id}.png")
+				when :effect
+					if EFFECTS[@id][1] != nil
+						@app.cache.texture(EFFECTS[@id][1].not_nil!)
+					else
+						
+						@app.cache.texture(LE::Utils.get_resource("white.png"))
+					end
 				else
 					@app.cache.texture("#{type}.png")
 				end.as SF::Texture
 				@sprite.texture = texture
 				@sprite.texture_rect = SF.int_rect(type == :fixed ? (id-1) * LE::TILE_SIZE : 0,
 								   type == :bg || type == :fixed ?
-									0
-									: (id-1) * LE::TILE_SIZE,
+								   	0
+								   	: (id-1) * LE::TILE_SIZE,
 								   LE::TILE_SIZE, LE::TILE_SIZE)
+				if type == :effect
+					case @id
+					when 1
+						@sprite.color = SF::Color::Black
+					end
+				end
 			rescue
 			end
 		end
@@ -420,6 +468,10 @@ class Sidebar
 							       @back_button.bounds.width - 1, pos.y)
 			@fw_button.position = SF.vector2f(@time_displayer.position.x +
 							  @time_displayer.bounds.width - 1, pos.y)
+		end
+
+		def position
+			@back_button.position
 		end
 
 		include SF::Drawable 
