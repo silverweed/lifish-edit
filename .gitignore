@@ -10,3 +10,5 @@ lifishedit
 *.o
 shard.lock
 deps
+LifishEdit.app
+.DS_Store

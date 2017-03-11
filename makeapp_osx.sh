@@ -1,51 +1,60 @@
 #!/bin/bash
 # Create a Mac OSX app bundle.
-# MUST be launched from the lifish directory
-# The lifish executable MUST already exist.
+# Must be launched from the lifish-edit directory
+# The lifishedit executable must already exist.
 
 APPNAME=LifishEdit
-EXE=lifish-edit
+EXE=lifishedit
 MACOS=($EXE)
-DYLIBS=(foreign/{libnfd-mac.so,Darwin/libvoidcsfml-{graphics,audio,system}.dylib})
+DYLIBS=(foreign/Darwin/{libnfd-mac.so,libvoidcsfml-{graphics,window,system}.2.4.dylib})
 RESOURCES=(res)
 FRAMEWORK_PATH=/Library/Frameworks
-FRAMEWORKS=(SFML.framework)
+FRAMEWORKS=({ogg,freetype,OpenAL,vorbis{,enc,file},sfml-{window,graphics,system}}.framework)
+
+nstep=1
+step() {
+	echo "------------------------------" >&2
+	echo "* [$nstep] $*..." >&2
+	let nstep++
+}
 
 # Ensure all due resources are here
 for i in ${MACOS[@]} ${RESOURCES[@]} ${DYLIBS[@]}; do
 	[[ -e $i ]] || {
-		echo "$i not found in this directory." >&2
+		echo "FATAL: $i not found in this directory." >&2
 		exit 1
 	}
 done
 
 for i in ${FRAMEWORKS[@]}; do
 	[[ -d "$FRAMEWORK_PATH/$i" ]] || {
-		echo "$i not found in $FRAMEWORK_PATH". >&2
+		echo "FATAL: $i not found in $FRAMEWORK_PATH". >&2
 		exit 1
 	}
 done
 
-set -x
-
 rm -rf "$APPNAME.app"
 
 # Create the bundle structure
-mkdir -p "$APPNAME.app"/Contents/{MacOS,Resources,Frameworks}
+step "Creating bundle structure"
+mkdir -vp "$APPNAME.app"/Contents/{MacOS,Resources,Frameworks}
 
-# Inject frameworks
+# Copy frameworks
+step "Copying frameworks"
 for i in ${FRAMEWORKS[@]}; do
+	echo "  > ${i%.framework}" >&2
 	cp -R "$FRAMEWORK_PATH/$i" "$APPNAME.app"/Contents/Frameworks/.
 done
 
 # Create info.plist
+step "Creating info.plist"
 cat > "$APPNAME.app"/Contents/Info.plist <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
     <dict>
         <key>CFBundleExecutable</key>
-        <string>lifish-edit</string>
+        <string>lifishedit</string>
         <key>CFBundleIdentifier</key>
         <string>github.com/silverweed/lifish-edit</string>
         <key>CFBundleInfoDictionaryVersion</key>
@@ -63,32 +72,58 @@ cat > "$APPNAME.app"/Contents/Info.plist <<EOF
 EOF
 
 # Copy binaries and resources 
-cp -r ${MACOS[@]} "$APPNAME.app"/Contents/MacOS/.
+step "Copying binaries"
+cp -vr ${MACOS[@]} "$APPNAME.app"/Contents/MacOS/.
 for i in ${DYLIBS[@]}; do
 	libpath="$APPNAME.app/Contents/MacOS/$(dirname $i)"
-	[[ -d "$libpath" ]] || mkdir -p "$libpath"
-	cp "$i" "$libpath"
+	[[ -d "$libpath" ]] || mkdir -vp "$libpath"
+	cp -v "$i" "$libpath"
 done
-cp -r ${RESOURCES[@]} "$APPNAME.app"/Contents/Resources/.
-cp osx/Lifish.icns Lifish.app/Contents/Resources/.
+step "Copying resources"
+cp -vr ${RESOURCES[@]} "$APPNAME.app"/Contents/Resources/.
+#cp -v LifishEdit.icns "$APPNAME.app"/Contents/Resources/.
 
 pushd "$APPNAME.app"/Contents/MacOS
 
-# FIXME
-# Hack to ensure things are installation-independent
-DYN=$(otool -L $EXE | tail -n+2 | awk '{print $1}' | egrep -v '^(/usr|/Library|/System)')
-for i in $DYN; do
-	# Should only have found "our" libraries: check if they're all in DYLIBS array
+## Ensure things are installation-independent
+# Libraries to relocate
+DYN=(foreign/Darwin/libnfd-mac.so
+@rpath/libvoidcsfml-graphics.2.4.dylib 
+@rpath/libvoidcsfml-window.2.4.dylib 
+@rpath/libvoidcsfml-system.2.4.dylib 
+/usr/local/opt/bdw-gc/lib/libgc.1.dylib 
+/usr/local/opt/libevent/lib/libevent-2.1.6.dylib
+/usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib)
+
+step "Relocating dynamic library paths"
+for i in ${DYN[@]}; do
+	# If it's one of "our" libraries, just change the dynamic path
 	found=0
 	for dy in ${DYLIBS[@]}; do 
-		[[ $(basename $dy) == $(basename $i) ]] && {
-			found=1
+		a=$(basename $dy)
+		b=$(basename $i)
+		if [[ $a == $b ]]; then 
+			found=$dy
 			break
-		}
+		fi
 	done
-	[[ $found == 1 ]] || {
-		echo "Found unexpected library $i in ones to be relocated!" >&2
-		exit 1
-	}
-	install_name_tool -change "$i" "@executable_path/${i#@rpath}"
+	if [[ $found != 0 ]]; then
+		install_name_tool -change "$i" "@executable_path/$found" "$EXE"
+	else
+		# Else, copy it and relocate
+		cp -v $i foreign
+		llib="foreign/$(basename $i)"
+		chmod +w $llib
+		install_name_tool -id "@executable_path/$llib" $llib
+		install_name_tool -change "$i" "@executable_path/$llib" "$EXE"
+		for dl in $(otool -L $llib | grep /usr/local); do
+			install_name_tool -change $dl "@executable_path/foreign/$(basename $dl)" $llib 
+		done
+	fi
 done
+
+# Finally, inject rpath
+popd
+step "Injecting rpath"
+find "$APPNAME.app" -type f -exec install_name_tool -add_rpath "@executable_path/../Frameworks" {} \; 2>&1 | grep -v "not a Mach-O"
+echo "Done!" >&2
