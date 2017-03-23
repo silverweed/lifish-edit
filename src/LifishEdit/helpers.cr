@@ -9,6 +9,14 @@ class LE::App
 		end
 	end
 
+	def remove_entity
+		touched = mouse_utils.touch
+		if touched.is_a? LE::Entity
+			history.save
+			lr.remove_entity(touched)
+		end
+	end
+
 	@lvbuf = 0
 	@lvbufclock = SF::Clock.new
 

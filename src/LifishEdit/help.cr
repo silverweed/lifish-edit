@@ -30,6 +30,7 @@ class Help
 		h("")
 		h("LMouse", "Act / Place entity")
 		h("RMouse", "Delete entity")
+		h("Shift + LMouse", "Delete entity")
 		h("MouseWheel", "Navigate levels")
 		h("+", "Go to next level")
 		h("-", "Go to previous level")

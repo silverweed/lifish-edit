@@ -144,24 +144,30 @@ while window.open?
 			else
 				case event.button
 				when SF::Mouse::Left
-					app.place_entity
+					if Kb.key_pressed?(Kb::LShift)
+						app.remove_entity
+					else
+						app.place_entity
+					end
 				when SF::Mouse::Right
 					if touched.is_a? LE::Entity
 						app.history.save
-						lr.remove_entity(touched) 
+						lr.remove_entity(touched)
 					end
 				end
 			end
 
+
 		when SF::Event::MouseMoved
 			if SF::Mouse.button_pressed?(SF::Mouse::Left)
-				app.place_entity
+				if Kb.key_pressed?(Kb::LShift)
+					app.remove_entity
+				else
+					app.place_entity
+				end
 			elsif SF::Mouse.button_pressed?(SF::Mouse::Right)
 				touched = app.mouse_utils.touch
-				if touched.is_a? LE::Entity
-					app.history.save
-					lr.remove_entity(touched)
-				end
+				app.remove_entity
 			end
 
 		when SF::Event::MouseWheelScrolled
