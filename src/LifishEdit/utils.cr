@@ -17,6 +17,15 @@ module LE
 			(({{tile}})[1] * LE::LV_WIDTH + ({{tile}})[0])
 		end
 
+		macro code2num(keycode)
+			case {{keycode}}
+			{% for i in 0..9 %}
+			when SF::Keyboard::Num{{i.id}}, SF::Keyboard::Numpad{{i.id}} then {{i}}
+			{% end %}
+			else -1
+			end
+		end
+
 		# Attempts to read the config file `CFG_FILE` and returns a Hash
 		# (possibly empty) with pairs Key => Value of the config.
 		def read_cfg_file : Hash(String, String)

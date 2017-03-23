@@ -132,14 +132,19 @@ class LevelRenderer
 		@tiles.map! { |tile| tile == entity ? nil : tile }
 	end
 
+	def remove_entities(type)
+		@tiles.map! { |tile| tile == nil || tile.not_nil!.type != type ? tile : nil }
+	end
+
 	def place_entity(tile : Tuple, entity : LE::Entity)
-		tx, ty = tile 
+		tx, ty = tile
 		if tx < 0 || ty < 0 || tx >= LE::LV_WIDTH || ty >= LE::LV_HEIGHT
 			STDERR.puts "Attempted to place entity in tile #{tile}!"
 			return
 		end
 		idx = LE::Utils.tile_to_idx(tile)
 		unless @tiles[idx].is_a?(LE::Entity) && @tiles[idx].not_nil!.type == entity.type
+			remove_entities(entity.type) if LE.is_unique_entity?(entity.type)
 			@tiles[idx] = LE::Entity.new(@app, entity.type)
 		end
 	end

@@ -86,59 +86,7 @@ app.sidebar.refresh
 
 LE::Utils.write_cfg_file("start_dir", File.dirname(levels_json))
 
-class LE::App
-	def place_entity
-		tile = mouse_utils.get_touched_tile
-		if @selected_entity != nil && tile.is_a? Tuple
-			history.save
-			lr.place_entity(tile, @selected_entity.not_nil!)
-		end
-	end
-end
-
-def highlight_tile(window, app)
-	touched = app.mouse_utils.get_touched_tile
-	hlrect = SF::RectangleShape.new(SF.vector2f(LE::TILE_SIZE, LE::TILE_SIZE))
-	hlrect.fill_color = SF.color(200, 200, 200, 70)
-	hlrect.outline_color = SF.color(0, 0, 0, 255)
-	hlrect.outline_thickness = 2
-	draw = false
-
-	if touched
-		x, y = touched.as Tuple(Int32, Int32)
-		hlrect.position = SF.vector2f((x + 1) * LE::TILE_SIZE + LE::SIDE_PANEL_WIDTH,
-					      (y + 1) * LE::TILE_SIZE + LE::MENU_HEIGHT)
-		draw = true
-	else
-		btn = app.sidebar.get_touched_button(window.map_pixel_to_coords(SF::Mouse.get_position(window)))
-		if btn
-			hlrect.position = btn
-			hlrect.size = SF.vector2f(1.2 * LE::TILE_SIZE, 1.2 * LE::TILE_SIZE)
-			draw = true
-		end
-	end
-
-	window.draw(hlrect) if draw
-end
-
-def keep_ratio(size, designedsize)
-	viewport = SF::FloatRect.new(0_f32, 0_f32, 1_f32, 1_f32)
-	screenw = size.width / designedsize[0].to_f32
-	screenh = size.height / designedsize[1].to_f32
-
-	if screenw > screenh
-		viewport.width = screenh / screenw
-		viewport.left = (1 - viewport.width) / 2_f32
-	elsif screenh > screenw
-		viewport.height = screenw / screenh
-		viewport.top = (1 - viewport.height) / 2_f32
-	end
-
-	view = SF::View.new(SF::FloatRect.new(0_f32, 0_f32, designedsize[0].to_f32, designedsize[1].to_f32))
-	view.viewport = viewport
-	return view
-end
-
+alias Kb = SF::Keyboard
 clock = SF::Clock.new
 while window.open?
 	while event = window.poll_event
@@ -151,22 +99,34 @@ while window.open?
 
 		when SF::Event::KeyPressed
 			case event.code
-			when SF::Keyboard::Add
+			when Kb::Add
 				lr.save_level
 				lr.level = ls.next
-			when SF::Keyboard::Subtract
+			when Kb::Subtract
 				lr.save_level
 				lr.level = ls.prev
-			when SF::Keyboard::Z
-				if SF::Keyboard.key_pressed?(SF::Keyboard::LControl)
-					app.history.step_back
-				end
-			when SF::Keyboard::Y
-				if SF::Keyboard.key_pressed?(SF::Keyboard::LControl)
-					app.history.step_forward
-				end
-			when SF::Keyboard::F
+			when Kb::F
 				app.show_fps = !app.show_fps
+			when Kb::H
+				app.toggle_help
+			when Kb::Num0 .. Kb::Num9,
+			     Kb::Numpad0 .. Kb::Numpad9
+				app.jump_to_lv(LE::Utils.code2num(event.code))
+			# Control sequences
+			when Kb::Z
+				app.history.step_back if Kb.key_pressed?(Kb::LControl)
+			when Kb::Y
+				app.history.step_forward if Kb.key_pressed?(Kb::LControl)
+			when Kb::S
+				if Kb.key_pressed?(Kb::LControl)
+					if Kb.key_pressed?(Kb::LShift)
+						app.menu.invoke(:save_as, app)
+					else
+						app.menu.invoke(:save, app)
+					end
+				end
+			when Kb::Q
+				exit 0 if Kb.key_pressed?(Kb::LControl)
 			end
 
 		when SF::Event::MouseButtonPressed
@@ -200,9 +160,13 @@ while window.open?
 				touched = app.mouse_utils.touch
 				if touched.is_a? LE::Entity
 					app.history.save
-					lr.remove_entity(touched) 
+					lr.remove_entity(touched)
 				end
 			end
+
+		when SF::Event::MouseWheelScrolled
+			lr.save_level
+			event.delta.to_i.abs.times { lr.level = ls.cyclic(event.delta > 0) }
 		end
 	end
 	# Check long press on time tweaker
@@ -210,7 +174,7 @@ while window.open?
 		app.sidebar.time_tweaker.press(app.mouse_utils.get_touching_time_tweaker, clock.restart)
 	end
 	window.clear
-	window.draw app
-	highlight_tile(window, app)
+	window.draw(app)
+	app.highlight_tile(window)
 	window.display
 end

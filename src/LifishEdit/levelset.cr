@@ -40,7 +40,7 @@ class LevelSet
 	end
 
 	def [](i)
-		@levels[i]
+		@levels[i % n_levels]
 	end
 
 	def set(i)

@@ -52,6 +52,10 @@ class Menu
 		end
 		nil
 	end
+
+	def invoke(cb : Symbol, app)
+		get_callback(cb).call(app)
+	end
 	
 	private def create_buttons : Array(ButtonComponents)
 		btn = [] of ButtonComponents

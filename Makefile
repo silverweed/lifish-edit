@@ -4,7 +4,7 @@ ifeq ($(UNAME), Darwin)
 	NCORES = $(shell sysctl -n hw.ncpu)
 endif
 ifeq ($(UNAME), Linux)
-	NCORES = $(shell lscpu | grep -c1 CPU | awk '{print $2}')
+	NCORES = $(shell lscpu | grep -m1 'CPU(s)' | cut -f2 -d:)
 endif
 
 build: deps

@@ -4,6 +4,7 @@ require "./mouse_utils"
 require "./sidebar"
 require "./history"
 require "./cache"
+require "./help"
 
 module LE
 
@@ -21,6 +22,7 @@ class App
 	getter! history
 	getter! cache
 	getter! ls
+	getter! help
 
 	setter ls
 
@@ -43,6 +45,7 @@ class App
 		@mouse_utils = LE::MouseUtils.new(self)
 		@history = LE::History.new(self)
 		@fps_counter = FPSCounter.new(self)
+		@help = LE::Help.new(self)
 
 		window.vertical_sync_enabled = true
 		window.framerate_limit = 60
@@ -56,6 +59,7 @@ class App
 		target.draw(sidebar, states)
 		target.draw(menu, states)
 		target.draw(lr, states)
+		target.draw(help, states)
 		target.draw(fps_counter, states)
 	end
 
@@ -65,6 +69,10 @@ class App
 
 	def show_fps=(active)
 		fps_counter.active = active
+	end
+
+	def toggle_help
+		help.active = !help.active
 	end
 
 	private def fps_counter
