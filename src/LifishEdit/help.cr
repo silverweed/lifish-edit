@@ -10,6 +10,8 @@ class LE::Help
 		@active = false
 		@rect = SF::RectangleShape.new(SF.vector2f(LE::WIN_WIDTH * 2/3, LE::WIN_HEIGHT * 4/5))
 		@rect.fill_color = SF::Color::White
+		@rect.outline_color = SF::Color::Black
+		@rect.outline_thickness = 2
 		@rect.position = SF.vector2f((LE::WIN_WIDTH - @rect.local_bounds.width) / 2,
 		                             (LE::WIN_HEIGHT - @rect.local_bounds.height) / 2)
 		@texts = [] of SF::Text

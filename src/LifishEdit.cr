@@ -126,7 +126,7 @@ while window.open?
 					end
 				end
 			when Kb::Q
-				exit 0 if Kb.key_pressed?(Kb::LControl)
+				window.close if Kb.key_pressed?(Kb::LControl)
 			end
 
 		when SF::Event::MouseButtonPressed
@@ -140,7 +140,7 @@ while window.open?
 
 			if touched.is_a? LE::MenuCallback
 				callback = touched
-				exit 0 unless callback.call(app)
+				window.close unless callback.call(app)
 			else
 				case event.button
 				when SF::Mouse::Left

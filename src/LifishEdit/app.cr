@@ -46,7 +46,7 @@ class LE::App
 		@help = LE::Help.new(self)
 
 		window.vertical_sync_enabled = true
-		window.framerate_limit = 60
+		window.framerate_limit = LE::FRAMERATE_LIMIT
 		lr.offset = SF.vector2f(LE::SIDE_PANEL_WIDTH.to_f32, LE::MENU_HEIGHT.to_f32)
 		fps_counter.position = SF.vector2(2, LE::WIN_HEIGHT - 20)
 	end

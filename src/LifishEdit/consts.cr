@@ -1,5 +1,6 @@
 # Module constants
 module LE
+	FRAMERATE_LIMIT = 30
 	# Level width in tiles
 	LV_WIDTH = 15
 	# Level height in tiles

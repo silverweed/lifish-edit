@@ -78,6 +78,10 @@ class LE::Sidebar
 						width: BUTTONS_WIDTH * 3/2 + 1,
 						height: LE::TILE_SIZE)
 		@time_tweaker = TimeTweaker.new(@app)
+		@help_text = SF::Text.new("Press H for help", @app.font, 12)
+		b = @help_text.local_bounds
+		@help_text.position = SF.vector2f(LE::SIDE_PANEL_WIDTH - b.width - 5, LE::WIN_HEIGHT - b.height - 5)
+		@help_text.fill_color = SF::Color::Black
 		init_buttons
 	end
 
@@ -91,6 +95,7 @@ class LE::Sidebar
 		target.draw(@backten_button, states)
 		target.draw(@fwten_button, states)
 		target.draw(@time_tweaker, states)
+		target.draw(@help_text, states)
 	end
 
 	# Given a position `pos`, returns the position of the button containing
@@ -187,7 +192,7 @@ class LE::Sidebar
 
 	private def init_buttons
 		# Padding of buttons inside side panel
-		buttons_padding = 13
+		buttons_padding = 11
 		# Entities' buttons
 		begin
 			pos = SF.vector2f(buttons_padding, LE::MENU_HEIGHT + buttons_padding)
@@ -209,7 +214,7 @@ class LE::Sidebar
 		end
 
 		# Border/bg buttons
-		bp = @entity_buttons[2].position
+		bp = @entity_buttons[2].position + SF.vector2f(2, 0)
 		pos = {
 			:bg        => SF.vector2f(bp.x + BUTTONS_WIDTH + 1, bp.y),
 			:border    => SF.vector2f(bp.x + 2 * (BUTTONS_WIDTH + 1), bp.y),
