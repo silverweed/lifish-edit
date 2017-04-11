@@ -6,11 +6,9 @@ require "./history"
 require "./cache"
 require "./help"
 
-module LE
-
 # A container for all app components which can be conveniently
 # passed around across functions.
-class App
+class LE::App
 	getter lifish_dir
 	getter graphics_dir
 	getter! font
@@ -114,5 +112,3 @@ class App
 		end
 	end
 end
-
-end # module LE

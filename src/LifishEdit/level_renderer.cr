@@ -2,10 +2,8 @@ require "./utils"
 require "crsfml/graphics"
 require "crsfml/system"
 
-module LE
-
 # A LevelRenderer manages and draws a `Level` with its entities.
-class LevelRenderer
+class LE::LevelRenderer
 	getter level, tiles
 	getter offset
 
@@ -156,5 +154,3 @@ class LevelRenderer
 		end
 	{% end %}
 end
-
-end # module LE

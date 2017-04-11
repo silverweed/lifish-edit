@@ -1,8 +1,6 @@
 require "crsfml/graphics"
 
-module LE
-
-class Sidebar
+class LE::Sidebar
 	getter entity_buttons, time_tweaker
 
 	BUTTONS_WIDTH = 1.2 * LE::TILE_SIZE
@@ -513,5 +511,3 @@ class Sidebar
 
 	end
 end
-
-end # module LE

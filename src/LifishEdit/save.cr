@@ -1,9 +1,7 @@
 require "./levelset"
 require "json"
 
-module LE
-
-class SaveManager
+class LE::SaveManager
 	# Serializes a `LevelSet` into a JSON string, saving it to `fname`
 	def self.save(levelset : LE::LevelSet, fname : String)
 		fname += ".json" unless fname.ends_with? ".json"
@@ -18,5 +16,3 @@ class SaveManager
 		app.ls = LE::LevelSet.new(app, fname)
 	end
 end
-
-end # module LE

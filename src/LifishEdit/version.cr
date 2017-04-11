@@ -1,3 +1,3 @@
-module LE 
+module LE
 	VERSION = "0.5.3"
 end

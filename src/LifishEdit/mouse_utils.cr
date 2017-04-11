@@ -1,10 +1,8 @@
 require "./consts"
 require "crsfml/window"
 
-module LE
-
 # MouseUtils provides utility methods for the mouse within a `SF::RenderWindow`.
-class MouseUtils
+class LE::MouseUtils
 	def initialize(@app : LE::App)
 	end
 
@@ -62,5 +60,3 @@ class MouseUtils
 		{tx, ty}
 	end
 end
-
-end # module LE

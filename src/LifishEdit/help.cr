@@ -1,9 +1,7 @@
 require "crsfml/graphics"
 require "./app"
 
-module LE
-
-class Help
+class LE::Help
 	property active
 
 	include SF::Drawable
@@ -64,5 +62,3 @@ class Help
 		end
 	end
 end
-
-end # module LE

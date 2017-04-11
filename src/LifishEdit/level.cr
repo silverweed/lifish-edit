@@ -2,11 +2,9 @@
 require "./data"
 require "./entities.cr"
 
-module LE
-
 # A Lifish level, containing data deserialized from a JSON file.
 # Levels are usually created by a `LevelSet`.
-class Level
+class LE::Level
 	property time, music, tileIDs, tilemap, effects
 	getter orig_tilemap, lvnum
 
@@ -52,5 +50,3 @@ class Level
 		@tilemap = "#{LE.get_entity_symbol(:empty)}" * @tilemap.size
 	end
 end
-
-end # module LE

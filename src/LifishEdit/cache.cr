@@ -1,9 +1,7 @@
 require "crsfml/graphics"
 require "./utils"
 
-module LE
-
-class Cache
+class LE::Cache
 	def initialize(@app : LE::App)
 		@textures = {} of String => SF::Texture
 	end
@@ -27,5 +25,3 @@ class Cache
 	end
 
 end
-
-end # module LE

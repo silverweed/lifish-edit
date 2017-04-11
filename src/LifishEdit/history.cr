@@ -1,10 +1,8 @@
 require "./app"
 
-module LE
-
 # This class holds a stack of pairs (lvnum, tilemap) and allows restoring
 # a previous program state via <C-z> / <C-y>
-class History
+class LE::History
 	MAX_HIST_LEN = 50
 
 	def initialize(@app : LE::App)
@@ -74,5 +72,3 @@ class History
 		@i += 1
 	end
 end
-
-end # module LE

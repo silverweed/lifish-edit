@@ -4,12 +4,10 @@
 require "json"
 require "./data"
 
-module LE
-
 # A **LevelSet** contains an array of `Level`s.
 # The LevelSet is constructed with a JSON lifish levels file
 # containing the levels data and metadata.
-class LevelSet
+class LE::LevelSet
 
 	getter app
 	getter json_fname
@@ -108,5 +106,3 @@ class LevelSet
 		@data.created = date
 	end
 end
-
-end # module LE

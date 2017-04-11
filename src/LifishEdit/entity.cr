@@ -3,11 +3,9 @@ require "./utils"
 require "./data"
 require "crsfml/graphics"
 
-module LE
-
 # An Entity is essentially a sprite whose texture depends
 # on its type (as defined in `ENTITIES`).
-class Entity
+class LE::Entity
 	include LE::Utils
 
 	getter sprite, type, button_sprite
@@ -93,5 +91,3 @@ class Entity
 			point.y <= @sprite.position.y + @sprite.texture_rect.height
 	end
 end
-
-end # module LE
