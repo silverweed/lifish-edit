@@ -2,13 +2,13 @@
 LifishEdit is a small graphical level editor for [Lifish](https://github.com/silverweed/lifish).
 It's currently work-in-progress and not fully working yet.
 
-Currently working on:  
-- Linux  
-- MacOS 
-
-**TODO**: fix walls; change RClick to something else on Mac.
+Currently working on:
+- Linux
+- MacOS
 
 ## Installation
+
+A Crystal compiler (at least version 0.20) is required.
 
 Building:
 
@@ -24,7 +24,7 @@ Running:
 ./run.sh [lifish directory]
 ```
 
-On Mac, you may need to specify the location of CSFML if it isn't in `rpath` already. 
+On Mac, you may need to specify the location of CSFML if it isn't in `rpath` already.
 In this case, use:
 
 ```
@@ -32,7 +32,7 @@ LD_LIBRARY_PATH=/path/to/CSFML ./run.sh [opts]
 ```
 
 ## Development
-Building LifishEdit requires the [Crystal](http://crystal-lang.org) compiler, SFML and 
+Building LifishEdit requires the [Crystal](http://crystal-lang.org) compiler, SFML and
 [crsfml](https://github.com/BlaXpirit/crsfml).
 
 ## Contributing
