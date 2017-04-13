@@ -346,7 +346,6 @@ class LE::Sidebar
 
 		def initialize(@app : LE::App, entity_sym)
 			super()
-			STDERR.puts(entity_sym)
 			@entity = LE::Entity.new(@app, entity_sym, 
 						 LE::Data::TileIDs.new(breakable: 1_u16, fixed: 1_u16))
 		end

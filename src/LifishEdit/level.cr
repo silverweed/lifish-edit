@@ -15,6 +15,7 @@ class LE::Level
 		@music   = description.music.as UInt16
 		@tileIDs = description.tileIDs.as LE::Data::TileIDs
 		@orig_tilemap = @tilemap = description.tilemap.as String
+		@orig_tileIDs = @tileIDs
 		@effects = description.effects || [] of String
 	end
 
@@ -44,6 +45,7 @@ class LE::Level
 
 	def restore!
 		@tilemap = @orig_tilemap
+		@tileIDs = @orig_tileIDs
 	end
 
 	def clear!
