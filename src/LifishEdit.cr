@@ -152,7 +152,7 @@ while window.open?
 				when SF::Mouse::Right
 					if touched.is_a? LE::Entity
 						app.history.save
-						lr.remove_entity(touched)
+						app.remove_entity
 					end
 				end
 			end

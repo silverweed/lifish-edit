@@ -13,13 +13,13 @@ class LE::Sidebar
 					b = @entity_buttons.find { |bt| bt.entity.type == {{name}} }
 					if b.is_a? LE::EntityButton
 						if {{name}} == :fixed
-							b.entity.sprite.texture_rect = SF.int_rect(
+							b.entity.button_sprite.texture_rect = SF.int_rect(
 								LE::TILE_SIZE * (i.to_u16 - 1),
-								b.entity.sprite.texture_rect.top,
+								b.entity.button_sprite.texture_rect.top,
 								LE::TILE_SIZE, LE::TILE_SIZE)
 						else
-							b.entity.sprite.texture_rect = SF.int_rect(
-								b.entity.sprite.texture_rect.left,
+							b.entity.button_sprite.texture_rect = SF.int_rect(
+								b.entity.button_sprite.texture_rect.left,
 								LE::TILE_SIZE * (i.to_u16 - 1),
 								LE::TILE_SIZE, LE::TILE_SIZE)
 						end

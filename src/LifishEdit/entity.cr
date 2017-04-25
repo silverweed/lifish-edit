@@ -85,6 +85,12 @@ class LE::Entity
 		@sprite.position
 	end
 
+	# The grid position in tiles (playable starts from 0, 0)
+	def grid_position
+		{(@sprite.position.x - LE::SIDE_PANEL_WIDTH).to_i / 32 - 1,
+   		(@sprite.position.y - LE::MENU_HEIGHT).to_i / 32 - 1}
+	end
+
 	def contains?(point)
 		@sprite.position.x <= point.x && 
 			point.x <= @sprite.position.x + @sprite.texture_rect.width &&

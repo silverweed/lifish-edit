@@ -131,6 +131,7 @@ class LE::LevelRenderer
 	end
 
 	def remove_entity_at(tile : Tuple)
+		puts "tile: #{tile}, idx: #{LE::Utils.tile_to_idx(tile)}"
 		@tiles[LE::Utils.tile_to_idx(tile)] = nil
 	end
 
@@ -147,7 +148,7 @@ class LE::LevelRenderer
 		idx = LE::Utils.tile_to_idx(tile)
 		unless @tiles[idx].is_a?(LE::Entity) && @tiles[idx].not_nil!.type == entity.type
 			remove_entities(entity.type) if LE.is_unique_entity?(entity.type)
-			@tiles[idx] = LE::Entity.new(@app, entity.type)
+			@tiles[idx] = LE::Entity.new(@app, entity.type, level.tileIDs)
 		end
 	end
 
