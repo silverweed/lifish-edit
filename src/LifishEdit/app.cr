@@ -21,6 +21,7 @@ class LE::App
 	getter! cache
 	getter! ls
 	getter! help
+	getter! symmetries
 
 	setter ls
 
@@ -44,6 +45,8 @@ class LE::App
 		@history = LE::History.new(self)
 		@fps_counter = FPSCounter.new(self)
 		@help = LE::Help.new(self)
+
+		@symmetries = [] of Symbol
 
 		window.vertical_sync_enabled = true
 		window.framerate_limit = LE::FRAMERATE_LIMIT

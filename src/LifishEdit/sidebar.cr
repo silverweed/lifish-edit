@@ -1,23 +1,17 @@
 require "crsfml/graphics"
+require "./buttons"
 
 class LE::Sidebar
 	getter entity_buttons, time_tweaker
 
-	BUTTONS_WIDTH = 1.2 * LE::TILE_SIZE
-	# {Effect, texture}
-	EFFECTS = [
-		{:fog, "fog.png"},
-		{:darkness, nil}
-	]
-
 	macro make_buttons(name)
 		(1..8).each do |i|
-			btn = CallbackButton.new(@app, {{name}}, i.to_u16, ->() {
+			btn = BgBorderWallButton.new(@app, ->() {
 				@app.lr.save_level
 				@app.lr.set_{{name.id}}(i.to_u16)
 				if {{name}} == :fixed || {{name}} == :breakable
 					b = @entity_buttons.find { |bt| bt.entity.type == {{name}} }
-					if b.is_a? EntityButton
+					if b.is_a? LE::EntityButton
 						if {{name}} == :fixed
 							b.entity.sprite.texture_rect = SF.int_rect(
 								LE::TILE_SIZE * (i.to_u16 - 1),
@@ -32,10 +26,10 @@ class LE::Sidebar
 					end
 				end
 				return
-			})
+			}, {{name}}, i)
 			@{{name.id}}_buttons << btn
 			btn.position = pos[{{name}}]
-			pos[{{name}}] = SF.vector2f(pos[{{name}}].x, pos[{{name}}].y + BUTTONS_WIDTH + 1)
+			pos[{{name}}] = SF.vector2f(pos[{{name}}].x, pos[{{name}}].y + LE::BUTTONS_WIDTH + 1)
 		end
 	end
 
@@ -56,26 +50,27 @@ class LE::Sidebar
 		@fixed_buttons = [] of CallbackButton
 		@breakable_buttons = [] of CallbackButton
 		@effect_buttons = [] of CallbackButton
-		@backten_button = TextButton.new(@app.font, 
-						callback: ->() { 
+		@sym_buttons = [] of CallbackButton
+		@backten_button = TextButton.new(@app.font,
+						callback: ->() {
 							@app.lr.save_level
 							i = @app.ls.cur_level - 11
 							i = @app.ls.n_levels + i if i < 0
 							@app.lr.level = @app.ls.set(i)
 							return
-						}, 
+						},
 						string: "<< -10",
-						width: BUTTONS_WIDTH * 3/2,
+						width: LE::BUTTONS_WIDTH * 3/2,
 						height: LE::TILE_SIZE)
-		@fwten_button = TextButton.new(@app.font, 
-						callback: ->() { 
+		@fwten_button = TextButton.new(@app.font,
+						callback: ->() {
 							@app.lr.save_level
 							i = (@app.ls.cur_level + 9) % @app.ls.n_levels
 							@app.lr.level = @app.ls.set(i)
 							return
 						},
 						string: "+10 >>",
-						width: BUTTONS_WIDTH * 3/2 + 1,
+						width: LE::BUTTONS_WIDTH * 3/2 + 1,
 						height: LE::TILE_SIZE)
 		@time_tweaker = TimeTweaker.new(@app)
 		@help_text = SF::Text.new("Press H for help", @app.font, 12)
@@ -89,7 +84,7 @@ class LE::Sidebar
 
 	def draw(target, states : SF::RenderStates)
 		target.draw(@rect, states)
-		{% for name in %i(entity bg border fixed breakable effect) %}
+		{% for name in %i(entity bg border fixed breakable effect sym) %}
 			@{{name.id}}_buttons.map { |btn| btn.draw target, states }
 		{% end %}
 		target.draw(@backten_button, states)
@@ -106,7 +101,7 @@ class LE::Sidebar
 				return btn.position
 			end
 		end
-		{% for name in %w(bg border fixed breakable effect) %}
+		{% for name in %w(bg border fixed breakable effect sym) %}
 			@{{name.id}}_buttons.each do |btn|
 				if btn.contains?(pos)
 					return btn.position	
@@ -147,11 +142,11 @@ class LE::Sidebar
 			end
 		end
 
-		{% for name in %w(bg border fixed breakable effect) %}
+		{% for name in %w(bg border fixed breakable effect sym) %}
 			@{{name.id}}_buttons.each do |btn|
 				if btn.contains?(pos)
 					STDERR.puts "Callback #{{{name}}}[#{btn.id}]" if @app.verbose?
-				{% if name != "effect" %}
+				{% if name != "effect" && name != "sym" %}
 					if @selected_{{name.id}} != nil
 						@selected_{{name.id}}.not_nil!.selected = false
 					end	
@@ -186,7 +181,10 @@ class LE::Sidebar
 		{% end %}
 		fx = @app.lr.level.effects
 		@effect_buttons.each_with_index do |btn, i|
-			btn.selected = fx.includes?(EFFECTS[i][0].to_s)
+			btn.selected = fx.includes?(LE::EFFECTS[i][0].to_s)
+		end
+		@sym_buttons.each_with_index do |btn, i|
+			btn.selected = @app.symmetries.includes?(LE::SYMMETRIES[i][0])
 		end
 	end
 
@@ -204,9 +202,9 @@ class LE::Sidebar
 				@entity_buttons << btn
 				btn.position = pos
 				if i % 3 != 2
-					pos.x += BUTTONS_WIDTH + 1
+					pos.x += LE::BUTTONS_WIDTH + 1
 				else
-					pos.y += BUTTONS_WIDTH + 1
+					pos.y += LE::BUTTONS_WIDTH + 1
 					pos.x = buttons_padding.to_f32
 				end
 				i += 1
@@ -216,10 +214,10 @@ class LE::Sidebar
 		# Border/bg buttons
 		bp = @entity_buttons[2].position + SF.vector2f(2, 0)
 		pos = {
-			:bg        => SF.vector2f(bp.x + BUTTONS_WIDTH + 1, bp.y),
-			:border    => SF.vector2f(bp.x + 2 * (BUTTONS_WIDTH + 1), bp.y),
-			:fixed     => SF.vector2f(bp.x + 3 * (BUTTONS_WIDTH + 1), bp.y),
-			:breakable => SF.vector2f(bp.x + 4 * (BUTTONS_WIDTH + 1), bp.y),
+			:bg        => SF.vector2f(bp.x + LE::BUTTONS_WIDTH + 1, bp.y),
+			:border    => SF.vector2f(bp.x + 2 * (LE::BUTTONS_WIDTH + 1), bp.y),
+			:fixed     => SF.vector2f(bp.x + 3 * (LE::BUTTONS_WIDTH + 1), bp.y),
+			:breakable => SF.vector2f(bp.x + 4 * (LE::BUTTONS_WIDTH + 1), bp.y),
 		}
 		
 		make_buttons(:bg)
@@ -228,188 +226,55 @@ class LE::Sidebar
 		make_buttons(:breakable)
 
 		@backten_button.position = SF.vector2f(@entity_buttons[0].position.x,
-						      @entity_buttons[-1].position.y + BUTTONS_WIDTH + 1)
+						      @entity_buttons[-1].position.y + LE::BUTTONS_WIDTH + 1)
 		@fwten_button.position = SF.vector2f(@backten_button.position.x + @backten_button.bounds.width - 1,
 						     @backten_button.position.y)
-		@time_tweaker.position = @bg_buttons[-1].position + SF.vector2f(0, BUTTONS_WIDTH + 1)
+		@time_tweaker.position = @bg_buttons[-1].position + SF.vector2f(0, LE::BUTTONS_WIDTH + 1)
+
+		make_sym_buttons	
 
 		# Effects buttons
 		fxcb = ->(id : Int32) {
 			->() {
 				fx = @app.lr.level.effects
-				if fx.includes?(EFFECTS[id][0].to_s)
-					@app.lr.level.effects.delete(EFFECTS[id][0].to_s)
+				if fx.includes?(LE::EFFECTS[id][0].to_s)
+					@app.lr.level.effects.delete(LE::EFFECTS[id][0].to_s)
 					@effect_buttons[id].selected = false
 				else
-					@app.lr.level.effects << EFFECTS[id][0].to_s
+					@app.lr.level.effects << LE::EFFECTS[id][0].to_s
 					@effect_buttons[id].selected = true
 				end
 				@app.lr.save_level
 				nil
 			}
 		}
-		pos = @time_tweaker.position + SF.vector2f(0, BUTTONS_WIDTH + 1)
+		pos = @time_tweaker.position + SF.vector2f(0, LE::BUTTONS_WIDTH + 1)
 		2.times do |i|
-			btn = CallbackButton.new(@app, :effect, i.to_u16, fxcb.call(i))
+			btn = EffectButton.new(@app, fxcb.call(i), i)
 			btn.position = pos
-			pos.x += BUTTONS_WIDTH
+			pos.x += LE::BUTTONS_WIDTH
 			@effect_buttons << btn
 		end
 	end
-	
-	class Button
-		property selected
 
-		def initialize
-			@bg_rect = SF::RectangleShape.new(SF.vector2f(BUTTONS_WIDTH, BUTTONS_WIDTH))
-			@bg_rect.fill_color = SF.color(0, 0, 255, 150)
-			@bg_rect.outline_thickness = 1
-			@bg_rect.outline_color = SF.color(50, 50, 50, 255)
-			@selected = false
-		end
-
-		def bounds
-			@bg_rect.local_bounds
-		end
-
-		def position
-			@bg_rect.position
-		end
-
-		def position=(pos)
-			@bg_rect.position = pos
-		end
-
-		def contains?(pos)
-			@bg_rect.global_bounds.contains?(pos)
-		end
-
-		include SF::Drawable 
-
-		def draw(target, states : SF::RenderStates)
-			if @selected
-				@bg_rect.fill_color = SF.color(0, 0, 255, 150)
-			else
-				@bg_rect.fill_color = SF.color(0, 0, 0, 0)
-			end
-			target.draw(@bg_rect, states)
-		end
-	end
-
-	class TextButton < Button
-		getter callback
-
-		def initialize(font, @callback : -> Void, string = "", width = 0, height = 0)
-			super()
-			@text = SF::Text.new(string, font, 14)
-			@text.color = SF::Color::Black
-			b = @text.local_bounds
-			@bg_rect.size = SF.vector2f([width, b.width + 4].max, [height, b.height + 4].max)
-			center_text
-			@bg_rect.fill_color = SF::Color.new(207, 210, 218)
-		end
-
-		def fill_color=(col)
-			@bg_rect.fill_color = col
-		end
-
-		def color=(col)
-			@text.color = col
-		end
-		
-		def string=(s)
-			@text.string = s
-			center_text
-		end
-
-		private def center_text
-			tb = @text.local_bounds
-			rb = @bg_rect.size
-			@text.position = @bg_rect.position + SF.vector2f((rb.x - tb.width) / 2, (rb.y - tb.height) / 2)
-		end
-
-		def draw(target, states : SF::RenderStates)
-			target.draw(@bg_rect, states)
-			target.draw(@text, states)
-		end
-
-		def position=(pos)
-			super
-			b = @text.local_bounds
-			bs = @bg_rect.size
-			@text.position = @bg_rect.position + SF.vector2f((bs.x - b.width) / 2, (bs.y - b.height) / 2)
-		end
-	end
-
-	class EntityButton < Button
-		getter entity
-
-		def initialize(@app : LE::App, entity_sym)
-			super()
-			@entity = LE::Entity.new(@app, entity_sym, 
-						 LE::Data::TileIDs.new(breakable: 1_u16, fixed: 1_u16))
-		end
-
-		def draw(target, states : SF::RenderStates)
-			super
-			target.draw(@entity.button_sprite, states)
-		end
-
-		def position=(pos)
-			super
-			@entity.button_sprite.position = SF.vector2f(
-				pos.x + 0.1 * LE::TILE_SIZE,
-				pos.y + 0.1 * LE::TILE_SIZE)
-		end
-	end
-
-	class CallbackButton < Button
-		getter callback
-		getter id
-
-		def initialize(@app : LE::App, type, @id : UInt16, @callback : -> Void)
-			super()
-			@bg_rect.fill_color = SF.color(0, 0, 0, 0)
-			@sprite = SF::Sprite.new
-			texture = nil
-			begin
-				texture = case type
-				when :bg, :border
-					@app.cache.texture("#{type}#{id}.png")
-				when :effect
-					if EFFECTS[@id][1] != nil
-						@app.cache.texture(EFFECTS[@id][1].not_nil!)
-					else
-						
-						@app.cache.texture(LE::Utils.get_resource("white.png"))
-					end
+	private def make_sym_buttons
+		pos = @backten_button.position
+		pos.y += LE::BUTTONS_WIDTH + 1
+		3.times do |i|
+			sym = SYMMETRIES[i][0]
+			btn = SymmetryButton.new(@app, ->() {
+				if @app.symmetries.includes?(sym)
+					@app.symmetries.delete(sym)
+					@sym_buttons[i].selected = false
 				else
-					@app.cache.texture("#{type}.png")
-				end.as SF::Texture
-				@sprite.texture = texture
-				@sprite.texture_rect = SF.int_rect(type == :fixed ? (id-1) * LE::TILE_SIZE : 0,
-								   type == :bg || type == :fixed ?
-								   	0
-								   	: (id-1) * LE::TILE_SIZE,
-								   LE::TILE_SIZE, LE::TILE_SIZE)
-				if type == :effect
-					case @id
-					when 1
-						@sprite.color = SF::Color::Black
-					end
+					@app.symmetries << sym
+					@sym_buttons[i].selected = true
 				end
-			rescue
-			end
-		end
-
-		def draw(target, states : SF::RenderStates)
-			super
-			target.draw(@sprite, states)
-		end
-
-		def position=(pos)
-			super
-			@sprite.position = SF.vector2f(pos.x + 0.1 * LE::TILE_SIZE, pos.y + 0.1 * LE::TILE_SIZE)
+				nil
+			}, i)
+			btn.position = pos
+			@sym_buttons << btn
+			pos.x += LE::BUTTONS_WIDTH + 1
 		end
 	end
 

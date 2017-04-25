@@ -130,6 +130,10 @@ class LE::LevelRenderer
 		@tiles.map! { |tile| tile == entity ? nil : tile }
 	end
 
+	def remove_entity_at(tile : Tuple)
+		@tiles[LE::Utils.tile_to_idx(tile)] = nil
+	end
+
 	def remove_entities(type)
 		@tiles.map! { |tile| tile == nil || tile.not_nil!.type != type ? tile : nil }
 	end

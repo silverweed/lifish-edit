@@ -6,6 +6,7 @@ class LE::App
 		if @selected_entity != nil && tile.is_a? Tuple
 			history.save
 			lr.place_entity(tile, @selected_entity.not_nil!)
+			place_symmetric(tile)
 		end
 	end
 
@@ -14,6 +15,38 @@ class LE::App
 		if touched.is_a? LE::Entity
 			history.save
 			lr.remove_entity(touched)
+			pos = touched.position
+			remove_symmetric({pos.x, pos.y})
+		end
+	end
+
+	private def place_symmetric(tile)
+		symmetries.each do |sym|
+			puts "sym = #{sym}"
+			stile = symmetric(sym, tile)
+			puts "Symmetric of #{tile} is #{stile}"
+			lr.place_entity(stile.not_nil!, @selected_entity.not_nil!) if stile != nil
+		end
+	end
+
+	private def remove_symmetric(tile)
+		symmetries.each do |sym|
+			stile = symmetric(sym, tile)
+			lr.remove_entity_at(stile.not_nil!) if stile != nil
+		end
+	end
+	
+	private def symmetric(sym, tile)
+		x, y = tile
+		case sym
+		when :sym_axial_h
+			{LE::LV_WIDTH - 1 - x, y}
+		when :sym_axial_v
+			{x, LE::LV_HEIGHT - 1 - y}
+		when :sym_central
+			{LE::LV_WIDTH - 1 - x, LE::LV_HEIGHT - 1 - y}
+		else
+			nil
 		end
 	end
 

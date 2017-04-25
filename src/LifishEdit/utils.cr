@@ -15,7 +15,7 @@ module Utils
 	end
 
 	macro tile_to_idx(tile)
-		(({{tile}})[1] * LE::LV_WIDTH + ({{tile}})[0])
+		(({{tile}})[1] * LE::LV_WIDTH + ({{tile}})[0]).to_i
 	end
 
 	macro code2num(keycode)
