@@ -25,11 +25,11 @@ require "crsfml/graphics"
 require "crsfml/window"
 
 options = getopt [
-	{ "-v", :verbose }, # whether to be verbose or not
-	{ "-V", :version }, # only output program version
-	{ "-h", :help },    # only output help
-	{ "-g", :graphics_dir, String }, # manually select graphics dir
-]
+	{ "-v", :verbose, "be verbose" },
+	{ "-V", :version, "print version and exit" },
+	{ "-h", :help, "print this help and exit" },
+	{ "-g", :graphics_dir, "select graphics directory (default: lifish_dir/assets/graphics)", String },
+], "Usage: #{$0} [options] <levelset>"
 
 if options[:version]
 	puts "LifishEdit #{LE::VERSION} by Giacomo Parolini"

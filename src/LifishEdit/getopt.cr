@@ -2,7 +2,8 @@
 
 # **getopt** must be given an array of tuples like:
 # ```
-# getopt([{ "-l", :levels, String }, { "-v", :verbose }])
+# # [{ flag, option_name, description[, type] }]
+# getopt([{ "-l", :levels, "select levels", String }, { "-v", :verbose, "be verbose" }])
 # ```
 # and it will return a variable %options containing a hash 
 # of all the options with their values and an array of all
@@ -18,7 +19,7 @@
 # ```
 # {:args => ["/my/path"], :levels => "levels.json", :verbose => true}
 # ```
-macro getopt(optlist)
+macro getopt(optlist, help_head = "")
 	%i = 0
 	%opts_ended = false
 	%options = {} of Symbol => Array(String)|Int64|Float64|String|Bool
@@ -29,6 +30,19 @@ macro getopt(optlist)
 	%options[{{opt[1]}}] = false
 	{% end %}
 
+	print_help = ->() {
+		puts {{help_head}} if {{help_head}}.size > 0
+		puts "Options:"
+		{% for opt in optlist %}
+			{% if opt.size < 4 %}
+				puts "\t#{{{opt[0]}}}: #{{{opt[2]}}}"
+			{% else %}
+				puts "\t#{{{opt[0]}}} <#{{{opt[3]}}}>: #{{{opt[2]}}}"
+			{% end %}
+		{% end %}
+		exit
+	}
+
 	while %i < ARGV.size
 		unless %opts_ended
 			case ARGV[%i]
@@ -36,24 +50,27 @@ macro getopt(optlist)
 				%opts_ended = true
 			{% for opt in optlist %}
 			when {{opt[0]}}
-				{% if opt.size < 3 %}
+				{% if opt.size < 4 %}
 					# unary flag
 					%options[{{opt[1]}}] = true
 				{% else %}
 				# needs an argument
 				%i += 1
 				if %i == ARGV.size
-					raise "Expected argument after #{ARGV[%i - 1]}"
-				elsif !ARGV[%i].is_a? {{opt[2]}}
-					raise "Invalid type for option #{ARGV[%i - 1]} \
-					       (#{typeof(ARGV[%i - 1])} instead of #{{{opt[2]}}})"
+					puts "Expected #{{{opt[3]}}} argument after #{ARGV[%i - 1]}"
+					exit 1
+				elsif !ARGV[%i].is_a? {{opt[3]}}
+					puts "Invalid type for option #{ARGV[%i - 1]} \
+					       (#{typeof(ARGV[%i - 1])} instead of #{{{opt[3]}}})"
+				       exit 1
 				end
-				%options[{{opt[1]}}] = ARGV[%i].as {{opt[2]}}
+				%options[{{opt[1]}}] = ARGV[%i].as {{opt[3]}}
 				{% end %}
 			{% end %}
 			else
 				if ARGV[%i][0] == '-'
-					STDERR.puts("Ignoring unknown option: #{ARGV[%i]}")
+					STDERR.puts("Unknown option: #{ARGV[%i]}")
+					print_help.call
 				else
 					%args << ARGV[%i]
 				end
