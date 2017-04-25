@@ -84,6 +84,9 @@ ls = app.ls
 lr.load_level
 app.sidebar.refresh
 
+# Start with a default selected entity
+app.selected_entity = app.sidebar.touch(app.sidebar.entity_buttons[0].position)
+
 LE::Utils.write_cfg_file("start_dir", File.dirname(levels_json))
 
 alias Kb = SF::Keyboard
@@ -135,7 +138,7 @@ while window.open?
 			if app.verbose?
 				puts "Mouse in #{SF::Mouse.get_position window};" +
 					" tile = #{app.mouse_utils.get_touched_tile};" +
-					" touched = #{touched}" 
+					" touched = #{touched}"
 			end
 
 			if touched.is_a? LE::MenuCallback

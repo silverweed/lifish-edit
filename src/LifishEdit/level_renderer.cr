@@ -131,7 +131,6 @@ class LE::LevelRenderer
 	end
 
 	def remove_entity_at(tile : Tuple)
-		puts "tile: #{tile}, idx: #{LE::Utils.tile_to_idx(tile)}"
 		@tiles[LE::Utils.tile_to_idx(tile)] = nil
 	end
 
