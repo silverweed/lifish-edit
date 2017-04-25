@@ -19,7 +19,8 @@ class LE::MouseUtils
 		if y <= LE::MENU_HEIGHT
 			@app.menu.touch(SF.vector2f(x, y))
 		elsif x < LE::SIDE_PANEL_WIDTH
-			@app.selected_entity = @app.sidebar.touch(SF.vector2f(x, y))
+			e = @app.sidebar.touch(SF.vector2f(x, y))
+			@app.selected_entity = e if e != nil
 			nil
 		else
 			get_touched_entity

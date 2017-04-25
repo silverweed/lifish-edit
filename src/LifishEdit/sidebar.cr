@@ -134,11 +134,13 @@ class LE::Sidebar
 
 		@entity_buttons.each do |btn|
 			if btn.contains?(pos)
-				btn.selected = true
+				puts "contains#{btn}"
 				if @selected_button != nil
 					@selected_button.not_nil!.selected = false
 				end
-				return (@selected_button = btn).entity
+				btn.selected = true
+				@selected_button = btn
+				return btn.entity
 			end
 		end
 

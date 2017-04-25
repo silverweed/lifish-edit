@@ -26,7 +26,8 @@ class LE::Entity
 			texture_name = @type.to_s + ".png"
 			begin
 				texture = @app.cache.texture(texture_name)
-			rescue
+			rescue ex
+				STDERR.puts "[ warning ] creating entity: #{ex}"
 			end
 		end
 		if texture.is_a? SF::Texture
