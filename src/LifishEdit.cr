@@ -129,7 +129,7 @@ while window.open?
 					end
 				end
 			when Kb::Q
-				window.close if Kb.key_pressed?(Kb::LControl)
+				app.quit_prompt.active = true if Kb.key_pressed?(Kb::LControl)
 			end
 
 		when SF::Event::MouseButtonPressed

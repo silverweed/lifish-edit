@@ -1,5 +1,5 @@
-require "./consts"
 require "crsfml/window"
+require "./consts"
 
 # MouseUtils provides utility methods for the mouse within a `SF::RenderWindow`.
 class LE::MouseUtils
@@ -15,15 +15,21 @@ class LE::MouseUtils
 	# a MenuCallback (if it's over the menu), or nil.
 	def touch : (LE::Entity|MenuCallback)?
 		x, y = get_mouse_xy
+		mpos = SF.vector2f(x, y)
+
+		if @app.quit_prompt.active
+			@app.quit_prompt.touch(mpos)
+			return nil
+		end
 
 		if y <= LE::MENU_HEIGHT
-			@app.menu.touch(SF.vector2f(x, y))
+			return @app.menu.touch(mpos)
 		elsif x < LE::SIDE_PANEL_WIDTH
-			e = @app.sidebar.touch(SF.vector2f(x, y))
+			e = @app.sidebar.touch(mpos)
 			@app.selected_entity = e if e != nil
-			nil
+			return
 		else
-			get_touched_entity
+			return get_touched_entity
 		end
 	end
 

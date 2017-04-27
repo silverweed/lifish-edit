@@ -121,8 +121,7 @@ class Menu
 			}
 		when :quit 
 			->(app : LE::App) {
-				# TODO: confirm
-				false
+				app.quit_prompt.active = true
 			}
 		when :back
 			->(app : LE::App) {

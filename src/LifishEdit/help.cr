@@ -1,31 +1,13 @@
 require "crsfml/graphics"
 require "./app"
+require "./popup"
 
-class LE::Help
-	property active
-
-	include SF::Drawable
-
-	def initialize(@app : LE::App)
-		@active = false
-		@rect = SF::RectangleShape.new(SF.vector2f(LE::WIN_WIDTH * 2/3, LE::WIN_HEIGHT * 4/5))
-		@rect.fill_color = SF::Color::White
-		@rect.outline_color = SF::Color::Black
-		@rect.outline_thickness = 2
-		@rect.position = SF.vector2f((LE::WIN_WIDTH - @rect.local_bounds.width) / 2,
-		                             (LE::WIN_HEIGHT - @rect.local_bounds.height) / 2)
-		@texts = [] of SF::Text
-		@initialized = false
+class LE::Help < LE::Popup
+	def initialize(app : LE::App)
+		super(app, SF.vector2f(LE::WIN_WIDTH * 2/3, LE::WIN_HEIGHT * 4/5))
 	end
 
-	def draw(target, states : SF::RenderStates)
-		return unless @active
-		init unless @initialized
-		target.draw(@rect, states)
-		@texts.each { |t| target.draw(t, states) }
-	end
-
-	private def init
+	protected def init
 		h("KEYBINDINGS")
 		h("")
 		h("LMouse", "Act / Place entity")

@@ -5,6 +5,7 @@ require "./sidebar"
 require "./history"
 require "./cache"
 require "./help"
+require "./quit_prompt"
 
 # A container for all app components which can be conveniently
 # passed around across functions.
@@ -20,8 +21,9 @@ class LE::App
 	getter! history
 	getter! cache
 	getter! ls
-	getter! help
 	getter! symmetries
+	getter! help
+	getter! quit_prompt
 
 	setter ls
 
@@ -45,13 +47,17 @@ class LE::App
 		@history = LE::History.new(self)
 		@fps_counter = FPSCounter.new(self)
 		@help = LE::Help.new(self)
-
+		@quit_prompt = LE::QuitPrompt.new(self)
 		@symmetries = [] of Symbol
 
 		window.vertical_sync_enabled = true
 		window.framerate_limit = LE::FRAMERATE_LIMIT
 		lr.offset = SF.vector2f(LE::SIDE_PANEL_WIDTH.to_f32, LE::MENU_HEIGHT.to_f32)
 		fps_counter.position = SF.vector2(2, LE::WIN_HEIGHT - 20)
+	end
+
+	def popups
+		[help, quit_prompt]
 	end
 
 	include SF::Drawable
@@ -61,6 +67,7 @@ class LE::App
 		target.draw(menu, states)
 		target.draw(lr, states)
 		target.draw(help, states)
+		target.draw(quit_prompt, states)
 		target.draw(fps_counter, states)
 	end
 

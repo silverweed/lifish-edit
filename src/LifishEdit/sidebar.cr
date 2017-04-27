@@ -134,7 +134,6 @@ class LE::Sidebar
 
 		@entity_buttons.each do |btn|
 			if btn.contains?(pos)
-				puts "contains#{btn}"
 				if @selected_button != nil
 					@selected_button.not_nil!.selected = false
 				end
@@ -229,7 +228,7 @@ class LE::Sidebar
 
 		@backten_button.position = SF.vector2f(@entity_buttons[0].position.x,
 						      @entity_buttons[-1].position.y + LE::BUTTONS_WIDTH + 1)
-		@fwten_button.position = SF.vector2f(@backten_button.position.x + @backten_button.bounds.width - 1,
+		@fwten_button.position = SF.vector2f(@backten_button.position.x + @backten_button.local_bounds.width - 1,
 						     @backten_button.position.y)
 		@time_tweaker.position = @bg_buttons[-1].position + SF.vector2f(0, LE::BUTTONS_WIDTH + 1)
 
@@ -334,9 +333,9 @@ class LE::Sidebar
 		def position=(pos)
 			@back_button.position = pos
 			@time_displayer.position = SF.vector2f(@back_button.position.x +
-							       @back_button.bounds.width - 1, pos.y)
+							       @back_button.local_bounds.width - 1, pos.y)
 			@fw_button.position = SF.vector2f(@time_displayer.position.x +
-							  @time_displayer.bounds.width - 1, pos.y)
+							  @time_displayer.local_bounds.width - 1, pos.y)
 		end
 
 		def position

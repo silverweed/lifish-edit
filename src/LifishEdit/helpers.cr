@@ -62,7 +62,7 @@ class LE::App
 	end
 
 	def highlight_tile(window)
-		return if help.active
+		popups.each { |p| return if p.active }
 
 		touched = mouse_utils.get_touched_tile
 		hlrect = SF::RectangleShape.new(SF.vector2f(LE::TILE_SIZE, LE::TILE_SIZE))

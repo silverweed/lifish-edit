@@ -18,6 +18,11 @@ module Utils
 		(({{tile}})[1] * LE::LV_WIDTH + ({{tile}})[0]).to_i
 	end
 
+	macro centered(bounds)
+		SF.vector2f((LE::WIN_WIDTH - {{bounds}}.width) / 2,
+			(LE::WIN_HEIGHT - {{bounds}}.height) / 2)
+	end
+
 	macro code2num(keycode)
 		case {{keycode}}
 		{% for i in 0..9 %}

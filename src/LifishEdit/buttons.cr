@@ -13,7 +13,11 @@ class Button
 		@selected = false
 	end
 
-	def bounds
+	def global_bounds
+		@bg_rect.global_bounds
+	end
+
+	def local_bounds
 		@bg_rect.local_bounds
 	end
 
@@ -29,7 +33,7 @@ class Button
 		@bg_rect.global_bounds.contains?(pos)
 	end
 
-	include SF::Drawable 
+	include SF::Drawable
 
 	def draw(target, states : SF::RenderStates)
 		if @selected
