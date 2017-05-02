@@ -39,7 +39,7 @@ class LE::App
 		@ls = LE::LevelSet.new(self, levels_json)
 		@window = SF::RenderWindow.new(SF::VideoMode.new(LE::WIN_WIDTH, LE::WIN_HEIGHT), "Lifish Edit")
 		@font = SF::Font.from_file("#{@lifish_dir}/assets/fonts/pf_tempesta_seven.ttf")
-		@menu = LE::Menu.new(font.not_nil!)
+		@menu = LE::Menu.new(font)
 		@cache = LE::Cache.new(self)
 		@lr = LE::LevelRenderer.new(self, ls[0])
 		@sidebar = LE::Sidebar.new(self)

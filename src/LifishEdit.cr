@@ -102,6 +102,13 @@ while window.open?
 
 		when SF::Event::KeyPressed
 			case event.code
+			when Kb::Return
+				# Horrible hardcoded behaviour, probably will change this in future
+				if app.sidebar.time_tweaker.time_displayer.selected
+					app.sidebar.time_tweaker.finalize_manual_time
+				else
+					window.close if app.quit_prompt.active
+				end
 			when Kb::Add
 				lr.save_level
 				lr.level = ls.next
@@ -114,7 +121,12 @@ while window.open?
 				app.toggle_help
 			when Kb::Num0 .. Kb::Num9,
 			     Kb::Numpad0 .. Kb::Numpad9
-				app.jump_to_lv(LE::Utils.code2num(event.code))
+				if app.sidebar.time_tweaker.time_displayer.selected
+					app.sidebar.time_tweaker.time_displayer.update_manual_time(
+						LE::Utils.code2num(event.code))
+				else
+					app.jump_to_lv(LE::Utils.code2num(event.code))
+				end
 			# Control sequences
 			when Kb::Z
 				app.history.step_back if Kb.key_pressed?(Kb::LControl)

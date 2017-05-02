@@ -8,8 +8,8 @@ class LE::Cache
 
 	# Load and return texture `key`.
 	# If `key` is a relative path, assume base dir is `(lifish_dir)/assets/graphics`.
-	def texture(key : String)
-		return @textures[key] if @textures.has_key? key
+	def texture(key : String) : SF::Texture?
+		return @textures[key] if @textures.has_key?(key)
 		path = if key == File.basename(key)
 			       LE::Utils.get_graphic(key)
 		       else

@@ -108,19 +108,20 @@ class LE::LevelRenderer
 			raise "Invalid number of tiles! (#{@tiles.size} instead of #{@level.tilemap.size})"
 		end
 		# Load background and border textures
-		begin
-			@bg_texture = @app.cache.texture("bg#{@level.tileIDs.bg}.png")
-			@bg.texture = @bg_texture.not_nil!
+		bgt = @app.cache.texture("bg#{@level.tileIDs.bg}.png")
+		if !bgt.nil?
+			@bg_texture = bgt
+			@bg.texture = bgt
 			@bg.texture_rect = SF.int_rect(0, 0, LE::TILE_SIZE * LE::LV_WIDTH,
 						       LE::TILE_SIZE * LE::LV_HEIGHT)
 			@bg.texture.not_nil!.repeated = true
-
-			@border_texture = @app.cache.texture("border#{@level.tileIDs.border}.png")
-			@border.texture = @border_texture.not_nil!
+		end
+		bdt = @app.cache.texture("border#{@level.tileIDs.border}.png")
+		if !bdt.nil?
+			@border_texture = bdt
+			@border.texture = bdt
 			@border.texture_rect = SF.int_rect(0, 0, LE::TILE_SIZE * (LE::LV_WIDTH + 2),
 							   LE::TILE_SIZE * (LE::LV_HEIGHT + 2))
-		rescue ex
-			STDERR.puts(ex)
 		end
 		@level_text.string = "#{@level.lvnum}"
 		@level_text_shadow.string = @level_text.string
@@ -135,7 +136,7 @@ class LE::LevelRenderer
 	end
 
 	def remove_entities(type)
-		@tiles.map! { |tile| tile == nil || tile.not_nil!.type != type ? tile : nil }
+		@tiles.map! { |tile| tile.nil? || tile.type != type ? tile : nil }
 	end
 
 	def place_entity(tile : Tuple, entity : LE::Entity)

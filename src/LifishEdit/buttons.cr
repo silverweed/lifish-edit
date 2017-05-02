@@ -4,6 +4,7 @@ module LE
 
 class Button
 	property selected
+	property soft_selected
 
 	def initialize
 		@bg_rect = SF::RectangleShape.new(SF.vector2f(LE::BUTTONS_WIDTH, LE::BUTTONS_WIDTH))
@@ -11,6 +12,12 @@ class Button
 		@bg_rect.outline_thickness = 1
 		@bg_rect.outline_color = SF.color(50, 50, 50, 255)
 		@selected = false
+		@soft_selected = false
+		@soft_select_rect = SF::RectangleShape.new()
+		adjust_soft_select_rect
+		@soft_select_rect.outline_thickness = 1
+		@soft_select_rect.fill_color = SF.color(0, 0, 0, 0)
+		@soft_select_rect.outline_color = SF.color(0, 0, 0, 220)
 	end
 
 	def global_bounds
@@ -27,6 +34,7 @@ class Button
 
 	def position=(pos)
 		@bg_rect.position = pos
+		adjust_soft_select_rect
 	end
 
 	def contains?(pos)
@@ -42,11 +50,22 @@ class Button
 			@bg_rect.fill_color = SF.color(0, 0, 0, 0)
 		end
 		target.draw(@bg_rect, states)
+		if @soft_selected
+			target.draw(@soft_select_rect, states)
+		end
+	end
+
+	protected def adjust_soft_select_rect
+		s = @bg_rect.size
+		@soft_select_rect.size = SF.vector2f(s.x * 0.8, s.y * 0.8)
+		p = @bg_rect.position
+		@soft_select_rect.position = SF.vector2f(p.x + s.x * 0.1, p.y + s.y * 0.1)
 	end
 end
 
 class TextButton < Button
 	getter callback
+	getter text
 
 	def initialize(font, @callback : -> Void, string = "", width = 0, height = 0)
 		super()
@@ -54,6 +73,7 @@ class TextButton < Button
 		@text.color = SF::Color::Black
 		b = @text.local_bounds
 		@bg_rect.size = SF.vector2f([width, b.width + 4].max, [height, b.height + 4].max)
+		adjust_soft_select_rect
 		center_text
 		@bg_rect.fill_color = SF::Color.new(207, 210, 218)
 	end
@@ -78,15 +98,13 @@ class TextButton < Button
 	end
 
 	def draw(target, states : SF::RenderStates)
-		target.draw(@bg_rect, states)
+		super
 		target.draw(@text, states)
 	end
 
 	def position=(pos)
 		super
-		b = @text.local_bounds
-		bs = @bg_rect.size
-		@text.position = @bg_rect.position + SF.vector2f((bs.x - b.width) / 2, (bs.y - b.height) / 2)
+		center_text
 	end
 end
 
@@ -153,8 +171,8 @@ class EffectButton < CallbackButton
 	def initialize(app : LE::App, callback : -> Void, id)
 		super
 		@sprite.texture =
-			if LE::EFFECTS[id][1] != nil
-				@app.cache.texture(LE::Utils.get_resource(LE::EFFECTS[id][1].not_nil!))
+			if !LE::EFFECTS[id][1].nil?
+				@app.cache.texture(LE::Utils.get_resource(LE::EFFECTS[id][1]))
 			else
 				
 				@app.cache.texture(LE::Utils.get_resource("white.png"))

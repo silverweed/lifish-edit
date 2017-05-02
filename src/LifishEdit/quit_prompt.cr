@@ -32,6 +32,7 @@ class LE::QuitPrompt < LE::Popup
 		tb = txt.local_bounds
 		yes_btn = LE::TextButton.new(@app.font, ->() { @app.window.close }, "Yes", b.width / 4, b.height / 4)
 		yes_btn.position = txt.position + SF.vector2f(0, tb.height + 10)
+		yes_btn.soft_selected = true
 		@buttons << yes_btn
 		tb = yes_btn.local_bounds
 		no_btn = LE::TextButton.new(@app.font, ->() { @active = false; nil }, "No", b.width / 4, b.height / 4)

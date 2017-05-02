@@ -1,5 +1,6 @@
 require "crsfml/graphics"
 require "./buttons"
+require "./time_tweaker"
 
 class LE::Sidebar
 	getter entity_buttons, time_tweaker
@@ -134,8 +135,8 @@ class LE::Sidebar
 
 		@entity_buttons.each do |btn|
 			if btn.contains?(pos)
-				if @selected_button != nil
-					@selected_button.not_nil!.selected = false
+				unless (sb = @selected_button).nil?
+					sb.selected = false
 				end
 				btn.selected = true
 				@selected_button = btn
@@ -148,8 +149,8 @@ class LE::Sidebar
 				if btn.contains?(pos)
 					STDERR.puts "Callback #{{{name}}}[#{btn.id}]" if @app.verbose?
 				{% if name != "effect" && name != "sym" %}
-					if @selected_{{name.id}} != nil
-						@selected_{{name.id}}.not_nil!.selected = false
+					unless (sel = @selected_{{name.id}}).nil?
+						sel.selected = false
 					end	
 					btn.selected = true
 					@selected_{{name.id}} = btn
@@ -170,7 +171,9 @@ class LE::Sidebar
 
 	private def refresh_selected
 		{% for name in %w(bg border fixed breakable) %}
-			@selected_{{name.id}}.not_nil!.selected = false if @selected_{{name.id}} != nil
+			unless (sel = @selected_{{name.id}}).nil?
+				sel.selected = false
+			end
 			@selected_{{name.id}} = nil
 			@{{name.id}}_buttons.each do |btn|
 				if @app.lr.level.tileIDs.{{name.id}} == btn.id
@@ -253,7 +256,7 @@ class LE::Sidebar
 		2.times do |i|
 			btn = EffectButton.new(@app, fxcb.call(i), i)
 			btn.position = pos
-			pos.x += LE::BUTTONS_WIDTH
+			pos.x += LE::BUTTONS_WIDTH + 1
 			@effect_buttons << btn
 		end
 	end
@@ -277,107 +280,5 @@ class LE::Sidebar
 			@sym_buttons << btn
 			pos.x += LE::BUTTONS_WIDTH + 1
 		end
-	end
-
-	module LongPressable
-		@press_listeners = {} of Symbol => {SF::Time, -> Void}
-
-		# Feeds us with information about long presses.
-		def press(what : Symbol?, t : SF::Time)
-			# XXX Until they fix https://github.com/crystal-lang/crystal/issues/3512
-			#if what == nil
-				#@press_listeners.each { |x| x = {SF::Time::Zero, x[1]} }
-			#else
-				#pl = @press_listeners[what.not_nil!]
-				#@press_listeners[what.not_nil!] = {pl[0] + t, pl[1]}
-				#if pl[0] + t > SF.seconds(1)
-					#pl[1].call
-				#end
-			#end
-		end
-
-		def register(what : Symbol, cb : -> Void)
-			@press_listeners[what] = {SF::Time::Zero, cb}
-		end
-	end
-
-	class TimeTweaker
-		getter back_button, fw_button
-
-		include LongPressable
-
-		def initialize(@app : LE::App)
-			@back_button = TextButton.new(@app.font, ->() { back }, "<", 
-						      width: 1.2 * LE::TILE_SIZE, height: 1.2 * LE::TILE_SIZE)
-			@back_button.fill_color = SF.color(207, 210, 218)
-			@back_button.color = SF::Color::Black
-			@fw_button = TextButton.new(@app.font, ->() { fw }, ">",
-						      width: 1.2 * LE::TILE_SIZE, height: 1.2 * LE::TILE_SIZE)
-			@fw_button.fill_color = SF.color(207, 210, 218)
-			@fw_button.color = SF::Color::Black
-			@time_displayer = TextButton.new(@app.font, ->() {}, 
-							 width: 2.4 * LE::TILE_SIZE + 1, height: 1.2 * LE::TILE_SIZE)
-			@time_displayer.fill_color = SF::Color::White
-			@time_displayer.color = SF::Color::Black
-			@time = 0.seconds
-
-			register(:back, -> back)
-			register(:fw, -> fw)
-		end
-
-		def refresh
-			@time = @app.lr.level.time.seconds
-			update_time_string
-		end
-
-		def position=(pos)
-			@back_button.position = pos
-			@time_displayer.position = SF.vector2f(@back_button.position.x +
-							       @back_button.local_bounds.width - 1, pos.y)
-			@fw_button.position = SF.vector2f(@time_displayer.position.x +
-							  @time_displayer.local_bounds.width - 1, pos.y)
-		end
-
-		def position
-			@back_button.position
-		end
-
-		include SF::Drawable 
-
-		def draw(target, states : SF::RenderStates)
-			target.draw(@back_button, states)
-			target.draw(@time_displayer, states)
-			target.draw(@fw_button, states)
-		end
-
-		def touch(pos)
-			if @back_button.contains?(pos)
-				@back_button.callback.call
-				return true
-			elsif @fw_button.contains?(pos)
-				@fw_button.callback.call
-				return true
-			end
-			false
-		end
-
-		private def update_time_string
-			@time_displayer.string = "#{@time.minutes}m #{@time.seconds}s"
-		end
-
-		private def back
-			@app.lr.level.time -= 1 unless @app.lr.level.time == 0
-			@time = Time::Span.new(0, 0, @app.lr.level.time)
-			update_time_string
-			nil
-		end
-
-		private def fw 
-			@app.lr.level.time += 1
-			@time = Time::Span.new(0, 0, @app.lr.level.time)
-			update_time_string
-			nil
-		end
-
 	end
 end

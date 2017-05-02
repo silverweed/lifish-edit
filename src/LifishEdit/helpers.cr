@@ -3,9 +3,9 @@
 class LE::App
 	def place_entity
 		tile = mouse_utils.get_touched_tile
-		if @selected_entity != nil && tile.is_a? Tuple
+		if !(e = @selected_entity).nil? && tile.is_a? Tuple
 			history.save
-			lr.place_entity(tile, @selected_entity.not_nil!)
+			lr.place_entity(tile, e)
 			place_symmetric(tile)
 		end
 	end
@@ -22,14 +22,16 @@ class LE::App
 	private def place_symmetric(tile)
 		symmetries.each do |sym|
 			stile = symmetric(sym, tile)
-			lr.place_entity(stile.not_nil!, @selected_entity.not_nil!) if stile != nil
+			if !stile.nil? && !(e = @selected_entity).nil?
+				lr.place_entity(stile, e)
+			end
 		end
 	end
 
 	private def remove_symmetric(tile)
 		symmetries.each do |sym|
 			stile = symmetric(sym, tile)
-			lr.remove_entity_at(stile.not_nil!) if stile != nil
+			lr.remove_entity_at(stile) unless stile.nil?
 		end
 	end
 	
