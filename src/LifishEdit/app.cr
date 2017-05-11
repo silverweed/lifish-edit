@@ -6,7 +6,7 @@ require "./history"
 require "./cache"
 require "./help"
 require "./quit_prompt"
-require "./saved_text"
+require "./feedback_text"
 
 # A container for all app components which can be conveniently
 # passed around across functions.
@@ -25,7 +25,8 @@ class LE::App
 	getter! symmetries
 	getter! help
 	getter! quit_prompt
-	getter! saved_text
+	getter! feedback_text
+	private getter! level_clipboard
 
 	setter ls
 
@@ -50,15 +51,14 @@ class LE::App
 		@fps_counter = FPSCounter.new(self)
 		@help = LE::Help.new(self)
 		@quit_prompt = LE::QuitPrompt.new(self)
-		@saved_text = LE::SavedText.new(self)
+		@feedback_text = LE::FeedbackText.new(self)
 		@symmetries = [] of Symbol
+		@level_clipboard = ""
 
 		window.vertical_sync_enabled = true
 		window.framerate_limit = LE::FRAMERATE_LIMIT
 		lr.offset = SF.vector2f(LE::SIDE_PANEL_WIDTH.to_f32, LE::MENU_HEIGHT.to_f32)
 		fps_counter.position = SF.vector2f(2, LE::WIN_HEIGHT - 20)
-		b = saved_text.local_bounds
-		saved_text.position = SF.vector2f(LE::WIN_WIDTH - b.width - 5, LE::MENU_HEIGHT + 3.0)
 	end
 
 	def popups
@@ -70,7 +70,7 @@ class LE::App
 		#if SF::Mouse.button_pressed?(SF::Mouse::Left)
 			#sidebar.time_tweaker.press(app.mouse_utils.get_touching_time_tweaker, clock.restart)
 		#end
-		saved_text.refresh
+		feedback_text.refresh
 	end
 
 	include SF::Drawable
@@ -82,7 +82,7 @@ class LE::App
 		target.draw(help, states)
 		target.draw(quit_prompt, states)
 		target.draw(fps_counter, states)
-		target.draw(saved_text, states)
+		target.draw(feedback_text, states)
 	end
 
 	def show_fps
@@ -95,6 +95,19 @@ class LE::App
 
 	def toggle_help
 		help.active = !help.active
+	end
+
+	def copy_level
+		@level_clipboard = lr.level.tilemap
+		feedback_text.show("Level copied to clipboard")
+	end
+
+	def paste_level
+		return if level_clipboard.size != lr.level.tilemap.size
+		history.save
+		lr.level.tilemap = level_clipboard
+		lr.load_level
+		feedback_text.show("Level pasted")
 	end
 
 	private def fps_counter

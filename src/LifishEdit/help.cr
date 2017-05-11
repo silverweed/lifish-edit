@@ -22,6 +22,8 @@ class LE::Help < LE::Popup
 		h("Ctrl + Z", "Undo")
 		h("Ctrl + Y", "Redo")
 		h("Ctrl + S", "Save")
+		h("Ctrl + C", "Copy level")
+		h("Ctrl + V", "Paste level")
 		h("Ctrl + Shift + S", "Save As")
 		h("Ctrl + Q", "Quit")
 		@initialized = true

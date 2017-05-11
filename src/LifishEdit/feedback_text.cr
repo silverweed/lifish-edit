@@ -3,19 +3,22 @@ require "./app"
 
 module LE
 
-class SavedText
+class FeedbackText
 	
 	FADE_DURATION = SF.seconds(2)
 
 	def initialize(app : LE::App)
-		@text = SF::Text.new("Levels saved", app.font, 18)
+		@text = SF::Text.new("", app.font, 18)
 		@text.fill_color = SF::Color.new(0, 255, 0, 0)
 		@text.outline_color = SF::Color.new(0, 150, 0, 0)
 		@text.outline_thickness = 1
 		@clock = SF::Clock.new
 	end
 	
-	def show
+	def show(str)
+		@text.string = str
+		b = @text.local_bounds
+		@text.position = SF.vector2f(LE::WIN_WIDTH - b.width - 3.0, LE::MENU_HEIGHT + 3.0)
 		fc = @text.fill_color
 		@text.fill_color = SF::Color.new(fc.r, fc.g, fc.b, 255)
 		oc = @text.outline_color
@@ -30,18 +33,6 @@ class SavedText
 			oc = @text.outline_color
 			@text.outline_color = SF::Color.new(oc.r, oc.g, oc.b, @text.fill_color.a)
 		end
-	end
-
-	def local_bounds
-		@text.local_bounds
-	end
-
-	def position
-		@text.position
-	end
-
-	def position=(pos)
-		@text.position = pos
 	end
 
 	include SF::Drawable

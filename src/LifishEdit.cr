@@ -114,6 +114,14 @@ while window.open?
 			when Kb::Subtract
 				lr.save_level
 				lr.level = ls.prev
+			when Kb::C
+				if Kb.key_pressed?(Kb::LControl)
+					app.copy_level
+				end
+			when Kb::V
+				if Kb.key_pressed?(Kb::LControl)
+					app.paste_level
+				end
 			when Kb::F
 				app.show_fps = !app.show_fps
 			when Kb::H
