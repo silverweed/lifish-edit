@@ -85,7 +85,7 @@ class LE::TimeTweaker
 	end
 
 	def finalize_manual_time
-		@time = @time_displayer.manual_time_buffer_to_seconds.seconds
+		@app.lr.level.time = @time_displayer.manual_time_buffer_to_seconds
 		@time_displayer.finalize_manual_time
 		refresh
 	end
@@ -129,7 +129,6 @@ class LE::TimeTweaker
 
 		def update_manual_time(n : Int32)
 			@manual_time_buffer << n
-			puts @manual_time_buffer
 			refresh
 		end
 
@@ -144,7 +143,6 @@ class LE::TimeTweaker
 			@manual_time_buffer.reverse.each_with_index do |n, i|
 				s += n * 10**i
 			end
-			puts s
 			s
 		end
 	end
