@@ -98,6 +98,7 @@ class Menu
 			begin	
 				app.lr.save_level
 				LE::SaveManager.save(app.ls, app.ls.json_fname)
+				app.saved_text.show
 				puts "Saved levels in #{app.ls.json_fname}"
 			rescue
 				show_save_dialog(app)

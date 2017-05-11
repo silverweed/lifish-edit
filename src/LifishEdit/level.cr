@@ -17,6 +17,8 @@ class LE::Level
 		@orig_tilemap = @tilemap = description.tilemap.as String
 		@orig_tileIDs = @tileIDs
 		@effects = description.effects || [] of String
+		@width = LE::LV_WIDTH
+		@height = LE::LV_HEIGHT
 	end
 
 	# Serializes this level into JSON
@@ -26,7 +28,9 @@ class LE::Level
 			music: @music,
 			tileIDs: @tileIDs,
 			tilemap: @tilemap,
-			effects: @effects
+			effects: @effects,
+			width: @width,
+			height: @height
 		}
 	end
 

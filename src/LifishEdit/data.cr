@@ -57,6 +57,8 @@ struct Level
 	JSON.mapping(
 		time:    Int32,
 		music:   UInt16,
+		width:   { type: UInt16, nilable: true },
+		height:  { type: UInt16, nilable: true },
 		tileIDs: TileIDs,
 		tilemap: String,
 		effects: { type: Array(String), nilable: true }

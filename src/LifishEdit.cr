@@ -90,7 +90,6 @@ app.selected_entity = app.sidebar.touch(app.sidebar.entity_buttons[0].position)
 LE::Utils.write_cfg_file("start_dir", File.dirname(levels_json))
 
 alias Kb = SF::Keyboard
-clock = SF::Clock.new
 while window.open?
 	while event = window.poll_event
 		case event
@@ -190,10 +189,7 @@ while window.open?
 			event.delta.to_i.abs.times { lr.level = ls.cyclic(event.delta > 0) }
 		end
 	end
-	# Check long press on time tweaker
-	if SF::Mouse.button_pressed?(SF::Mouse::Left) 
-		app.sidebar.time_tweaker.press(app.mouse_utils.get_touching_time_tweaker, clock.restart)
-	end
+	app.refresh
 	window.clear
 	window.draw(app)
 	app.highlight_tile(window)
