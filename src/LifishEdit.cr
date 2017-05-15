@@ -160,23 +160,27 @@ while window.open?
 					" touched = #{touched}"
 			end
 
-			if touched.is_a? LE::MenuCallback
-				callback = touched
-				window.close unless callback.call(app)
-			else
-				case event.button
-				when SF::Mouse::Left
-					if Kb.key_pressed?(Kb::LShift)
-						app.remove_entity
-					else
-						app.place_entity
-					end
-				when SF::Mouse::Right
-					if touched.is_a? LE::Entity
-						app.history.save
-						app.remove_entity
-					end
+			case event.button
+			when SF::Mouse::Left
+				if touched.is_a? LE::MenuCallback
+					callback = touched
+					window.close unless callback.call(app)
+				elsif Kb.key_pressed?(Kb::LShift)
+					app.remove_entity
+				else
+					app.place_entity
 				end
+			when SF::Mouse::Right
+				if touched.is_a? LE::Entity
+					app.history.save
+					app.remove_entity
+				end
+			when SF::Mouse::XButton1
+				lr.save_level
+				lr.level = ls.prev
+			when SF::Mouse::XButton2
+				lr.save_level
+				lr.level = ls.next
 			end
 
 
