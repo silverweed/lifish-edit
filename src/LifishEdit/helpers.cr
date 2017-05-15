@@ -20,7 +20,7 @@ class LE::App
 	end
 
 	private def place_symmetric(tile)
-		return if LE.is_unique_entity?(@selected_entity)
+		return if @selected_entity.nil? || LE.is_unique_entity?(@selected_entity.not_nil!.type)
 		symmetries.each do |sym|
 			stile = symmetric(sym, tile)
 			if !stile.nil? && !(e = @selected_entity).nil?
@@ -30,7 +30,7 @@ class LE::App
 	end
 
 	private def remove_symmetric(tile)
-		return if LE.is_unique_entity?(@selected_entity)
+		return if @selected_entity.nil? || LE.is_unique_entity?(@selected_entity.not_nil!.type)
 		symmetries.each do |sym|
 			stile = symmetric(sym, tile)
 			lr.remove_entity_at(stile) unless stile.nil?

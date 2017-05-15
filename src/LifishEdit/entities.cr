@@ -57,7 +57,7 @@ def self.get_entity_size(e)
 end
 
 # `true` if entities represented by symbol `e` is unique in the level
-def self.is_unique_entity?(e)
+def self.is_unique_entity?(e : Symbol)
 	return {:player1, :player2, :cage}.includes? e
 end
 
