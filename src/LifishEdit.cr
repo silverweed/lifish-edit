@@ -136,9 +136,15 @@ while window.open?
 				end
 			# Control sequences
 			when Kb::Z
-				app.history.step_back if Kb.key_pressed?(Kb::LControl)
+				if Kb.key_pressed?(Kb::LControl)
+					app.history.step_back
+					app.feedback_text.show("Undo: place entity")
+				end
 			when Kb::Y
-				app.history.step_forward if Kb.key_pressed?(Kb::LControl)
+				if Kb.key_pressed?(Kb::LControl)
+					app.history.step_forward
+					app.feedback_text.show("Redo: place entity") 
+				end
 			when Kb::S
 				if Kb.key_pressed?(Kb::LControl)
 					if Kb.key_pressed?(Kb::LShift)
@@ -171,10 +177,7 @@ while window.open?
 					app.place_entity
 				end
 			when SF::Mouse::Right
-				if touched.is_a? LE::Entity
-					app.history.save
-					app.remove_entity
-				end
+				app.remove_entity
 			when SF::Mouse::XButton1
 				lr.save_level
 				lr.level = ls.prev
@@ -192,7 +195,6 @@ while window.open?
 					app.place_entity
 				end
 			elsif SF::Mouse.button_pressed?(SF::Mouse::Right)
-				touched = app.mouse_utils.touch
 				app.remove_entity
 			end
 

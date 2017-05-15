@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-describe LifishEdit do
+describe LE do
   # TODO: Write tests
 
   it "works" do

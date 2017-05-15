@@ -10,9 +10,13 @@ class LE::History
 		@i = -1
 	end
 
-	def save 
+	def size
+		@i
+	end
+
+	def save
 		@app.lr.save_level
-		push(@app.ls.cur_level, @app.lr.level.tilemap)
+		push({@app.ls.cur_level, @app.lr.level.tilemap})
 	end
 
 	def step_back
@@ -52,6 +56,9 @@ class LE::History
 	# Inserts current level's state into the currently pointed history
 	# entry, then returns the old pointed history entry
 	private def swap_cur
+		if @i < 0 || @i >= @hist.size
+			raise "i is out of bounds! (#{@i} / #{@hist.size})"
+		end
 		state = @hist[@i]
 		@app.lr.save_level
 		@hist[@i] = {@app.ls.cur_level, @app.lr.level.tilemap}
@@ -60,15 +67,16 @@ class LE::History
 
 	# Adds an element to the history, right after the currently pointed
 	# state. If there are more states after the pointed one, they're dropped.
-	private def push(lvnum, tilemap)
+	private def push(tup)
 		if @i < @hist.size - 1
 			# We're overwriting successive history: drop it
 			@hist = @hist[0 .. @i]
 		elsif @hist.size == MAX_HIST_LEN
 			# Reached length limit: start dropping old states
 			@hist = @hist[1 .. -1]
+			@i = @hist.size - 2
 		end
-		@hist << {lvnum, tilemap}
+		@hist << tup
 		@i += 1
 	end
 end

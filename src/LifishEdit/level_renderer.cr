@@ -139,17 +139,30 @@ class LE::LevelRenderer
 		@tiles.map! { |tile| tile.nil? || tile.type != type ? tile : nil }
 	end
 
-	def place_entity(tile : Tuple, entity : LE::Entity)
+	def should_place_entity?(tile : Tuple, entity : LE::Entity) : Bool
+		tx, ty = tile
+		if tx < 0 || ty < 0 || tx >= LE::LV_WIDTH || ty >= LE::LV_HEIGHT
+			return false
+		end
+		idx = LE::Utils.tile_to_idx(tile)
+		ent = @tiles[idx]
+		return !ent.is_a?(LE::Entity) || ent.type != entity.type
+	end
+
+	def place_entity(tile : Tuple, entity : LE::Entity) : Bool
 		tx, ty = tile
 		if tx < 0 || ty < 0 || tx >= LE::LV_WIDTH || ty >= LE::LV_HEIGHT
 			STDERR.puts "Attempted to place entity in tile #{tile}!"
-			return
+			return false
 		end
 		idx = LE::Utils.tile_to_idx(tile)
-		unless @tiles[idx].is_a?(LE::Entity) && @tiles[idx].not_nil!.type == entity.type
+		ent = @tiles[idx]
+		if !ent.is_a?(LE::Entity) || ent.type != entity.type
 			remove_entities(entity.type) if LE.is_unique_entity?(entity.type)
 			@tiles[idx] = LE::Entity.new(@app, entity.type, level.tileIDs)
+			return true
 		end
+		return false
 	end
 
 	{% for name in %w(bg border fixed breakable) %}
