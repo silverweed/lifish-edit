@@ -1,37 +1,12 @@
 # Functions which are only used in the main
 
 class LE::App
-	class FixedQueue(T, N)
-		def initialize
-			@q = [] of T
-			@i = 0
-		end
-		def <<(t : T)
-			if @i == N - 1
-				@q = @q[1..-1]
-			else
-				@i += 1
-			end
-			@q << t
-		end
-		def pop
-			if @i == 0
-				nil
-			else
-				@q.pop
-			end
-		end
-	end
-
 	def place_entity
 		tile = mouse_utils.get_touched_tile
 		if !(e = @selected_entity).nil? && tile.is_a? Tuple
 			return unless lr.should_place_entity?(tile, e)
 			history.save
-			if lr.place_entity(tile, e)
-				# TODO
-				#@latest_placed_entity << e.type
-			end
+			lr.place_entity(tile, e)
 			place_symmetric(tile)
 		end
 	end
@@ -88,7 +63,7 @@ class LE::App
 			@lvbuf = @lvbuf * 10 + n
 		end
 		@lvbufclock.restart
-		lr.level = ls[@lvbuf - 1]
+		lr.level = ls.set(@lvbuf - 1)
 	end
 
 	def highlight_tile(window)
