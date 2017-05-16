@@ -54,6 +54,13 @@ class LE::App
 		@feedback_text = LE::FeedbackText.new(self)
 		@symmetries = [] of Symbol
 		@level_clipboard = ""
+		@credit_text = SF::Text.new("LifishEdit #{LE::VERSION} by Giacomo Parolini", font, 11)
+		begin
+			ct = @credit_text.not_nil!
+			ct.fill_color = SF::Color::White
+			b = ct.local_bounds
+			ct.position = SF.vector2f(LE::WIN_WIDTH - b.width - 3, LE::WIN_HEIGHT - b.height - 3)
+		end
 
 		window.vertical_sync_enabled = true
 		window.framerate_limit = LE::FRAMERATE_LIMIT
@@ -83,6 +90,7 @@ class LE::App
 		target.draw(quit_prompt, states)
 		target.draw(fps_counter, states)
 		target.draw(feedback_text, states)
+		target.draw(@credit_text.not_nil!, states)
 	end
 
 	def show_fps
