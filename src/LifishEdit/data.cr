@@ -22,9 +22,7 @@ struct Enemy
 	struct Attack
 		JSON.mapping(
 			type:      Array(String),
-			damage:    UInt16,
 			id:        { type: UInt16,  nilable: true },
-			speed:     { type: Float32, nilable: true },
 			fireRate:  { type: Float32, nilable: true },
 			blockTime: { type: Float32, nilable: true },
 			range:     { type: Float32, nilable: true },

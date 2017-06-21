@@ -86,9 +86,11 @@ class Menu
 		when LibNFD::Result::CANCEL
 		else
 			app.lr.save_level
-			LE::SaveManager.save(app.ls, String.new(fname))
+			filename = String.new(fname)
+			LE::SaveManager.save(app.ls, filename)
+			return filename
 		end
-		true
+		false
 	end
 
 	private def get_callback(role : Symbol) : MenuCallback
@@ -101,12 +103,26 @@ class Menu
 				app.feedback_text.show("Saved levels")
 				puts "Saved levels in #{app.ls.json_fname}"
 			rescue
-				show_save_dialog(app)
+				begin
+					show_save_dialog(app)
+					app.feedback_text.show("Saved levels in new file")
+				rescue
+					app.feedback_text.show("Levels NOT SAVED!")
+				end
 			end
 				true
 			}
 		when :save_as
-			->(app : LE::App) { show_save_dialog(app) }
+			->(app : LE::App) {
+				begin
+					file = show_save_dialog(app)
+					app.ls.json_fname = file if file.is_a? String
+					app.feedback_text.show("Saved levels in new file")
+				rescue
+					app.feedback_text.show("Levels NOT SAVED!")
+				end
+				true
+			}
 		when :load
 			->(app : LE::App) { 
 				case LibNFD.open_dialog("json", app.lifish_dir, out fname)
@@ -118,7 +134,7 @@ class Menu
 					app.lr.save_level
 					app.lr.level = app.ls[0]
 				end
-				true 
+				true
 			}
 		when :quit 
 			->(app : LE::App) {

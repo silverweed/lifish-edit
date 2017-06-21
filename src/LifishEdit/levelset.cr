@@ -10,7 +10,7 @@ require "./data"
 class LE::LevelSet
 
 	getter app
-	getter json_fname
+	property json_fname
 	getter data
 
 	# Opens file `@json_fname` containing a lifish level set
