@@ -85,6 +85,9 @@ cp -vr ${RESOURCES[@]} "$APPNAME.app"/Contents/Resources/.
 
 pushd "$APPNAME.app"/Contents/MacOS
 
+# Softlink the resources here
+ln -s ../Resources/res/
+
 ## Ensure things are installation-independent
 # Libraries to relocate
 DYN=(foreign/Darwin/libnfd-mac.so

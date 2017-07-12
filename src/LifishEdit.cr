@@ -64,7 +64,7 @@ if ARGV.size > 0
 	levels_json = args[0]
 else
 	start_dir = cfg["start_dir"]? || ENV["HOME"]
-	case LibNFD.open_dialog(nil, start_dir, out levels_json_ptr)
+	case LibNFD.open_dialog("json", start_dir, out levels_json_ptr)
 	when LibNFD::Result::ERROR
 		raise "Error selecting directory!"
 	when LibNFD::Result::CANCEL
