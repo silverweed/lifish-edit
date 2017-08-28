@@ -60,7 +60,7 @@ STDERR.flush
 
 levels_json = ""
 
-if ARGV.size > 0
+if options[:args].as(Array(String)).size > 0
 	levels_json = args[0]
 else
 	start_dir = cfg["start_dir"]? || ENV["HOME"]

@@ -74,23 +74,28 @@ class LE::App
 		hlrect.fill_color = SF.color(200, 200, 200, 70)
 		hlrect.outline_color = SF.color(0, 0, 0, 255)
 		hlrect.outline_thickness = 2
-		draw = false
 
 		if touched
 			x, y = touched.as Tuple(Int32, Int32)
 			hlrect.position = SF.vector2f((x + 1) * LE::TILE_SIZE + LE::SIDE_PANEL_WIDTH,
 						      (y + 1) * LE::TILE_SIZE + LE::MENU_HEIGHT)
-			draw = true
+			txt = SF::Text.new("#{x+1}, #{y+1}", font, 10)
+			txt.position = hlrect.position + SF.vector2f(2, 2)
+			shad = SF::Text.new(txt.string, font, txt.character_size)
+			shad.position = txt.position + SF.vector2f(-1, 1)
+			shad.color = SF::Color::Black
+			window.draw(shad)
+			window.draw(txt)
+			window.draw(hlrect)
 		else
 			btn = sidebar.get_touched_button(window.map_pixel_to_coords(SF::Mouse.get_position(window)))
 			if btn
 				hlrect.position = btn
 				hlrect.size = SF.vector2f(1.2 * LE::TILE_SIZE, 1.2 * LE::TILE_SIZE)
-				draw = true
+				window.draw(hlrect)
 			end
 		end
 
-		window.draw(hlrect) if draw
 	end
 end
 
