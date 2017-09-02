@@ -27,6 +27,8 @@ ENTITIES = {
 	'=' => :haunting_spirit_boss,
 	'^' => :spikes,
 	'R' => :rex_boss,
+	'O' => :god_eye_boss,
+	't' => :torch,
 }
 
 # Gets entity value from its key
@@ -45,7 +47,7 @@ end
 # Gets the entity size in tiles
 def self.get_entity_size(e)
 	case e
-	when :alien_boss
+	when :alien_boss, :god_eye_boss
 		{3, 3}
 	when :haunting_spirit_boss
 		{4, 4}

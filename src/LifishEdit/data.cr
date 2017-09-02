@@ -54,6 +54,7 @@ end
 struct Level
 	JSON.mapping(
 		time:    Int32,
+		num:     { type: UInt16, nilable: true },
 		music:   UInt16,
 		width:   { type: UInt16, nilable: true },
 		height:  { type: UInt16, nilable: true },

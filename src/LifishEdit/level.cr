@@ -25,6 +25,7 @@ class LE::Level
 	def serialize
 		{
 			time: @time,
+			num: @lvnum,
 			music: @music,
 			tileIDs: @tileIDs,
 			tilemap: @tilemap,
