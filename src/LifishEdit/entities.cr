@@ -6,6 +6,7 @@ ENTITIES = {
 	'0' => :empty,
 	'1' => :fixed,
 	'2' => :breakable,
+	'4' => :transparent_wall,
 	'3' => :coin,
 	'X' => :player1,
 	'Y' => :player2,
@@ -20,15 +21,14 @@ ENTITIES = {
 	'H' => :enemy8,
 	'I' => :enemy9,
 	'J' => :enemy10,
-	'*' => :alien_boss,
-	'4' => :transparent_wall,
 	'5' => :acid_pond,
-	'6' => :haunted_statue,
-	'=' => :haunting_spirit_boss,
 	'^' => :spikes,
+	't' => :torch,
+	'6' => :haunted_statue,
+	'*' => :alien_boss,
+	'=' => :haunting_spirit_boss,
 	'R' => :rex_boss,
 	'O' => :god_eye_boss,
-	't' => :torch,
 }
 
 # Gets entity value from its key
