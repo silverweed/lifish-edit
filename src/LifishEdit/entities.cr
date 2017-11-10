@@ -29,6 +29,7 @@ ENTITIES = {
 	'=' => :haunting_spirit_boss,
 	'R' => :rex_boss,
 	'O' => :god_eye_boss,
+	'#' => :mainframe_boss,
 }
 
 # Gets entity value from its key
@@ -55,6 +56,8 @@ def self.get_entity_size(e)
 		{4, 4}
 	when :haunted_statue
 		{1, 2}
+	when :mainframe_boss
+		{5, 5}
 	when :fog
 		{15, 13}
 	else

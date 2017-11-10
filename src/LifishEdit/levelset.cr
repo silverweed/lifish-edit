@@ -42,7 +42,7 @@ class LE::LevelSet
 	end
 
 	def set(i)
-		@current = i
+		@current = i % n_levels
 		@levels[@current]
 	end
 
