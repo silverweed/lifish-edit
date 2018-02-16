@@ -34,6 +34,13 @@ class LE::Sidebar
 		end
 	end
 
+	# Padding of buttons inside side panel
+	BUTTONS_PADDING = 11
+	ENTITIES_PER_PAGE = 27
+
+	@entity_page = 0
+	@max_entity_page = 1
+
 	@selected_button : EntityButton?
 	@selected_bg : Button?
 	@selected_border : Button?
@@ -52,27 +59,22 @@ class LE::Sidebar
 		@breakable_buttons = [] of CallbackButton
 		@effect_buttons = [] of CallbackButton
 		@sym_buttons = [] of CallbackButton
-		@backten_button = TextButton.new(@app.font,
-						callback: ->() {
-							@app.lr.save_level
-							i = @app.ls.cur_level - 11
-							i = @app.ls.n_levels + i if i < 0
-							@app.lr.level = @app.ls.set(i)
-							return
-						},
-						string: "<< -10",
-						width: LE::BUTTONS_WIDTH * 3/2,
-						height: LE::TILE_SIZE)
-		@fwten_button = TextButton.new(@app.font,
-						callback: ->() {
-							@app.lr.save_level
-							i = (@app.ls.cur_level + 9) % @app.ls.n_levels
-							@app.lr.level = @app.ls.set(i)
-							return
-						},
-						string: "+10 >>",
-						width: LE::BUTTONS_WIDTH * 3/2 + 1,
-						height: LE::TILE_SIZE)
+		@backpage_button = TextButton.new(@app.font,
+						  callback: ->() {
+							  change_entity_page(-1)
+							  return
+						  },
+						  string: "< Prev",
+						  width: LE::BUTTONS_WIDTH * 3/2,
+						  height: LE::TILE_SIZE)
+		@fwpage_button = TextButton.new(@app.font,
+						  callback: ->() {
+							  change_entity_page(1)
+							  return
+						  },
+						  string: "Next >",
+						  width: LE::BUTTONS_WIDTH * 3/2,
+						  height: LE::TILE_SIZE)
 		@time_tweaker = TimeTweaker.new(@app)
 		@help_text = SF::Text.new("Press H for help", @app.font, 12)
 		b = @help_text.local_bounds
@@ -88,8 +90,8 @@ class LE::Sidebar
 		{% for name in %i(entity bg border fixed breakable effect sym) %}
 			@{{name.id}}_buttons.map { |btn| btn.draw target, states }
 		{% end %}
-		target.draw(@backten_button, states)
-		target.draw(@fwten_button, states)
+		target.draw(@backpage_button, states)
+		target.draw(@fwpage_button, states)
 		target.draw(@time_tweaker, states)
 		target.draw(@help_text, states)
 	end
@@ -98,39 +100,39 @@ class LE::Sidebar
 	# it, or nil if no button contains that `pos`.
 	def get_touched_button(pos) : SF::Vector2(Float32)?
 		@entity_buttons.each do |btn|
+		if btn.contains?(pos)
+			return btn.position
+		end
+	end
+	{% for name in %w(bg border fixed breakable effect sym) %}
+		@{{name.id}}_buttons.each do |btn|
 			if btn.contains?(pos)
 				return btn.position
 			end
 		end
-		{% for name in %w(bg border fixed breakable effect sym) %}
-			@{{name.id}}_buttons.each do |btn|
-				if btn.contains?(pos)
-					return btn.position	
-				end
-			end
-		{% end %}
-		{% for name in %w(back fw) %}
-			if @time_tweaker.{{name.id}}_button.contains?(pos)
-				return @time_tweaker.{{name.id}}_button.position
-			end
-		{% end %}
-		nil
+	{% end %}
+	{% for name in %w(back fw) %}
+		if @time_tweaker.{{name.id}}_button.contains?(pos)
+			return @time_tweaker.{{name.id}}_button.position
+		end
+	{% end %}
+	nil
 	end
 
 	# Checks if a touch in position `pos` intercepts a Button and:
 	# 	if it's an EntityButton, select it and return it
 	#	if it's a BG/Border button, change BG/Border to level and return nil
 	def touch(pos) : LE::Entity?
-		if @backten_button.contains?(pos)
-			@backten_button.callback.call
+		if @backpage_button.contains?(pos)
+			@backpage_button.callback.call
 			return nil
 		end
-		
-		if @fwten_button.contains?(pos)
-			@fwten_button.callback.call
+
+		if @fwpage_button.contains?(pos)
+			@fwpage_button.callback.call
 			return nil
 		end
-		
+
 		return nil if @time_tweaker.touch(pos)
 
 		@entity_buttons.each do |btn|
@@ -148,21 +150,21 @@ class LE::Sidebar
 			@{{name.id}}_buttons.each do |btn|
 				if btn.contains?(pos)
 					STDERR.puts "Callback #{{{name}}}[#{btn.id}]" if @app.verbose?
-				{% if name != "effect" && name != "sym" %}
-					unless (sel = @selected_{{name.id}}).nil?
-						sel.selected = false
-					end	
-					btn.selected = true
-					@selected_{{name.id}} = btn
-				{% end %}
-					btn.callback.call
-					return
+			       {% if name != "effect" && name != "sym" %}
+				       unless (sel = @selected_{{name.id}}).nil?
+					       sel.selected = false
+				       end
+				       btn.selected = true
+				       @selected_{{name.id}} = btn
+			       {% end %}
+			       btn.callback.call
+			       return
 				end
 			end
 		{% end %}
 		nil
 	end
-	
+
 	# Autoselects bg/border/fixed/breakable buttons according to the current level
 	def refresh
 		refresh_selected
@@ -193,27 +195,7 @@ class LE::Sidebar
 	end
 
 	private def init_buttons
-		# Padding of buttons inside side panel
-		buttons_padding = 11
-		# Entities' buttons
-		begin
-			pos = SF.vector2f(buttons_padding, LE::MENU_HEIGHT + buttons_padding)
-			i = 0
-			LE::ENTITIES.each_value do |v|
-				next if v == :empty
-
-				btn = EntityButton.new(@app, v)
-				@entity_buttons << btn
-				btn.position = pos
-				if i % 3 != 2
-					pos.x += LE::BUTTONS_WIDTH + 1
-				else
-					pos.y += LE::BUTTONS_WIDTH + 1
-					pos.x = buttons_padding.to_f32
-				end
-				i += 1
-			end
-		end
+		init_entity_buttons
 
 		# Border/bg buttons
 		bp = @entity_buttons[2].position + SF.vector2f(2, 0)
@@ -223,19 +205,19 @@ class LE::Sidebar
 			:fixed     => SF.vector2f(bp.x + 3 * (LE::BUTTONS_WIDTH + 1), bp.y),
 			:breakable => SF.vector2f(bp.x + 4 * (LE::BUTTONS_WIDTH + 1), bp.y),
 		}
-		
+
 		make_buttons(:bg)
 		make_buttons(:border)
 		make_buttons(:fixed)
 		make_buttons(:breakable)
 
-		@backten_button.position = SF.vector2f(@entity_buttons[0].position.x,
-						      @entity_buttons[-1].position.y + LE::BUTTONS_WIDTH + 1)
-		@fwten_button.position = SF.vector2f(@backten_button.position.x + @backten_button.local_bounds.width - 1,
-						     @backten_button.position.y)
+		@backpage_button.position = SF.vector2f(@entity_buttons[0].position.x,
+							@entity_buttons[-1].position.y + LE::BUTTONS_WIDTH + 1)
+		@fwpage_button.position = SF.vector2f(@backpage_button.position.x + @backpage_button.local_bounds.width - 1,
+						      @backpage_button.position.y)
 		@time_tweaker.position = @bg_buttons[-1].position + SF.vector2f(0, LE::BUTTONS_WIDTH + 1)
 
-		make_sym_buttons	
+		make_sym_buttons
 
 		# Effects buttons
 		fxcb = ->(id : Int32) {
@@ -261,8 +243,48 @@ class LE::Sidebar
 		end
 	end
 
+	private def init_entity_buttons
+		i = 0
+		LE::ENTITIES.each_value do |v|
+			next if v == :empty
+
+			btn = EntityButton.new(@app, v)
+			@entity_buttons << btn
+			i += 1
+			if i == ENTITIES_PER_PAGE
+				i = 0
+				@max_entity_page += 1
+			end
+		end
+
+		position_entity_buttons
+	end
+
+	private def position_entity_buttons
+		pos = SF.vector2f(BUTTONS_PADDING, LE::MENU_HEIGHT + BUTTONS_PADDING)
+		i = 0
+		(@entity_page * ENTITIES_PER_PAGE .. (@entity_page + 1) * ENTITIES_PER_PAGE).each do |j|
+			break if j >= @entity_buttons.size
+			btn = @entity_buttons[j]
+			btn.position = pos
+			if i % 3 != 2
+				pos.x += LE::BUTTONS_WIDTH + 1
+			else
+				pos.y += LE::BUTTONS_WIDTH + 1
+				pos.x = BUTTONS_PADDING.to_f32
+			end
+			i += 1
+		end
+	end
+
+	private def clear_entity_buttons_positions
+		@entity_buttons.each do |btn|
+			btn.position = SF.vector2f(-9999, -9999)
+		end
+	end
+
 	private def make_sym_buttons
-		pos = @backten_button.position
+		pos = @backpage_button.position
 		pos.y += LE::BUTTONS_WIDTH + 1
 		3.times do |i|
 			sym = SYMMETRIES[i][0]
@@ -280,5 +302,11 @@ class LE::Sidebar
 			@sym_buttons << btn
 			pos.x += LE::BUTTONS_WIDTH + 1
 		end
+	end
+
+	private def change_entity_page(i : Int)
+		@entity_page = (@entity_page + i) % @max_entity_page
+		clear_entity_buttons_positions
+		position_entity_buttons
 	end
 end

@@ -49,7 +49,7 @@ class LE::LevelSet
 	def n_levels
 		@levels.size
 	end
-	
+
 	def metadata
 		{
 			name: data.name,
@@ -73,7 +73,7 @@ class LE::LevelSet
 	def next
 		cyclic true
 	end
-	
+
 	def prev
 		cyclic false
 	end
@@ -86,12 +86,12 @@ class LE::LevelSet
 			if @levels[@current].is_a? LE::Level
 				return @levels[@current]
 			else
-				nils += 1 
+				nils += 1
 			end
 		end
 		raise "All levels nil!"
 	end
-	
+
 	def dump
 		puts "LevelSet: #{@data.name || "Unnamed set"}\n\
 			Author: #{@data.author || "Unknown"}\n\

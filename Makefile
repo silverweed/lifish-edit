@@ -1,5 +1,6 @@
 UNAME := $(shell uname)
 NCORES = 1
+CRYSTAL = /usr/local/src/crystal-0.23.1-3/bin/crystal
 EXE = lifishedit
 ifeq ($(UNAME), Darwin)
 	NCORES = $(shell sysctl -n hw.ncpu)
@@ -9,13 +10,13 @@ ifeq ($(UNAME), Linux)
 endif
 
 build: deps $(EXE)
-	crystal build -d --threads $(NCORES) src/LifishEdit.cr -o $(EXE) --link-flags -L$(PWD)/foreign/$(shell uname)
+	$(CRYSTAL) build -d --threads $(NCORES) src/LifishEdit.cr -o $(EXE) --link-flags -L$(PWD)/foreign/$(shell uname)
 
 release: deps $(EXE)
-	crystal build --release --threads $(NCORES) src/LifishEdit.cr -o $(EXE) --link-flags -L$(PWD)/foreign/$(shell uname)
+	$(CRYSTAL) build --release --threads $(NCORES) src/LifishEdit.cr -o $(EXE) --link-flags -L$(PWD)/foreign/$(shell uname)
 
 docs:
-	crystal docs 
+	$(CRYSTAL) docs
 
 deps:
 	shards install
@@ -26,6 +27,6 @@ bundle: release
 
 .PHONY: clean
 clean:
-	rm -f $(EXE) 
+	rm -f $(EXE)
 
 .PHONY: $(EXE)

@@ -10,7 +10,7 @@ Currently working on:
 
 ## Installation
 
-A Crystal compiler (at least version 0.20) is required.
+A Crystal compiler **with version >= 0.20 && < 0.24** is required. Latest Crystal won't be able to build this program due to a bug in the compiler.
 
 Install the dependencies:
 
