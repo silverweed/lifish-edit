@@ -225,9 +225,11 @@ class LE::Sidebar
 				fx = @app.lr.level.effects
 				if fx.includes?(LE::EFFECTS[id][0].to_s)
 					@app.lr.level.effects.delete(LE::EFFECTS[id][0].to_s)
+					@app.feedback_text.show("#{LE::EFFECTS[id][0].to_s} disabled")
 					@effect_buttons[id].selected = false
 				else
 					@app.lr.level.effects << LE::EFFECTS[id][0].to_s
+					@app.feedback_text.show("#{LE::EFFECTS[id][0].to_s} enabled")
 					@effect_buttons[id].selected = true
 				end
 				@app.lr.save_level
