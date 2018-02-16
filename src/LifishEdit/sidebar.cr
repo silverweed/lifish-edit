@@ -64,7 +64,7 @@ class LE::Sidebar
 							  change_entity_page(-1)
 							  return
 						  },
-						  string: "< Prev",
+						  string: "< Pre",
 						  width: LE::BUTTONS_WIDTH * 3/2,
 						  height: LE::TILE_SIZE)
 		@fwpage_button = TextButton.new(@app.font,
@@ -72,7 +72,7 @@ class LE::Sidebar
 							  change_entity_page(1)
 							  return
 						  },
-						  string: "Next >",
+						  string: "Nxt >",
 						  width: LE::BUTTONS_WIDTH * 3/2,
 						  height: LE::TILE_SIZE)
 		@time_tweaker = TimeTweaker.new(@app)
