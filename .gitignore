@@ -12,3 +12,5 @@ shard.lock
 deps
 LifishEdit.app
 .DS_Store
+build/
+.gdbhist

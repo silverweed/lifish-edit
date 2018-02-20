@@ -54,7 +54,7 @@ class LE::App
 		@feedback_text = LE::FeedbackText.new(self)
 		@symmetries = [] of Symbol
 		@level_clipboard = ""
-		@credit_text = SF::Text.new("LifishEdit #{LE::VERSION} by Giacomo Parolini", font, 11)
+		@credit_text = SF::Text.new("LifishEdit #{LE::VERSION} by G. Parolini", font, 11)
 		begin
 			ct = @credit_text.not_nil!
 			ct.fill_color = SF::Color::White
@@ -129,7 +129,7 @@ class LE::App
 
 		def initialize(@app : LE::App, @active = false)
 			@updates = 0
-			@time = 0_f32 
+			@time = 0_f32
 			@clock = SF::Clock.new
 			@update_clock = SF::Clock.new
 			raise "Font is nil!" if @app.font == nil
