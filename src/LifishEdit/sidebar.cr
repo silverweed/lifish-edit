@@ -11,20 +11,7 @@ class LE::Sidebar
 				@app.lr.save_level
 				@app.lr.set_{{name.id}}(i.to_u16)
 				if {{name}} == :fixed || {{name}} == :breakable
-					b = @entity_buttons.find { |bt| bt.entity.type == {{name}} }
-					if b.is_a? LE::EntityButton
-						if {{name}} == :fixed
-							b.entity.button_sprite.texture_rect = SF.int_rect(
-								LE::TILE_SIZE * (i.to_u16 - 1),
-								b.entity.button_sprite.texture_rect.top,
-								LE::TILE_SIZE, LE::TILE_SIZE)
-						else
-							b.entity.button_sprite.texture_rect = SF.int_rect(
-								b.entity.button_sprite.texture_rect.left,
-								LE::TILE_SIZE * (i.to_u16 - 1),
-								LE::TILE_SIZE, LE::TILE_SIZE)
-						end
-					end
+					refresh_walls_entity_buttons({{name}}, i)
 				end
 				return
 			}, {{name}}, i)
@@ -192,6 +179,8 @@ class LE::Sidebar
 		@sym_buttons.each_with_index do |btn, i|
 			btn.selected = @app.symmetries.includes?(LE::SYMMETRIES[i][0])
 		end
+		refresh_walls_entity_buttons(:fixed, @app.lr.level.tileIDs.fixed)
+		refresh_walls_entity_buttons(:breakable, @app.lr.level.tileIDs.breakable)
 	end
 
 	private def init_buttons
@@ -310,5 +299,22 @@ class LE::Sidebar
 		@entity_page = (@entity_page + i) % @max_entity_page
 		clear_entity_buttons_positions
 		position_entity_buttons
+	end
+
+	private def refresh_walls_entity_buttons(name, tileId)
+		b = @entity_buttons.find { |bt| bt.entity.type == name }
+		if b.is_a? LE::EntityButton
+			if name == :fixed
+				b.entity.button_sprite.texture_rect = SF.int_rect(
+					LE::TILE_SIZE * (tileId.to_u16 - 1),
+					b.entity.button_sprite.texture_rect.top,
+					LE::TILE_SIZE, LE::TILE_SIZE)
+			else
+				b.entity.button_sprite.texture_rect = SF.int_rect(
+					b.entity.button_sprite.texture_rect.left,
+					LE::TILE_SIZE * (tileId.to_u16 - 1),
+					LE::TILE_SIZE, LE::TILE_SIZE)
+			end
+		end
 	end
 end

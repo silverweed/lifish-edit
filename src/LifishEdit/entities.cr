@@ -65,6 +65,17 @@ def self.get_entity_size(e)
 	end
 end
 
+def self.get_sprite_offset(e)
+	case e
+	when :haunting_spirit_boss
+		{-2, -2}
+	when :haunted_statue
+		{0, -1}
+	else
+		{0, 0}
+	end
+end
+
 # `true` if entities represented by symbol `e` is unique in the level
 def self.is_unique_entity?(e : Symbol)
 	return {:player1, :player2, :cage}.includes? e

@@ -21,12 +21,13 @@ end
 struct Enemy
 	struct Attack
 		JSON.mapping(
-			type:      Array(String),
-			id:        { type: UInt16,  nilable: true },
-			fireRate:  { type: Float32, nilable: true },
-			blockTime: { type: Float32, nilable: true },
-			range:     { type: Float32, nilable: true },
-			tileRange: { type: UInt16,  nilable: true }
+			type:          Array(String),
+			id:            { type: UInt16,  nilable: true },
+			contactDamage: { type: UInt16,  nilable: true },
+			fireRate:      { type: Float32, nilable: true },
+			blockTime:     { type: Float32, nilable: true },
+			range:         { type: Float32, nilable: true },
+			tileRange:     { type: UInt16,  nilable: true }
 		)
 	end
 	JSON.mapping(

@@ -13,22 +13,22 @@ class LE::LevelRenderer
 	def initialize(@app : LE::App, @level : LE::Level)
 		@tiles = [] of LE::Entity?
 		@bg = SF::Sprite.new
-		@bg.position = SF.vector2f(LE::SIDE_PANEL_WIDTH + LE::TILE_SIZE, 
+		@bg.position = SF.vector2f(LE::SIDE_PANEL_WIDTH + LE::TILE_SIZE,
 					   LE::MENU_HEIGHT + LE::TILE_SIZE)
 		@border = SF::Sprite.new
 		@border.position = SF.vector2f(LE::SIDE_PANEL_WIDTH, LE::MENU_HEIGHT)
 
 		@offset = SF.vector2f(0_f32 + LE::TILE_SIZE, 0_f32 + LE::TILE_SIZE)
 		@level_text = SF::Text.new("#{@level.lvnum}", @app.font, 20)
-		@level_text.position = SF.vector2f(LE::SIDE_PANEL_WIDTH + LE::TILE_SIZE * (LE::LV_WIDTH + 1), 
+		@level_text.position = SF.vector2f(LE::SIDE_PANEL_WIDTH + LE::TILE_SIZE * (LE::LV_WIDTH + 1),
 						   LE::MENU_HEIGHT)
 		@level_text.color = SF::Color::White
 		@level_text.style = SF::Text::Bold
 		@level_text_shadow = SF::Text.new(@level_text.string, @level_text.font.not_nil!,
 						  @level_text.character_size)
 		@level_text_shadow.position = @level_text.position + SF.vector2f(2, 2)
-		@level_text_shadow.style = SF::Text::Bold 
-		@level_text_shadow.color = SF::Color::Black 
+		@level_text_shadow.style = SF::Text::Bold
+		@level_text_shadow.color = SF::Color::Black
 	end
 
 	def level=(lv)
@@ -46,7 +46,7 @@ class LE::LevelRenderer
 	def draw(target, states : SF::RenderStates)
 		# Background
 		target.draw(@bg, states)
-	
+
 		# Borders
 		target.draw(@border, states)
 
@@ -84,7 +84,7 @@ class LE::LevelRenderer
 		end
 
 		STDERR.puts("Tilemap now: #{@level.tilemap}") if @app.verbose?
-		
+
 		@app.ls.data.levels[@level.lvnum - 1] = LE::Data::Level.from_json(
 			@level.serialize.to_json)
 	end

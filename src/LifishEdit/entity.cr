@@ -22,12 +22,15 @@ class LE::Entity
 		@pivot_sprite = SF::Sprite.new
 		@bounding_rect = SF::RectangleShape.new(SF.vector2f(0, 0))
 
+		offx, offy = LE.get_sprite_offset(@type)
+		@sprite_offset = SF.vector2f(offx * TILE_SIZE, offy * TILE_SIZE)
+
 		unless @type == :empty
 			texture_name = @type.to_s + ".png"
 			begin
 				texture = @app.cache.texture(texture_name)
 			rescue ex
-				STDERR.puts "[ warning ] creating entity: #{ex}"
+				STDERR.puts "[ warning ] creating entity #{@type}: #{ex}"
 			end
 		end
 		if texture.is_a? SF::Texture
@@ -37,7 +40,7 @@ class LE::Entity
 		else
 			@texture = SF::Texture.new(TILE_SIZE, TILE_SIZE)
 		end
-		
+
 		sx, sy = LE.get_entity_size(@type)
 		rect = SF.int_rect(0, 0, sx * TILE_SIZE, sy * TILE_SIZE)
 
@@ -58,7 +61,7 @@ class LE::Entity
 				@pivot_sprite.texture = pivot_texture
 				@pivot_sprite.texture_rect = SF.int_rect(0, 0, TILE_SIZE, TILE_SIZE)
 			end
-			
+
 			@bounding_rect.size = SF.vector2f(sx * TILE_SIZE, sy * TILE_SIZE)
 			@bounding_rect.fill_color = SF::Color.new(0, 0, 150, 80)
 			@bounding_rect.outline_color = SF::Color::Blue
@@ -76,23 +79,23 @@ class LE::Entity
 	end
 
 	def position=(pos)
-		@sprite.position = pos
+		@sprite.position = pos + @sprite_offset
 		@pivot_sprite.position = pos
-		@bounding_rect.position = pos
+		@bounding_rect.position = @sprite.position
 	end
 
 	def position
-		@sprite.position
+		@pivot_sprite.position
 	end
 
 	# The grid position in tiles (playable starts from 0, 0)
 	def grid_position
-		{(@sprite.position.x - LE::SIDE_PANEL_WIDTH).to_i / 32 - 1,
-   		(@sprite.position.y - LE::MENU_HEIGHT).to_i / 32 - 1}
+		{(position.x - LE::SIDE_PANEL_WIDTH).to_i / 32 - 1,
+   		(position.y - LE::MENU_HEIGHT).to_i / 32 - 1}
 	end
 
 	def contains?(point)
-		@sprite.position.x <= point.x && 
+		@sprite.position.x <= point.x &&
 			point.x <= @sprite.position.x + @sprite.texture_rect.width &&
 			@sprite.position.y <= point.y &&
 			point.y <= @sprite.position.y + @sprite.texture_rect.height
