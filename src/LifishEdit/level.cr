@@ -9,7 +9,7 @@ class LE::Level
 	getter orig_tilemap, lvnum
 
 	# Initializes this level with the parameters given by
-	# the hash *description*. 
+	# the hash *description*.
 	def initialize(description : LE::Data::Level, @lvnum : UInt32)
 		@time    = description.time.as Int32
 		@music   = description.music.as UInt16
@@ -37,7 +37,8 @@ class LE::Level
 
 	# Prints a human-readable representation of this level.
 	def dump
-		puts "Time: #{@time} s\n\
+		puts "Level ##{@lvnum}\n\
+			Time: #{@time} s\n\
 			Music: #{@music}\n\
 			TileIDs: {\n\
 			\tborder: #{@tileIDs.border},\n\

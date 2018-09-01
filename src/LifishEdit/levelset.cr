@@ -28,7 +28,10 @@ class LE::LevelSet
 		i = 1_u32
 		lvjson.each do |description|
 			begin
-				@levels << LE::Level.new(description, i)
+				level = LE::Level.new(description, i)
+				@levels << level
+				@data.levels[i - 1] = LE::Data::Level.from_json(
+					level.serialize.to_json)
 			rescue e
 				STDERR.puts "Couldn't create level #{i}:"
 				STDERR.puts e.backtrace.join "\n"
