@@ -17,7 +17,9 @@ class LE::Cache
 		       end
 		begin
 			STDERR.puts "Loading #{path}"
-			return @textures[key] = SF::Texture.from_file(path)
+			texture = SF::Texture.from_file(path)
+			texture.smooth = true
+			@textures[key] = texture
 		rescue e
 			STDERR.puts "Error loading texture #{path}: #{e}"
 			return nil
