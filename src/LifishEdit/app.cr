@@ -27,6 +27,8 @@ class LE::App
 	getter! quit_prompt
 	getter! feedback_text
 	private getter! level_clipboard
+	private getter! credit_text
+	private getter! credit_text_shade
 
 	setter ls
 
@@ -60,6 +62,10 @@ class LE::App
 			ct.fill_color = SF::Color::White
 			b = ct.local_bounds
 			ct.position = SF.vector2f(LE::WIN_WIDTH - b.width - 3, LE::WIN_HEIGHT - b.height - 3)
+			@credit_text_shade = SF::Text.new(ct.string, ct.font.not_nil!, ct.character_size)
+			cts = @credit_text_shade.not_nil!
+			cts.position = ct.position + SF.vector2f(-1, 1)
+			cts.fill_color = SF::Color::Black
 		end
 
 		window.vertical_sync_enabled = true
@@ -90,7 +96,8 @@ class LE::App
 		target.draw(quit_prompt, states)
 		target.draw(fps_counter, states)
 		target.draw(feedback_text, states)
-		target.draw(@credit_text.not_nil!, states)
+		target.draw(credit_text_shade, states)
+		target.draw(credit_text, states)
 	end
 
 	def show_fps
