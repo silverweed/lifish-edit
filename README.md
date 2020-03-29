@@ -1,7 +1,7 @@
 # LifishEdit
 <img src="https://i.imgur.com/2TjPlxl.png" alt="Lifish-Edit Preview" height="400px">
 
-LifishEdit is a small graphical level editor for [Lifish](https://github.com/silverweed/lifish).
+LifishEdit is a small graphical level editor for [Lifish](https://github.com/silverweed/lifish) and [BOOM Remake](https://silverweed.github.io/boom/).
 It's currently work-in-progress but usable.
 
 Currently working on:
