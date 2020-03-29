@@ -1,12 +1,13 @@
 UNAME := $(shell uname)
 NCORES = 1
-CRYSTAL = /usr/local/src/crystal-0.23.1-3/bin/crystal
 EXE = lifishedit
 ifeq ($(UNAME), Darwin)
 	NCORES = $(shell sysctl -n hw.ncpu)
+	CRYSTAL = crystal
 endif
 ifeq ($(UNAME), Linux)
 	NCORES = $(shell lscpu | grep -m1 'CPU(s)' | cut -f2 -d:)
+	CRYSTAL = /usr/local/src/crystal-0.23.1-3/bin/crystal
 endif
 
 build: deps $(EXE)

@@ -26,6 +26,7 @@ ENTITIES = {
 	't' => :torch,
 	'6' => :haunted_statue,
 	'*' => :alien_boss,
+	'/' => :big_alien_boss,
 	'=' => :haunting_spirit_boss,
 	'R' => :rex_boss,
 	'O' => :god_eye_boss,
@@ -50,6 +51,8 @@ def self.get_entity_size(e)
 	case e
 	when :alien_boss, :god_eye_boss
 		{3, 3}
+	when :big_alien_boss
+		{5, 5}
 	when :haunting_spirit_boss
 		{4, 4}
 	when :rex_boss
